@@ -12,6 +12,7 @@ export interface Milestone {
 export interface BusinessRules {
   referrerReward: number; // ₹ to User A
   friendReward: number; // ₹ to User B
+  friendDataGB: number; // bonus data (GB) to User B on first recharge / bill payment
   minTransaction: number; // ₹ minimum qualifying recharge
   linkValidityHours: number; // invitation link lifetime
   attribution: "first_valid_link_opened";
@@ -24,6 +25,7 @@ export interface BusinessRules {
 export const DEFAULT_RULES: BusinessRules = {
   referrerReward: 25,
   friendReward: 25,
+  friendDataGB: 2,
   minTransaction: 100,
   linkValidityHours: 24,
   attribution: "first_valid_link_opened",

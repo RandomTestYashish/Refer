@@ -34,40 +34,64 @@ export function MilestoneMedal({ m, unlocked, size = 44 }: { m: Milestone; unloc
   );
 }
 
-/** Horizontal milestone track with animated fill. */
+/**
+ * Horizontal milestone track: 4 evenly spaced levels joined by a progress line.
+ * Reached levels show their medal, the next level is outlined in black with its target,
+ * future levels are muted with a lock.
+ */
 export function MilestoneTrack({ milestones, count, className }: { milestones: Milestone[]; count: number; className?: string }) {
-  const max = milestones[milestones.length - 1].target;
-  // Piece-wise even spacing so early milestones are readable.
-  const seg = 100 / (milestones.length - 1);
-  let pct = 0;
-  for (let i = 0; i < milestones.length; i++) {
-    const prev = i === 0 ? 0 : milestones[i - 1].target;
+  const n = milestones.length;
+  // Fill: whole segments for reached levels + partial progress toward the next one.
+  let filled = 0;
+  for (let i = 1; i < n; i++) {
+    const prev = milestones[i - 1].target;
     const cur = milestones[i].target;
-    if (count >= cur) pct = i * seg;
+    if (count >= cur) filled = i;
     else {
-      if (i > 0) pct = (i - 1) * seg + ((count - prev) / (cur - prev)) * seg;
+      if (count >= prev) filled = i - 1 + (count - prev) / (cur - prev);
       break;
     }
   }
-  if (count >= max) pct = 100;
+  const pct = (filled / (n - 1)) * 100;
+  const nextIdx = milestones.findIndex((m) => count < m.target);
   return (
-    <div className={cn("px-1", className)}>
-      <div className="relative mx-[22px] h-1.5 rounded-full bg-[#EFEFEF]">
+    <div className={cn("relative", className)}>
+      {/* line between first and last circle centres */}
+      <div className="absolute top-[19px] h-[3px] rounded-full bg-[#E6E9EF]" style={{ left: `${50 / n}%`, right: `${50 / n}%` }}>
         <motion.div
-          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-airtel-red to-[#FF4D6A]"
+          className="h-full rounded-full bg-[linear-gradient(90deg,#FC5252,#E32121)]"
           initial={{ width: 0 }}
-          animate={{ width: `${Math.max(0, pct)}%` }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
         />
       </div>
-      <div className="-mt-[25px] flex justify-between">
-        {milestones.map((m) => (
-          <div key={m.id} className="flex w-[56px] flex-col items-center gap-1.5">
-            <MilestoneMedal m={m} unlocked={count >= m.target} />
-            <span className={cn("text-[11px] font-semibold", count >= m.target ? "text-airtel-ink" : "text-airtel-sub")}>{m.label === "First referral" ? "First" : m.label}</span>
-            <span className="-mt-1 text-[10px] text-airtel-sub tabular">{m.target}</span>
-          </div>
-        ))}
+      <div className="relative grid" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
+        {milestones.map((m, i) => {
+          const reached = count >= m.target;
+          const next = i === nextIdx;
+          return (
+            <div key={m.id} className="flex flex-col items-center text-center">
+              {reached ? (
+                <MilestoneMedal m={m} unlocked size={40} />
+              ) : (
+                <span
+                  className={cn(
+                    "flex size-10 items-center justify-center rounded-full text-[13px] font-bold",
+                    next ? "border-2 border-[#E32121] bg-white text-[#E32121] shadow-[0_0_0_4px_rgba(227,33,33,0.12)]" : "border border-[#E6E9EF] bg-[#F0F4F9] text-[#A0A2A4]",
+                  )}
+                >
+                  {next ? m.target : <Lock className="size-3.5" />}
+                </span>
+              )}
+              <span className={cn("mt-2 text-[12px] font-semibold leading-[14px]", reached || next ? "text-[#292C31]" : "text-[#696B6F]")}>
+                {m.label === "First referral" ? "First" : m.label}
+              </span>
+              <span className="mt-0.5 text-[11px] leading-[14px] text-[#696B6F]">
+                {m.target} {m.target === 1 ? "referral" : "referrals"}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export default {
           "red-soft": "#FFD5D7", // gen4red/50
           ink: "#292C31", // black/900 — primary text
           sub: "#696B6F", // black/700 — body / help text
-          surface: "#F6F6F6", // black/100
+          surface: "#F0F4F9", // blueGrey/50 — matches the Home Figma bands
           line: "#E6E9EF", // border/card (blueGrey/100)
           success: "#0F7033", // green/800 text
           "success-soft": "#D1EFDC",
@@ -88,8 +88,10 @@ export default {
         "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },
         "accordion-up": { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },
         shimmer: { "100%": { transform: "translateX(100%)" } },
+        marquee: { to: { transform: "translateX(-50%)" } },
       },
       animation: {
+        marquee: "marquee 14s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

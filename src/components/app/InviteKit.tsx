@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import QRCode from "qrcode";
-import { Check, Copy, Gift, MessageCircle, MessageSquareText, QrCode, Share2 } from "lucide-react";
+import { Check, Copy, Gift, MessageCircle, MessageSquareText, Share2 } from "lucide-react";
 import { ContactAvatar } from "@/components/app/primitives";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { CONTACTS, PERSONAL_CODE, PERSONAL_LINK } from "@/domain/data";
+import { IconAction } from "@/components/app/gen4";
+import { CONTACTS, PERSONAL_LINK } from "@/domain/data";
 import { useProto } from "@/store/useProto";
 import { cn } from "@/lib/utils";
 
@@ -63,14 +61,14 @@ export function ReferralLinkField({ link = PERSONAL_LINK, className }: { link?: 
     return () => clearTimeout(t);
   }, [copied]);
   return (
-    <div className={cn("flex h-12 items-center gap-2 rounded-[14px] border border-dashed border-airtel-red/35 bg-airtel-red-soft/40 pl-3.5 pr-1.5", className)}>
+    <div className={cn("flex h-12 items-center gap-2 rounded-[12px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] pl-3.5 pr-1.5", className)}>
       <span className="min-w-0 flex-1 select-all truncate text-[14px] font-semibold text-airtel-ink">{link}</span>
       <motion.button
         whileTap={{ scale: 0.94 }}
         onClick={async () => setCopied(await copyInviteLink(link))}
         className={cn(
-          "flex h-9 min-w-[84px] items-center justify-center gap-1.5 rounded-[10px] px-3 text-[13px] font-bold transition-colors",
-          copied ? "bg-airtel-success text-white" : "bg-airtel-ink text-white",
+          "flex h-9 min-w-[84px] items-center justify-center gap-1.5 rounded-[10px] px-3 text-[13px] font-medium transition-colors",
+          copied ? "bg-[#0F7033] text-white" : "bg-black text-white",
         )}
         aria-label={copied ? "Link copied" : "Copy link"}
       >
@@ -90,54 +88,13 @@ export function ReferralLinkField({ link = PERSONAL_LINK, className }: { link?: 
   );
 }
 
-/** Row of round share targets. */
-export function ShareRow({ onShare, onQr }: { onShare: (channel: "whatsapp" | "sms" | "more") => void; onQr: () => void }) {
-  const items = [
-    { label: "WhatsApp", icon: MessageCircle, bg: "#25D366", on: () => onShare("whatsapp") },
-    { label: "SMS", icon: MessageSquareText, bg: "#0A7AFF", on: () => onShare("sms") },
-    { label: "QR code", icon: QrCode, bg: "#171717", on: onQr },
-    { label: "More", icon: Share2, bg: "#8E8E93", on: () => onShare("more") },
-  ];
+/** Row of share targets, drawn as Home "Icon-action" circles. */
+export function ShareRow({ onShare }: { onShare: (channel: "whatsapp" | "sms" | "more") => void }) {
   return (
-    <div className="grid grid-cols-4">
-      {items.map(({ label, icon: Icon, bg, on }) => (
-        <button key={label} onClick={on} className="flex flex-col items-center gap-1.5 active:scale-95">
-          <span className="flex size-[52px] items-center justify-center rounded-full text-white shadow-sm" style={{ background: bg }}>
-            <Icon className="size-[22px]" />
-          </span>
-          <span className="text-[11.5px] font-semibold text-airtel-ink">{label}</span>
-        </button>
-      ))}
+    <div className="flex justify-around">
+      <IconAction label="WhatsApp" icon={<MessageCircle />} tint="#1DA851" onClick={() => onShare("whatsapp")} />
+      <IconAction label="SMS" icon={<MessageSquareText />} tint="#075EE8" onClick={() => onShare("sms")} />
+      <IconAction label="More" icon={<Share2 />} onClick={() => onShare("more")} />
     </div>
-  );
-}
-
-/** In-person invite: QR code of the personal link. */
-export function QrInviteSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
-  const [svg, setSvg] = useState("");
-  const rules = useProto((s) => s.rules);
-  useEffect(() => {
-    QRCode.toString(`https://${PERSONAL_LINK}`, { type: "svg", margin: 0, color: { dark: "#171717", light: "#ffffff" }, errorCorrectionLevel: "M" })
-      .then(setSvg)
-      .catch(() => setSvg(""));
-  }, []);
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader className="items-center pt-5 text-center">
-          <SheetTitle className="text-center">Scan to join Airtel</SheetTitle>
-          <SheetDescription className="text-center">Your friend scans this with their camera. You both get ₹{rules.friendReward} after their first eligible recharge.</SheetDescription>
-        </SheetHeader>
-        <div className="mx-auto mt-5 rounded-[22px] border border-airtel-line bg-white p-5 shadow-card">
-          {svg ? <div className="size-[188px] [&_svg]:h-full [&_svg]:w-full" dangerouslySetInnerHTML={{ __html: svg }} /> : <div className="size-[188px] animate-pulse rounded-[10px] bg-airtel-surface" />}
-        </div>
-        <p className="mt-3 text-center text-[13px] font-semibold tracking-[0.12em] text-airtel-sub">{PERSONAL_CODE}</p>
-        <div className="px-5 pb-[34px] pt-5">
-          <Button size="lg" block variant="outline" onClick={() => void copyInviteLink()}>
-            <Copy /> Copy link instead
-          </Button>
-        </div>
-      </SheetContent>
-    </Sheet>
   );
 }

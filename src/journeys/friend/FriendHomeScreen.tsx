@@ -6,6 +6,7 @@ import { ContactAvatar, RewardCoin, Screen, ScreenBody, Wordmark } from "@/compo
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SectionTitle } from "@/components/app/gen4";
 import { REFERRER } from "@/domain/data";
 import { useFocusReferral, useProto } from "@/store/useProto";
 import { inr } from "@/lib/utils";
@@ -50,7 +51,7 @@ export function FriendHomeScreen() {
   const daysLeft = deadlinePassed ? 0 : rules.firstTxnDeadlineDays;
 
   return (
-    <Screen className="bg-airtel-surface">
+    <Screen className="bg-white">
       <header className="flex h-14 shrink-0 items-center gap-2 bg-white px-3">
         <button aria-label="Menu" onClick={() => toast("Menu", { description: "Not part of this prototype." })} className="flex size-10 items-center justify-center rounded-full active:bg-black/5">
           <Menu className="size-6" />
@@ -64,7 +65,7 @@ export function FriendHomeScreen() {
         <ContactAvatar name={r?.name ?? "Friend"} hue={12} size={34} />
       </header>
       <ScreenBody className="pb-8">
-        <div className="bg-white px-5 pb-5 pt-2">
+        <div className="bg-[#F0F4F9] px-4 pb-5 pt-3">
           <motion.p initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[13px] text-airtel-sub">
             {bRun.eligibility?.segment === "new" ? "Welcome to Airtel 🎉" : "Welcome back"}
           </motion.p>
@@ -79,7 +80,7 @@ export function FriendHomeScreen() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.15 }}
               onClick={() => setSheet(true)}
-              className={`mt-4 flex w-full items-center gap-3 rounded-[18px] p-4 text-left ${deadlinePassed ? "bg-airtel-surface" : "bg-gradient-to-br from-[#FFF1F3] to-[#FFE3E8]"}`}
+              className="mt-5 flex w-full items-center gap-3 rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-4 text-left drop-shadow-[0_4px_6px_rgba(0,0,0,0.04)]"
             >
               {deadlinePassed ? (
                 <span className="flex size-12 items-center justify-center rounded-full bg-white">
@@ -116,15 +117,15 @@ export function FriendHomeScreen() {
         </div>
 
         {/* Services */}
-        <div className="mt-2 bg-white px-4 py-5">
-          <p className="mb-4 px-1 text-[15px] font-bold">Services</p>
+        <div className="px-4 py-6">
+          <SectionTitle className="mb-4 px-1">services</SectionTitle>
           <div className="grid grid-cols-3 gap-3">
             {SERVICES.map((s) => (
               <motion.button
                 key={s.id}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => (s.id === "recharge" ? navigate("b_plans") : setExplore(s))}
-                className={`relative flex flex-col items-start gap-3 rounded-[16px] p-3 text-left ${s.id === "recharge" ? "bg-airtel-red text-white shadow-red" : "bg-airtel-surface"}`}
+                className={`relative flex flex-col items-start gap-3 rounded-[16px] p-3 text-left ${s.id === "recharge" ? "bg-black text-white" : "border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)]"}`}
               >
                 <s.icon className="size-6" strokeWidth={1.9} />
                 <span className="text-[13px] font-semibold leading-[16px]">{s.label}</span>
@@ -136,7 +137,7 @@ export function FriendHomeScreen() {
           </div>
         </div>
 
-        <div className="mt-2 bg-white px-5 py-4">
+        <div className="mx-4 rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] px-4 py-3.5">
           <button onClick={() => navigate("b_plans")} className="flex w-full items-center gap-3">
             <span className="flex size-10 items-center justify-center rounded-full bg-airtel-red-soft">
               <Zap className="size-5 text-airtel-red" />

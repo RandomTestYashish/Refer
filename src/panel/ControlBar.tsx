@@ -22,8 +22,7 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
     const stack = useProto.getState().nav[journey];
     for (let i = stack.length - 1; i >= 0 && idx < 0; i--) idx = path.indexOf(stack[i].id);
   }
-  const pct = ((Math.max(0, idx) + 1) / path.length) * 100;
-  // Two-step confirm (browser confirm() dialogs are unavailable in embedded previews).
+    // Two-step confirm (browser confirm() dialogs are unavailable in embedded previews).
   const [confirmReset, setConfirmReset] = useState(false);
   useEffect(() => {
     if (!confirmReset) return;
@@ -46,7 +45,7 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-[#E2E2E6] bg-white px-4 py-2.5 shadow-[0_1px_0_rgba(0,0,0,0.02)]">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-[#E6E9EF] bg-white px-4 py-2">
       <div className="flex items-center gap-2 pr-1">
         <span className="flex size-7 items-center justify-center rounded-[8px] bg-airtel-red text-[13px] font-black text-white">R</span>
         <div className="hidden leading-tight sm:block">
@@ -81,20 +80,16 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
         </Button>
       </div>
 
-      <div className="flex min-w-[140px] flex-1 items-center gap-2.5">
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#ECECEF]">
-          <div className="h-full rounded-full bg-airtel-red transition-all duration-500" style={{ width: `${pct}%` }} />
-        </div>
-        <span className="whitespace-nowrap text-[12px] font-semibold text-airtel-sub tabular">
-          {Math.max(0, idx) + 1} / {path.length}
-        </span>
-      </div>
+      <span className="hidden whitespace-nowrap text-[12px] font-medium text-airtel-sub tabular sm:inline">
+        Step {Math.max(0, idx) + 1} of {path.length}
+      </span>
+      <div className="flex-1" />
 
       <div className="flex items-center gap-1">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button size="sm" variant="ghost" onClick={() => useProto.getState().resetJourney()}>
-              <RotateCcw /> <span className="hidden md:inline">Reset journey</span>
+              <RotateCcw /> <span className="hidden lg:inline">Restart</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>Restart the current journey. Shared referral data is kept.</TooltipContent>
@@ -112,12 +107,12 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
                 } else setConfirmReset(true);
               }}
             >
-              <Trash2 /> <span className={confirmReset ? "inline" : "hidden md:inline"}>{confirmReset ? "Click again to reset" : "Reset prototype"}</span>
+              <Trash2 /> <span className={confirmReset ? "inline" : "hidden"}>{confirmReset ? "Click again to reset all" : ""}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>Clear all mock data, scenarios and progress.</TooltipContent>
         </Tooltip>
-        <Button size="sm" variant="outline" className="xl:hidden" onClick={onTogglePanel}>
+        <Button size="sm" variant="outline" onClick={onTogglePanel}>
           <SlidersHorizontal /> Scenarios
         </Button>
       </div>

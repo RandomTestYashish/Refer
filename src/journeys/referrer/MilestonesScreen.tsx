@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { AppBar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
 import { MilestoneMedal } from "@/components/app/Milestones";
+import { BAND, CARD, HeroCard } from "@/components/app/gen4";
+import { home } from "@/assets/home";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,15 +21,22 @@ export function MilestonesScreen() {
     <Screen>
       <AppBar title="Milestones" />
       <ScreenBody className="px-5 pb-6">
-        <div className="rounded-[22px] bg-airtel-ink p-5 text-white">
-          <p className="text-[12px] text-white/60">Successful referrals</p>
-          <motion.p key={milestoneCount} initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[40px] font-extrabold leading-none tracking-[-0.04em] tabular">
-            {milestoneCount}
-          </motion.p>
-          <p className="mt-2 text-[13px] text-white/70">Each friend who completes a qualifying recharge moves you up a level.</p>
+        <div className={`${BAND} -mx-5 px-4 py-5`}>
+          <HeroCard className="pt-5">
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <p className="text-[12px] text-[#696B6F]">Successful referrals</p>
+                <motion.p key={milestoneCount} initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[32px] font-bold leading-10 text-[#292C31] tabular">
+                  {milestoneCount}
+                </motion.p>
+                <p className="text-[12px] leading-[18px] text-[#3E4146]">Each friend who completes a qualifying recharge moves you up a level.</p>
+              </div>
+              <img src={home("tile-rewards.png")} alt="" className="h-[64px] w-[104px] object-contain" />
+            </div>
+          </HeroCard>
         </div>
 
-        <div className="mt-5 space-y-3">
+        <div className="mt-6 space-y-3">
           {rules.milestones.map((m, i) => {
             const prev = i === 0 ? 0 : rules.milestones[i - 1].target;
             const unlocked = milestoneCount >= m.target;
@@ -39,7 +48,7 @@ export function MilestonesScreen() {
                 initial={{ y: 12, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: i * 0.06 }}
-                className={`rounded-[18px] border p-4 ${current ? "border-airtel-red/30 bg-airtel-red-soft/40" : "border-airtel-line"}`}
+                className={`rounded-[16px] p-4 ${CARD} ${current ? "!border-[#292C31]" : ""}`}
               >
                 <div className="flex items-center gap-3.5">
                   <MilestoneMedal m={m} unlocked={unlocked} size={48} />

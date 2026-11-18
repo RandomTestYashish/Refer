@@ -85,7 +85,7 @@ export function ReferralCompleteScreen() {
   const c = copy[state] ?? copy.validating;
 
   return (
-    <Screen className={credited ? "bg-gradient-to-b from-[#FFF4F6] via-white to-white" : undefined}>
+    <Screen className={credited ? "bg-gradient-to-b from-[#F0F4F9] via-white to-white" : undefined}>
       {credited && <Confetti originY="22%" />}
       <ScreenBody className="px-5 pb-6">
         <div className="flex flex-col items-center pt-10 text-center">
@@ -118,7 +118,7 @@ export function ReferralCompleteScreen() {
               initial={{ x: -12, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.15 + i * 0.1 }}
-              className="flex items-center gap-3 rounded-[18px] border border-airtel-line bg-white p-3.5 shadow-card"
+              className="flex items-center gap-3 rounded-full border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-2.5 pr-4"
             >
               <ContactAvatar name={x.name} hue={x.hue} size={42} />
               <div className="flex-1">

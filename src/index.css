@@ -29,7 +29,7 @@
   * { @apply border-border; }
   html, body, #root { height: 100%; }
   body {
-    @apply bg-[#EEEEF0] text-foreground antialiased;
+    @apply bg-[#F0F4F9] text-foreground antialiased;
     font-feature-settings: "liga" 0;
     -webkit-tap-highlight-color: transparent;
   }
@@ -49,3 +49,4 @@
     transition-duration: 0.01ms !important;
   }
 }
+

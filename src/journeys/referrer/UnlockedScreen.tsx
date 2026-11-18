@@ -4,6 +4,7 @@ import { CheckCircle2, Loader2, Lock } from "lucide-react";
 import { RewardCoin, Screen } from "@/components/app/primitives";
 import { Confetti } from "@/components/app/Confetti";
 import { MilestoneTrack } from "@/components/app/Milestones";
+import { CARD } from "@/components/app/gen4";
 import { Button } from "@/components/ui/button";
 import { referralStats, useProto } from "@/store/useProto";
 import { inr } from "@/lib/utils";
@@ -29,7 +30,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
   const justUnlocked = rules.milestones.find((m) => m.target === stats.milestoneCount);
 
   return (
-    <Screen className="relative overflow-hidden bg-gradient-to-b from-[#FFF4F6] via-white to-white">
+    <Screen className="relative overflow-hidden bg-gradient-to-b from-[#F0F4F9] via-white to-white">
       {phase >= 2 && <Confetti originY="26%" />}
       <div className="flex flex-1 flex-col items-center px-7 pt-14 text-center">
         <div className="relative flex h-[170px] items-center justify-center">
@@ -90,7 +91,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
         )}
 
         {phase >= 2 && (
-          <motion.div initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="mt-8 w-full rounded-[20px] border border-airtel-line bg-white p-4 pt-3 text-left shadow-card">
+          <motion.div initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className={`mt-8 w-full rounded-[16px] p-4 pt-3 text-left ${CARD}`}>
             <p className="mb-5 text-[13px] font-bold">
               {justUnlocked ? `🎉 ${justUnlocked.label} milestone unlocked!` : "Milestone progress"}
             </p>

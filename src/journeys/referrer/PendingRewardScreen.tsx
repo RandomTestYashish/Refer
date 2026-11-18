@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Ban, CalendarX2, Clock3, Hourglass, Lock, RotateCcw, ShieldAlert, Undo2, UserX } from "lucide-react";
 import { AppBar, RewardCoin, Screen, ScreenBody, ScreenFooter, SimNote } from "@/components/app/primitives";
 import { ErrorState } from "@/components/app/ErrorState";
+import { CARD } from "@/components/app/gen4";
 import { RewardBadge, StatusBadge } from "@/components/app/status";
 import { ReferralAction, canRemind, canResend } from "@/components/app/ReferralActions";
 import { Button } from "@/components/ui/button";
@@ -181,12 +182,12 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           </div>
         </div>
 
-        <div className="mt-7 rounded-[18px] bg-airtel-surface p-4">
+        <div className={`mt-7 rounded-[16px] p-4 ${CARD}`}>
           <div className="flex items-center justify-between text-[13px] font-semibold">
             <span>Unlock progress</span>
             <span className="text-airtel-sub tabular">{Math.max(0, stepIdx + 1)}/7</span>
           </div>
-          <Progress value={pct} className="mt-2.5 h-2 bg-white" indicatorClassName={processing ? "bg-airtel-warning" : undefined} />
+          <Progress value={pct} className="mt-2.5 h-2 bg-[#F0F4F9]" indicatorClassName={processing ? "bg-airtel-warning" : undefined} />
           <ul className="mt-4 space-y-2 text-[13px]">
             {[
               { t: "Invite sent", d: stepIdx >= 0 },

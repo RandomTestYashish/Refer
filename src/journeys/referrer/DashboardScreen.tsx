@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, BellRing, ChevronRight, Gift, Lock, Send, Users } from "lucide-react";
+import { Bell, BellRing, Lock, Send, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Callout } from "@/components/ui/callout";
 import { AvatarStack, ReferralLinkField } from "@/components/app/InviteKit";
 import { canRemind } from "@/components/app/ReferralActions";
 import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
+import { BAND, CARD, HeroCard, LinkButton, SectionTitle } from "@/components/app/gen4";
 import { MilestoneTrack } from "@/components/app/Milestones";
 import { StatusBadge } from "@/components/app/status";
 import { ReferralAction } from "@/components/app/ReferralActions";
@@ -67,8 +68,8 @@ export function DashboardScreen() {
   };
 
   return (
-    <Screen className="bg-airtel-surface">
-      <AppBar title="My Referrals" className="bg-airtel-surface" />
+    <Screen>
+      <AppBar title="My Referrals" />
       <ScreenBody className="pb-6">
         {referrals.length === 0 ? (
           <div className="flex h-full flex-col px-5 pb-10 pt-6">
@@ -102,80 +103,62 @@ export function DashboardScreen() {
               )}
             </AnimatePresence>
 
-            {/* Summary (Oportun / Rakuten pattern) */}
-            <div className="mx-4 rounded-[20px] bg-white p-4 shadow-card">
-              <div className="grid grid-cols-2 divide-x divide-airtel-line">
-                <div>
-                  <p className="text-[12px] text-airtel-sub">Total earned</p>
-                  <motion.p key={stats.earned} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[28px] font-extrabold leading-tight tracking-[-0.03em] tabular">
-                    {inr(stats.earned)}
-                  </motion.p>
-                </div>
-                <div className="pl-4">
-                  <p className="text-[12px] text-airtel-sub">Pending rewards</p>
-                  <p className="text-[28px] font-extrabold leading-tight tracking-[-0.03em] text-[#A56A12] tabular">{inr(lockedTotal)}</p>
-                </div>
-              </div>
-              <div className="mt-4 grid grid-cols-4 divide-x divide-airtel-line rounded-[14px] bg-airtel-surface py-2.5 text-center">
-                {[
-                  ["Invited", stats.total],
-                  ["Accepted", stats.accepted],
-                  ["Pending", stats.pending],
-                  ["Successful", stats.successful],
-                ].map(([l, v]) => (
-                  <div key={l as string}>
-                    <p className="text-[18px] font-bold tabular">{v}</p>
-                    <p className="text-[10.5px] font-medium text-airtel-sub">{l}</p>
+            {/* Summary — hero card on the blue-grey band */}
+            <div className={`${BAND} -mt-3 px-4 py-5`}>
+              <HeroCard className="pt-5">
+                <div className="grid grid-cols-2 divide-x divide-[#E6E9EF] text-center">
+                  <div>
+                    <p className="text-[12px] text-[#696B6F]">Total earned</p>
+                    <motion.p key={stats.earned} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[24px] font-bold leading-8 text-[#292C31] tabular">
+                      {inr(stats.earned)}
+                    </motion.p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Action cards (HelloFresh pattern) */}
-            <div className="mx-4 mt-3 grid gap-3">
+                  <div>
+                    <p className="text-[12px] text-[#696B6F]">Pending</p>
+                    <p className="text-[24px] font-bold leading-8 text-[#DA9802] tabular">{inr(lockedTotal)}</p>
+                  </div>
+                </div>
+                <div className="mt-4 grid grid-cols-4 rounded-[12px] bg-white py-2.5 text-center ring-1 ring-[#E6E9EF]">
+                  {[
+                    ["Invited", stats.total],
+                    ["Accepted", stats.accepted],
+                    ["Pending", stats.pending],
+                    ["Successful", stats.successful],
+                  ].map(([l, v]) => (
+                    <div key={l as string}>
+                      <p className="text-[16px] font-bold text-[#292C31] tabular">{v}</p>
+                      <p className="text-[10.5px] text-[#696B6F]">{l}</p>
+                    </div>
+                  ))}
+                </div>
+              </HeroCard>
               {remindable.length > 0 && (
-                <div className="flex gap-3 rounded-[20px] bg-airtel-warning-soft p-4">
-                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white">
-                    <BellRing className="size-5 text-[#B7791F]" />
+                <div className="mt-4 flex items-center gap-3 rounded-[16px] bg-white p-3.5 ring-1 ring-[#E6E9EF]">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#FFF0B8]">
+                    <BellRing className="size-5 text-[#8F4C00]" />
                   </span>
-                  <div className="flex-1">
-                    <span className="inline-block rounded-full bg-airtel-ink px-2 py-0.5 text-[11px] font-bold text-white">{inr(remindable.length * rules.referrerReward)} pending</span>
-                    <p className="mt-1.5 text-[15px] font-bold">Remind your friends</p>
-                    <p className="text-[12.5px] leading-[17px] text-[#7A5310]">
-                      {remindable.length === 1 ? `${remindable[0].name.split(" ")[0]} hasn't` : `${remindable.length} friends haven't`} completed their first recharge yet.
-                    </p>
-                    <button onClick={remindAll} className="mt-2 text-[13px] font-bold underline underline-offset-2">
-                      Send {remindable.length === 1 ? "a reminder" : "reminders"}
-                    </button>
-                  </div>
-                </div>
-              )}
-              <div className="flex gap-3 rounded-[20px] bg-airtel-red-soft/70 p-4">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white">
-                  <Gift className="size-5 text-airtel-red" />
-                </span>
-                <div className="flex-1">
-                  <span className="inline-block rounded-full bg-airtel-red px-2 py-0.5 text-[11px] font-bold text-white">{inr(rules.referrerReward)} per friend</span>
-                  <p className="mt-1.5 text-[15px] font-bold">Invite a friend</p>
-                  <p className="text-[12.5px] leading-[17px] text-airtel-sub">Get your friend on Airtel and unlock rewards together.</p>
-                  <button onClick={invite} className="mt-2 text-[13px] font-bold text-airtel-red underline underline-offset-2">
-                    Send an invite
+                  <p className="min-w-0 flex-1 text-[12.5px] leading-[17px] text-[#3E4146]">
+                    <b className="text-[#292C31]">{inr(remindable.length * rules.referrerReward)} waiting.</b>{" "}
+                    {remindable.length === 1 ? `${remindable[0].name.split(" ")[0]} hasn't` : `${remindable.length} friends haven't`} recharged yet.
+                  </p>
+                  <button onClick={remindAll} className="h-8 shrink-0 rounded-[10px] bg-black px-3 text-[12.5px] font-medium text-white active:bg-[#3E4146]">
+                    Remind
                   </button>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Milestone */}
-            <button onClick={() => navigate("a_milestones")} className="mx-4 mt-3 block w-[calc(100%-32px)] rounded-[20px] bg-white p-4 pt-3 text-left shadow-card">
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-[13px] font-bold">Milestone progress</span>
-                <ChevronRight className="size-4 text-airtel-sub" />
-              </div>
+            <div className="mx-4 mt-8">
+              <SectionTitle action={<LinkButton onClick={() => navigate("a_milestones")}>View all</LinkButton>}>milestones</SectionTitle>
+            </div>
+            <button onClick={() => navigate("a_milestones")} className={`mx-4 mt-4 block w-[calc(100%-32px)] rounded-[16px] p-4 pt-5 text-left ${CARD}`}>
               <MilestoneTrack milestones={rules.milestones} count={stats.milestoneCount} />
             </button>
 
             {/* List */}
-            <div className="mt-5 px-4">
+            <div className="mt-8 px-4">
+              <SectionTitle className="mb-4">your invites</SectionTitle>
               <Tabs value={tab} onValueChange={(v) => setTab(v as keyof typeof FILTERS)}>
                 <TabsList className="w-full">
                   <TabsTrigger value="all">All</TabsTrigger>
@@ -201,7 +184,7 @@ export function DashboardScreen() {
                         tabIndex={0}
                         onClick={() => navigate("a_detail", { id: r.id })}
                         onKeyDown={(e) => e.key === "Enter" && navigate("a_detail", { id: r.id })}
-                        className="cursor-pointer rounded-[18px] bg-white p-3.5 shadow-card active:scale-[0.99]"
+                        className={`cursor-pointer rounded-[16px] p-3.5 active:scale-[0.99] ${CARD}`}
                       >
                         <div className="flex items-start gap-3">
                           <ContactAvatar name={r.name} hue={c?.hue ?? 200} size={42} />
@@ -216,7 +199,7 @@ export function DashboardScreen() {
                             </p>
                           </div>
                         </div>
-                        <div className="mt-3 flex items-center gap-2 border-t border-airtel-line pt-3">
+                        <div className="mt-3 flex items-center gap-2 border-t border-[#E6E9EF] pt-3">
                           <span className={cn("flex items-center gap-1 text-[12px] font-semibold", rw.cls)}>
                             {rw.locked && <Lock className="size-3" />}
                             {rw.text}
