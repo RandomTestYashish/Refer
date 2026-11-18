@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, RotateCcw, SlidersHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -22,6 +23,13 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
     for (let i = stack.length - 1; i >= 0 && idx < 0; i--) idx = path.indexOf(stack[i].id);
   }
   const pct = ((Math.max(0, idx) + 1) / path.length) * 100;
+  // Two-step confirm (browser confirm() dialogs are unavailable in embedded previews).
+  const [confirmReset, setConfirmReset] = useState(false);
+  useEffect(() => {
+    if (!confirmReset) return;
+    const t = setTimeout(() => setConfirmReset(false), 3500);
+    return () => clearTimeout(t);
+  }, [confirmReset]);
 
   const step = (delta: 1 | -1) => {
     const target = path[Math.min(path.length - 1, Math.max(0, idx + delta))];
@@ -98,10 +106,13 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
               variant="ghost"
               className="text-airtel-error"
               onClick={() => {
-                if (window.confirm("Reset the whole prototype? All mock referrals and settings will be cleared.")) useProto.getState().resetAll();
+                if (confirmReset) {
+                  useProto.getState().resetAll();
+                  setConfirmReset(false);
+                } else setConfirmReset(true);
               }}
             >
-              <Trash2 /> <span className="hidden md:inline">Reset prototype</span>
+              <Trash2 /> <span className={confirmReset ? "inline" : "hidden md:inline"}>{confirmReset ? "Click again to reset" : "Reset prototype"}</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>Clear all mock data, scenarios and progress.</TooltipContent>
