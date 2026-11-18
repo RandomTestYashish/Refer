@@ -40,11 +40,43 @@ export default function App() {
     </StatusToneContext.Provider>
   );
 
-  // Real phones: the prototype IS the screen — no device frame, no developer chrome.
+  const drawer = (
+    <>
+      {panelOpen && <div className="fixed inset-0 z-30 bg-black/30 sm:bg-transparent" onClick={() => setPanelOpen(false)} aria-hidden />}
+      <aside
+        className={`no-scrollbar fixed inset-y-0 right-0 z-40 w-full overflow-y-auto border-l border-[#E2E2E6] bg-white transition-transform duration-300 sm:w-[380px] sm:max-w-[92vw] ${
+          panelOpen ? "translate-x-0 shadow-[-12px_0_40px_rgba(0,0,0,0.08)]" : "invisible translate-x-full"
+        }`}
+        aria-label="Prototype controls"
+        aria-hidden={!panelOpen}
+      >
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#E6E9EF] bg-white px-4 py-3">
+          <p className="text-[14px] font-bold">Prototype controls</p>
+          <button onClick={() => setPanelOpen(false)} className="rounded-full p-1.5 text-airtel-sub hover:bg-airtel-surface" aria-label="Close controls">
+            <X className="size-5" />
+          </button>
+        </div>
+        <ControlBar onTogglePanel={() => setPanelOpen(false)} compact />
+        <ScenarioPanel />
+      </aside>
+    </>
+  );
+
+  // Real phones: the prototype fills the screen; controls hide behind a small chip in the top strip.
   if (phone)
     return (
       <MotionConfig reducedMotion="user">
-        <TooltipProvider delayDuration={300}>{stage}</TooltipProvider>
+        <TooltipProvider delayDuration={300}>
+          {stage}
+          <button
+            onClick={() => setPanelOpen(true)}
+            className="fixed right-3 top-[max(6px,env(safe-area-inset-top))] z-20 flex h-7 items-center gap-1.5 rounded-full border border-[#E6E9EF] bg-white/90 px-2.5 text-[11px] font-semibold text-[#292C31] shadow-[0_2px_8px_rgba(0,0,0,0.08)] backdrop-blur"
+            aria-label="Open prototype controls"
+          >
+            <SlidersHorizontal className="size-3.5" /> Controls
+          </button>
+          {drawer}
+        </TooltipProvider>
       </MotionConfig>
     );
 
@@ -65,21 +97,7 @@ export default function App() {
             <SlidersHorizontal className="size-4" /> Controls
           </button>
 
-          <aside
-            className={`no-scrollbar fixed inset-y-0 right-0 z-30 w-[380px] max-w-[92vw] overflow-y-auto border-l border-[#E2E2E6] bg-white shadow-[-12px_0_40px_rgba(0,0,0,0.08)] transition-transform duration-300 ${
-              panelOpen ? "translate-x-0" : "translate-x-full"
-            }`}
-            aria-label="Prototype controls"
-          >
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#E6E9EF] bg-white px-4 py-3">
-              <p className="text-[14px] font-bold">Prototype controls</p>
-              <button onClick={() => setPanelOpen(false)} className="rounded-full p-1 text-airtel-sub hover:bg-airtel-surface" aria-label="Close controls">
-                <X className="size-4" />
-              </button>
-            </div>
-            <ControlBar onTogglePanel={() => setPanelOpen(false)} compact />
-            <ScenarioPanel />
-          </aside>
+          {drawer}
         </div>
       </TooltipProvider>
     </MotionConfig>
