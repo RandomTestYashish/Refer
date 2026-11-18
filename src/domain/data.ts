@@ -35,3 +35,7 @@ export const initials = (name: string) =>
     .slice(0, 2)
     .join("")
     .toUpperCase();
+
+/** User A's personal (reusable) invite link, shown on the landing page and in the QR sheet. */
+export const PERSONAL_CODE = `${REFERRER.first.toUpperCase()}-7K2Q`;
+export const PERSONAL_LINK = `airtel.in/r/${PERSONAL_CODE}`;

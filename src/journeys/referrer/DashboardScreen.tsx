@@ -1,6 +1,9 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, ChevronRight, Lock, Send, Users, Wallet } from "lucide-react";
+import { Bell, BellRing, ChevronRight, Gift, Lock, Send, Users } from "lucide-react";
+import { toast } from "sonner";
+import { AvatarStack, ReferralLinkField } from "@/components/app/InviteKit";
+import { canRemind } from "@/components/app/ReferralActions";
 import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
 import { MilestoneTrack } from "@/components/app/Milestones";
 import { StatusBadge } from "@/components/app/status";
@@ -54,26 +57,35 @@ export function DashboardScreen() {
   const unread = notices.filter((n) => !n.read);
 
   const invite = () => navigate(granted ? "a_contacts" : "a_permission");
+  const remindable = referrals.filter((r) => canRemind(r) && r.rewardA === "locked");
+  const lockedTotal = referrals.filter((r) => ["locked", "validating", "delayed"].includes(r.rewardA) && !["expired", "not_eligible", "failed"].includes(r.status)).length * rules.referrerReward;
+  const remind = useProto((s) => s.remind);
+  const remindAll = () => {
+    remindable.forEach((r) => remind(r.id));
+    toast.success(remindable.length === 1 ? `Reminder sent to ${remindable[0].name.split(" ")[0]}` : `Reminders sent to ${remindable.length} friends`);
+  };
 
   return (
     <Screen className="bg-airtel-surface">
       <AppBar title="My Referrals" className="bg-airtel-surface" />
       <ScreenBody className="pb-6">
         {referrals.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center px-8 pb-16 text-center">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="relative mb-6 flex size-[112px] items-center justify-center rounded-full bg-white shadow-card"
-            >
-              <Users className="size-12 text-airtel-red" strokeWidth={1.6} />
-            </motion.div>
-            <h2 className="text-title">No referrals yet</h2>
+          <div className="flex h-full flex-col px-5 pb-10 pt-6">
+            <AvatarStack size={56} />
+            <h2 className="mt-5 text-display">Your invites</h2>
             <p className="mt-2 text-[14px] leading-[21px] text-airtel-sub">
-              Invite your first friend and track every step here — from invite sent to {inr(rules.referrerReward)} credited.
+              Invite friends and track how close they are to earning you both {inr(rules.referrerReward)}.
             </p>
-            <Button size="lg" className="mt-7" onClick={invite}>
-              <Send /> Invite a friend
+            <div className="mt-6 rounded-[18px] border-2 border-dashed border-[#DCDCDC] px-5 py-7 text-center">
+              <Users className="mx-auto size-7 text-[#B5B5B5]" />
+              <p className="mt-2 text-[15px] font-semibold">No referrals yet</p>
+              <p className="mt-1 text-[12.5px] text-airtel-sub">Invites appear here as soon as you send them.</p>
+            </div>
+            <div className="mt-6">
+              <ReferralLinkField />
+            </div>
+            <Button size="lg" block className="mt-3" onClick={invite}>
+              <Send /> Invite from contacts
             </Button>
           </div>
         ) : (
@@ -95,21 +107,19 @@ export function DashboardScreen() {
               )}
             </AnimatePresence>
 
-            {/* Earnings */}
+            {/* Summary (Oportun / Rakuten pattern) */}
             <div className="mx-4 rounded-[20px] bg-white p-4 shadow-card">
-              <div className="flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-full bg-airtel-red-soft">
-                  <Wallet className="size-5 text-airtel-red" />
-                </span>
-                <div className="flex-1">
-                  <p className="text-[12px] text-airtel-sub">Rewards earned</p>
-                  <motion.p key={stats.earned} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[26px] font-extrabold leading-none tracking-[-0.03em] tabular">
+              <div className="grid grid-cols-2 divide-x divide-airtel-line">
+                <div>
+                  <p className="text-[12px] text-airtel-sub">Total earned</p>
+                  <motion.p key={stats.earned} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[28px] font-extrabold leading-tight tracking-[-0.03em] tabular">
                     {inr(stats.earned)}
                   </motion.p>
                 </div>
-                {stats.pendingRewards > 0 && (
-                  <span className="rounded-full bg-airtel-warning-soft px-2.5 py-1 text-[11.5px] font-semibold text-[#A56A12]">{inr(stats.pendingRewards)} processing</span>
-                )}
+                <div className="pl-4">
+                  <p className="text-[12px] text-airtel-sub">Pending rewards</p>
+                  <p className="text-[28px] font-extrabold leading-tight tracking-[-0.03em] text-[#A56A12] tabular">{inr(lockedTotal)}</p>
+                </div>
               </div>
               <div className="mt-4 grid grid-cols-4 divide-x divide-airtel-line rounded-[14px] bg-airtel-surface py-2.5 text-center">
                 {[
@@ -123,6 +133,40 @@ export function DashboardScreen() {
                     <p className="text-[10.5px] font-medium text-airtel-sub">{l}</p>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Action cards (HelloFresh pattern) */}
+            <div className="mx-4 mt-3 grid gap-3">
+              {remindable.length > 0 && (
+                <div className="flex gap-3 rounded-[20px] bg-airtel-warning-soft p-4">
+                  <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white">
+                    <BellRing className="size-5 text-[#B7791F]" />
+                  </span>
+                  <div className="flex-1">
+                    <span className="inline-block rounded-full bg-airtel-ink px-2 py-0.5 text-[11px] font-bold text-white">{inr(remindable.length * rules.referrerReward)} pending</span>
+                    <p className="mt-1.5 text-[15px] font-bold">Remind your friends</p>
+                    <p className="text-[12.5px] leading-[17px] text-[#7A5310]">
+                      {remindable.length === 1 ? `${remindable[0].name.split(" ")[0]} hasn't` : `${remindable.length} friends haven't`} completed their first recharge yet.
+                    </p>
+                    <button onClick={remindAll} className="mt-2 text-[13px] font-bold underline underline-offset-2">
+                      Send {remindable.length === 1 ? "a reminder" : "reminders"}
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div className="flex gap-3 rounded-[20px] bg-airtel-red-soft/70 p-4">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white">
+                  <Gift className="size-5 text-airtel-red" />
+                </span>
+                <div className="flex-1">
+                  <span className="inline-block rounded-full bg-airtel-red px-2 py-0.5 text-[11px] font-bold text-white">{inr(rules.referrerReward)} per friend</span>
+                  <p className="mt-1.5 text-[15px] font-bold">Invite a friend</p>
+                  <p className="text-[12.5px] leading-[17px] text-airtel-sub">Get your friend on Airtel and unlock rewards together.</p>
+                  <button onClick={invite} className="mt-2 text-[13px] font-bold text-airtel-red underline underline-offset-2">
+                    Send an invite
+                  </button>
+                </div>
               </div>
             </div>
 
