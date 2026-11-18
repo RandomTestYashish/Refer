@@ -105,11 +105,14 @@ export function HamburgerMenu({
   onOpenChange,
   onRefer,
   onMyReferrals,
+  profile = PROFILE,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
-  onRefer: () => void;
-  onMyReferrals: () => void;
+  /** Referral entry points are shown only when provided (referrer journey). */
+  onRefer?: () => void;
+  onMyReferrals?: () => void;
+  profile?: { initials: string; name: string; phone: string };
 }) {
   const rules = useProto((s) => s.rules);
   const notices = useProto((s) => s.notices);
@@ -135,19 +138,19 @@ export function HamburgerMenu({
       id: "rewards",
       title: "Rewards & OTTs",
       subtitle: `₹${rules.referrerReward} cashback on each referral`,
-      body: (
+      body: onRefer ? (
         <div className="flex flex-col gap-6 bg-[#F0F4F9] py-6 pl-[76px] pr-4">
           <button onClick={onRefer} className="flex w-[237px] items-center gap-2 text-left text-[14px] font-semibold leading-4 text-[#292C31]">
             Refer a Friend
           </button>
-          <button onClick={onMyReferrals} className="w-[237px] text-left text-[14px] leading-4 text-[#3E4146]">
+          <button onClick={() => onMyReferrals?.()} className="w-[237px] text-left text-[14px] leading-4 text-[#3E4146]">
             My Referrals
           </button>
           <button onClick={() => outOfScope("Claim OTTs")} className="w-[237px] text-left text-[14px] leading-4 text-[#3E4146]">
             Claim OTTs & More
           </button>
         </div>
-      ),
+      ) : undefined,
     },
     { id: "safety", title: "Safety Report", subtitle: "Check number of prevented fraud attempts" },
     { id: "subs", title: "Subscriptions", subtitle: "Manage OTT, books, music subscriptions" },
@@ -169,11 +172,11 @@ export function HamburgerMenu({
           <div className="mt-3 flex flex-col items-center gap-2">
             <div className="relative flex size-[88px] items-center justify-center p-2">
               <img src={home("hm-progress.svg")} alt="" className="absolute inset-[-2.06%] size-[104.12%] max-w-none" />
-              <div className="flex size-[72px] items-center justify-center rounded-full border border-[#9CBFF6] bg-[#E6F0FF] text-[20px] leading-[22px] text-[#292C31]">{PROFILE.initials}</div>
+              <div className="flex size-[72px] items-center justify-center rounded-full border border-[#9CBFF6] bg-[#E6F0FF] text-[20px] leading-[22px] text-[#292C31]">{profile.initials}</div>
             </div>
             <div className="flex w-full flex-col items-center gap-1 text-center text-[#292C31]">
-              <p className="text-[16px] font-bold leading-[18px]">{PROFILE.name}</p>
-              <p className="text-[12px] font-light leading-[18px]">{PROFILE.phone}</p>
+              <p className="text-[16px] font-bold leading-[18px]">{profile.name}</p>
+              <p className="text-[12px] font-light leading-[18px]">{profile.phone}</p>
             </div>
             <button onClick={() => outOfScope("Edit Profile")} className="flex h-5 items-center text-[14px] font-medium leading-[18px] text-[#075EE8]">
               Edit Profile
@@ -191,6 +194,8 @@ export function HamburgerMenu({
               </div>
             </Row>
 
+            {onRefer && (
+              <>
             {/* Refer & Earn — dedicated ingress */}
             <Divider />
             <button onClick={onRefer} className="flex w-full items-start gap-3 px-4 text-left">
@@ -205,9 +210,11 @@ export function HamburgerMenu({
               </span>
               <Icon name="hm-chevron.svg" className="-rotate-90" />
             </button>
-            <button onClick={onMyReferrals} className="-mt-3 ml-[76px] w-fit text-[14px] font-medium leading-4 text-[#075EE8]">
+            <button onClick={() => onMyReferrals?.()} className="-mt-3 ml-[76px] w-fit text-[14px] font-medium leading-4 text-[#075EE8]">
               My Referrals
             </button>
+              </>
+            )}
 
             {ROWS.map((r) => (
               <React.Fragment key={r.id}>

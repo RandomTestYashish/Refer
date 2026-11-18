@@ -1,25 +1,21 @@
 import { useEffect, useState } from "react";
+import { CalendarClock, Gift, Hourglass } from "lucide-react";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
-import { Bell, CalendarClock, ChevronRight, Gift, Hourglass, Menu, Music2, PhoneCall, Receipt, ShieldCheck, Zap } from "lucide-react";
-import { ContactAvatar, RewardCoin, Screen, ScreenBody, Wordmark } from "@/components/app/primitives";
+import { AirtelHome } from "@/components/app/AirtelHome";
+import { RewardCoin } from "@/components/app/primitives";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { SectionTitle } from "@/components/app/gen4";
-import { REFERRER } from "@/domain/data";
+import { REFERRER, initials } from "@/domain/data";
 import { useFocusReferral, useProto } from "@/store/useProto";
-import { inr } from "@/lib/utils";
+import { cn, inr } from "@/lib/utils";
 
-const SERVICES = [
-  { id: "recharge", icon: Zap, label: "Recharge", desc: "" },
-  { id: "bills", icon: Receipt, label: "Bill Payments", desc: "Pay electricity, broadband, DTH and postpaid bills in a couple of taps." },
-  { id: "calls", icon: PhoneCall, label: "Call Manager", desc: "Block spam, see who called and manage call forwarding." },
-  { id: "hellotune", icon: Music2, label: "HelloTune", desc: "Set a free HelloTune callers hear while your phone rings." },
-  { id: "safety", icon: ShieldCheck, label: "Safety Report", desc: "See spam calls and suspicious links Airtel blocked for you." },
-] as const;
+const CARD = "border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)]";
 
-/** B05 Welcome / Airtel home + B06 referral benefit bottom sheet. */
+/**
+ * B05 — the referred friend lands on the same Airtel Home as everyone else.
+ * Only the top card changes: instead of Pack Status it welcomes them and shows the referral reward.
+ * B06 — the referral benefit bottom sheet opens once on first visit.
+ */
 export function FriendHomeScreen() {
   const r = useFocusReferral();
   const rules = useProto((s) => s.rules);
@@ -30,9 +26,12 @@ export function FriendHomeScreen() {
   const expireDeadline = useProto((s) => s.expireDeadline);
   const eligible = !!bRun.eligibility?.eligible || bRun.attributedOther;
   const [sheet, setSheet] = useState(false);
-  const [explore, setExplore] = useState<(typeof SERVICES)[number] | null>(null);
   const first = r?.name.split(" ")[0] ?? "there";
+  const isNew = bRun.eligibility?.segment === "new";
   const deadlinePassed = scenario.deadline === "expired" || (r?.status === "expired" && r.reason === "deadline_expired");
+  const daysLeft = deadlinePassed ? 0 : rules.firstTxnDeadlineDays;
+  const reward = `${inr(rules.friendReward)} cashback + ${rules.friendDataGB}GB`;
+  const recharge = () => navigate("b_plans");
 
   useEffect(() => {
     if (scenario.deadline === "expired") expireDeadline();
@@ -48,108 +47,78 @@ export function FriendHomeScreen() {
     }
   }, [eligible, bRun.sheetSeen, setBRun]);
 
-  const daysLeft = deadlinePassed ? 0 : rules.firstTxnDeadlineDays;
+  // Copy for the welcome card, by eligibility state.
+  const showReward = eligible && !bRun.attributedOther && !deadlinePassed;
+  const title = showReward
+    ? `${reward} is waiting for you`
+    : deadlinePassed && eligible
+      ? "Your referral offer has expired"
+      : bRun.attributedOther
+        ? "Your welcome reward is on its way"
+        : "Enjoy everything Airtel has to offer";
+  const body = showReward
+    ? `${REFERRER.first} invited you. Complete your first recharge or bill payment within ${rules.firstTxnDeadlineDays} days to unlock it.`
+    : deadlinePassed && eligible
+      ? `The ${rules.firstTxnDeadlineDays}-day window for ${REFERRER.first}'s invite has ended. You can still recharge as usual.`
+      : bRun.attributedOther
+        ? `It's linked to the first invite you opened. Recharge or pay a bill to claim it.`
+        : "Referral rewards aren't available on this account.";
 
-  return (
-    <Screen className="bg-white">
-      <header className="flex h-14 shrink-0 items-center gap-2 bg-white px-3">
-        <button aria-label="Menu" onClick={() => toast("Menu", { description: "Not part of this prototype." })} className="flex size-10 items-center justify-center rounded-full active:bg-black/5">
-          <Menu className="size-6" />
-        </button>
-        <Wordmark />
-        <div className="flex-1" />
-        <button aria-label="Notifications" onClick={() => eligible && setSheet(true)} className="relative flex size-10 items-center justify-center rounded-full active:bg-black/5">
-          <Bell className="size-[22px]" />
-          {eligible && <span className="absolute right-2 top-2 size-2 rounded-full bg-airtel-red" />}
-        </button>
-        <ContactAvatar name={r?.name ?? "Friend"} hue={12} size={34} />
-      </header>
-      <ScreenBody className="pb-8">
-        <div className="bg-[#F0F4F9] px-4 pb-5 pt-3">
-          <motion.p initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[13px] text-airtel-sub">
-            {bRun.eligibility?.segment === "new" ? "Welcome to Airtel 🎉" : "Welcome back"}
-          </motion.p>
-          <motion.h1 initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05 }} className="text-title">
-            Hi {first}
-          </motion.h1>
-
-          {/* Referral benefit context */}
-          {eligible && !bRun.attributedOther && (
-            <motion.button
-              initial={{ y: 12, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              onClick={() => setSheet(true)}
-              className="mt-5 flex w-full items-center gap-3 rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-4 text-left drop-shadow-[0_4px_6px_rgba(0,0,0,0.04)]"
-            >
-              {deadlinePassed ? (
-                <span className="flex size-12 items-center justify-center rounded-full bg-white">
-                  <Hourglass className="size-5 text-airtel-sub" />
-                </span>
-              ) : (
-                <RewardCoin amount={rules.friendReward} size={48} />
-              )}
-              <span className="flex-1">
-                <span className="block text-[14px] font-bold">{deadlinePassed ? "Referral offer expired" : `${inr(rules.friendReward)} waiting for you`}</span>
-                <span className="mt-0.5 block text-[12.5px] leading-[17px] text-airtel-sub">
-                  {deadlinePassed
-                    ? `The ${rules.firstTxnDeadlineDays}-day window for ${REFERRER.first}'s invite has ended.`
-                    : `${REFERRER.first} invited you · Recharge ${inr(rules.minTransaction)}+ to unlock`}
-                </span>
-              </span>
-              {!deadlinePassed && (
-                <Badge variant="soft" className="shrink-0">
-                  <CalendarClock /> {daysLeft}d
-                </Badge>
-              )}
-            </motion.button>
-          )}
-          {bRun.attributedOther && (
-            <div className="mt-4 rounded-[16px] bg-[#EAF1FD] p-3.5 text-[12.5px] leading-[18px] text-[#1F4F9E]">
-              Your welcome reward is linked to the first invite you opened. Recharge {inr(rules.minTransaction)}+ to claim it.
-            </div>
-          )}
-          {!eligible && (
-            <div className="mt-4 rounded-[16px] bg-airtel-surface p-3.5 text-[12.5px] leading-[18px] text-airtel-sub">
-              Referral rewards aren't available on this account. Enjoy everything else Airtel has to offer.
-            </div>
-          )}
+  const welcomeTop = (
+    <>
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className={cn("relative flex w-[343px] flex-col items-center gap-4 rounded-[16px] px-4 pb-5 pt-5 drop-shadow-[0_4px_6px_rgba(0,0,0,0.04)]", CARD)}
+      >
+        <div className="flex w-full items-center gap-4">
+          <p className="flex-1 text-[12px] font-semibold leading-[14px] text-[#FD2F36]">{isNew ? "Welcome to Airtel 🎉" : "Welcome back 👋"}</p>
+          <p className="text-right text-[12px] font-semibold leading-[14px] text-[#292C31]">{r?.phone ?? ""}</p>
         </div>
-
-        {/* Services */}
-        <div className="px-4 py-6">
-          <SectionTitle className="mb-4 px-1">services</SectionTitle>
-          <div className="grid grid-cols-3 gap-3">
-            {SERVICES.map((s) => (
-              <motion.button
-                key={s.id}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => (s.id === "recharge" ? navigate("b_plans") : setExplore(s))}
-                className={`relative flex flex-col items-start gap-3 rounded-[16px] p-3 text-left ${s.id === "recharge" ? "bg-black text-white" : "border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)]"}`}
-              >
-                <s.icon className="size-6" strokeWidth={1.9} />
-                <span className="text-[13px] font-semibold leading-[16px]">{s.label}</span>
-                {s.id === "recharge" && eligible && !deadlinePassed && (
-                  <span className="absolute right-2 top-2 rounded-full bg-white px-1.5 py-0.5 text-[9.5px] font-bold text-airtel-red">+{inr(rules.friendReward)}</span>
-                )}
-              </motion.button>
-            ))}
+        <div className="flex w-full items-center gap-3 text-left">
+          {showReward ? (
+            <RewardCoin amount={rules.friendReward} size={52} />
+          ) : (
+            <span className="flex size-[52px] shrink-0 items-center justify-center rounded-full bg-[#F0F4F9]">
+              {deadlinePassed ? <Hourglass className="size-5 text-[#696B6F]" /> : <Gift className="size-5 text-[#696B6F]" strokeWidth={1.7} />}
+            </span>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-[12px] text-[#696B6F]">Hi {first},</p>
+            <p className="text-[15px] font-bold leading-[19px] text-[#292C31]">{title}</p>
           </div>
         </div>
+        <p className="w-full text-center text-[13px] font-medium leading-[19px] text-[#3E4146]">{body}</p>
+        {showReward && (
+          <span className="flex items-center gap-1.5 rounded-full bg-[#FFF0B8] px-3 py-1 text-[12px] font-semibold text-[#8F4C00]">
+            <CalendarClock className="size-3.5" /> {daysLeft} days left
+          </span>
+        )}
+      </motion.div>
+      <div className="flex w-full items-center justify-center gap-4">
+        <button
+          onClick={() => (eligible ? setSheet(true) : recharge())}
+          className="flex h-10 w-[163.5px] items-center justify-center rounded-[12px] border border-[#E6E9EF] bg-white px-3 text-[14px] font-medium leading-4 text-[#485B76] active:bg-[#F0F4F9]"
+        >
+          {eligible ? "View details" : "Explore Packs"}
+        </button>
+        <button
+          onClick={recharge}
+          className="flex h-10 w-[163.5px] items-center justify-center rounded-[12px] border border-black bg-black px-1 text-[14px] font-medium leading-4 text-white active:bg-[#3E4146]"
+        >
+          Recharge Now
+        </button>
+      </div>
+    </>
+  );
 
-        <div className="mx-4 rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] px-4 py-3.5">
-          <button onClick={() => navigate("b_plans")} className="flex w-full items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-full bg-airtel-red-soft">
-              <Zap className="size-5 text-airtel-red" />
-            </span>
-            <span className="flex-1 text-left">
-              <span className="block text-[14px] font-semibold">Recharge your number</span>
-              <span className="block text-[12px] text-airtel-sub">Plans from ₹79 · Unlimited 5G on ₹199+</span>
-            </span>
-            <ChevronRight className="size-5 text-airtel-sub" />
-          </button>
-        </div>
-      </ScreenBody>
+  return (
+    <>
+      <AirtelHome
+        top={welcomeTop}
+        onRecharge={recharge}
+        profile={{ initials: initials(r?.name ?? "Friend"), name: r?.name ?? "Friend", phone: r?.phone ?? "" }}
+      />
 
       {/* B06 — referral benefit bottom sheet */}
       <Sheet open={sheet} onOpenChange={setSheet}>
@@ -158,42 +127,51 @@ export function FriendHomeScreen() {
             <motion.div initial={{ scale: 0.6, rotate: -15 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 220, damping: 14 }} className="mb-2">
               {deadlinePassed ? <Hourglass className="size-14 text-airtel-sub" /> : <Gift className="size-14 text-airtel-red" strokeWidth={1.6} />}
             </motion.div>
-            <SheetTitle className="text-center">{deadlinePassed ? "This offer has expired" : "Unlock rewards for both of you"}</SheetTitle>
+            <SheetTitle className="text-center">{deadlinePassed ? "This offer has expired" : `${REFERRER.first} sent you a reward`}</SheetTitle>
             <SheetDescription className="text-center text-[14px] leading-[20px]">
               {deadlinePassed
-                ? `The ${rules.firstTxnDeadlineDays}-day window to complete a first eligible recharge has passed. You can still recharge as usual.`
-                : `Complete your first eligible recharge within ${rules.firstTxnDeadlineDays} days and unlock rewards for both of you.`}
+                ? `The ${rules.firstTxnDeadlineDays}-day window to complete your first recharge or bill payment has passed. You can still recharge as usual.`
+                : `Complete your first recharge or bill payment within ${rules.firstTxnDeadlineDays} days to unlock your welcome reward.`}
             </SheetDescription>
           </SheetHeader>
           {!deadlinePassed && (
             <div className="mx-5 mt-5 grid grid-cols-2 gap-3">
               <div className="rounded-[16px] bg-airtel-red-soft p-3.5">
                 <p className="text-[12px] font-medium text-airtel-red">You get</p>
-                <p className="text-[24px] font-extrabold tracking-[-0.03em]">{inr(rules.friendReward)}</p>
+                <p className="text-[22px] font-extrabold tracking-[-0.03em]">{inr(rules.friendReward)}</p>
+                <p className="text-[11px] text-airtel-sub">cashback + {rules.friendDataGB}GB data</p>
               </div>
               <div className="rounded-[16px] bg-airtel-surface p-3.5">
                 <p className="text-[12px] font-medium text-airtel-sub">{REFERRER.first} gets</p>
-                <p className="text-[24px] font-extrabold tracking-[-0.03em]">{inr(rules.referrerReward)}</p>
+                <p className="text-[22px] font-extrabold tracking-[-0.03em]">{inr(rules.referrerReward)}</p>
+                <p className="text-[11px] text-airtel-sub">cashback</p>
               </div>
             </div>
           )}
           <ul className="mx-5 mt-4 divide-y divide-airtel-line rounded-[16px] border border-airtel-line text-[13.5px]">
             <li className="flex justify-between px-4 py-3">
-              <span className="text-airtel-sub">Minimum recharge</span>
-              <b>{inr(rules.minTransaction)}</b>
+              <span className="text-airtel-sub">Qualifies</span>
+              <b>First recharge or bill payment</b>
             </li>
             <li className="flex justify-between px-4 py-3">
               <span className="text-airtel-sub">Complete within</span>
               <b>{deadlinePassed ? "Expired" : `${rules.firstTxnDeadlineDays} days`}</b>
             </li>
             <li className="flex justify-between px-4 py-3">
-              <span className="text-airtel-sub">Reward credited</span>
-              <b>After validation</b>
+              <span className="text-airtel-sub">Eligible</span>
+              <b>First-time users only</b>
             </li>
           </ul>
           <div className="px-5 pb-[34px] pt-5">
-            <Button size="lg" block onClick={() => { setSheet(false); navigate("b_plans"); }}>
-              {deadlinePassed ? "Recharge anyway" : `Recharge now`}
+            <Button
+              size="lg"
+              block
+              onClick={() => {
+                setSheet(false);
+                recharge();
+              }}
+            >
+              {deadlinePassed ? "Recharge anyway" : "Recharge now"}
             </Button>
             <Button block variant="ghost" className="mt-1" onClick={() => setSheet(false)}>
               Explore the app first
@@ -201,33 +179,6 @@ export function FriendHomeScreen() {
           </div>
         </SheetContent>
       </Sheet>
-
-      {/* Explore any service */}
-      <Sheet open={!!explore} onOpenChange={(o) => !o && setExplore(null)}>
-        <SheetContent>
-          {explore && (
-            <>
-              <SheetHeader className="pt-5">
-                <span className="mb-2 flex size-12 items-center justify-center rounded-[14px] bg-airtel-surface">
-                  <explore.icon className="size-6" />
-                </span>
-                <SheetTitle>{explore.label}</SheetTitle>
-                <SheetDescription className="text-[14px] leading-[20px]">{explore.desc}</SheetDescription>
-              </SheetHeader>
-              <div className="px-5 pb-[34px] pt-6">
-                <Button size="lg" block variant="outline" onClick={() => setExplore(null)}>
-                  Got it
-                </Button>
-                {eligible && !deadlinePassed && (
-                  <Button size="lg" block className="mt-2" onClick={() => { setExplore(null); navigate("b_plans"); }}>
-                    Recharge & unlock {inr(rules.friendReward)}
-                  </Button>
-                )}
-              </div>
-            </>
-          )}
-        </SheetContent>
-      </Sheet>
-    </Screen>
+    </>
   );
 }
