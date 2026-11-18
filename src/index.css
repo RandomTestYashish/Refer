@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* shadcn/ui semantic tokens mapped to the Airtel palette */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;            /* #171717 */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 349 100% 45%;          /* #E4002B */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96.5%;          /* #F6F6F6 */
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.5%;
+    --muted-foreground: 0 0% 47%;     /* #777777 */
+    --accent: 350 85% 96%;
+    --accent-foreground: 349 100% 40%;
+    --destructive: 4 71% 50%;         /* #D93025 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 91.8%;             /* #EAEAEA */
+    --input: 0 0% 91.8%;
+    --ring: 349 100% 45%;
+    --radius: 14px;
+  }
+  * { @apply border-border; }
+  html, body, #root { height: 100%; }
+  body {
+    @apply bg-[#EEEEF0] text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-tap-highlight-color: transparent;
+  }
+  button { -webkit-tap-highlight-color: transparent; }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
