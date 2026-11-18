@@ -71,7 +71,8 @@ export function prepare(screen: ScreenId): Record<string, string> | undefined {
       s.setBRun({ installed: false });
       return;
     case "b_launch":
-    case "b_register": {
+    case "b_register":
+    case "b_invited": {
       const id = ensureFocus();
       const r = S().referrals.find((x) => x.id === id)!;
       if (activeLink(r).state !== "active" || !["invited", "link_opened"].includes(r.status)) s.rebuild(id, "link_opened");

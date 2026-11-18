@@ -80,6 +80,7 @@ export type ScreenId =
   | "b_appstore"
   | "b_launch"
   | "b_register"
+  | "b_invited"
   | "b_eligibility"
   | "b_home"
   | "b_plans"

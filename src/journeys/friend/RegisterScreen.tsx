@@ -36,7 +36,7 @@ export function RegisterScreen() {
   const finish = () => {
     setBRun({ registered: true });
     acceptReferral();
-    navigate("b_eligibility");
+    navigate("b_invited");
   };
 
   const verify = () => {

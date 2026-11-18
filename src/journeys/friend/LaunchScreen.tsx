@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Gift, LinkIcon, SearchX } from "lucide-react";
-import { AirtelMark, ContactAvatar, Screen, SimNote } from "@/components/app/primitives";
+import { SearchX } from "lucide-react";
+import { AirtelMark, Screen, SimNote } from "@/components/app/primitives";
 import { ErrorState } from "@/components/app/ErrorState";
-import { Button } from "@/components/ui/button";
-import { REFERRER } from "@/domain/data";
-import { activeLink, useFocusReferral, useProto } from "@/store/useProto";
-import { inr } from "@/lib/utils";
+import { useProto } from "@/store/useProto";
 import { useStatusTone } from "@/components/device/statusTone";
 
 /**
@@ -15,10 +12,8 @@ import { useStatusTone } from "@/components/device/statusTone";
  */
 export function LaunchScreen({ params }: { params?: Record<string, string> }) {
   const via = params?.via === "store" ? "store" : "deeplink";
-  const r = useFocusReferral();
-  const rules = useProto((s) => s.rules);
-  const navigate = useProto((s) => s.navigate);
   const resetTo = useProto((s) => s.resetTo);
+  const replace = useProto((s) => s.replace);
   const setBRun = useProto((s) => s.setBRun);
   const [phase, setPhase] = useState<"splash" | "restoring" | "restored" | "failed">("splash");
   const [attempt, setAttempt] = useState(0);
@@ -36,11 +31,11 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
           return;
         }
         setBRun({ contextRestored: true });
-        setPhase("restored");
+        replace("b_register");
       }, 1800),
     );
     return () => t.forEach(clearTimeout);
-  }, [attempt, via, setBRun]);
+  }, [attempt, via, setBRun, replace]);
 
   if (phase === "failed")
     return (
@@ -75,35 +70,7 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
             </motion.div>
             <p className="mt-4 text-[30px] font-extrabold tracking-[-0.04em]">airtel</p>
           </motion.div>
-        ) : (
-          <motion.div key="restored" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col bg-white pt-[44px]">
-            <div className="flex flex-1 flex-col items-center justify-center px-7 text-center">
-              <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 220, damping: 16 }} className="relative">
-                <ContactAvatar name={REFERRER.name} hue={350} size={88} />
-                <span className="absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full border-4 border-white bg-airtel-red text-white">
-                  <Gift className="size-4" />
-                </span>
-              </motion.div>
-              <motion.h1 initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }} className="mt-6 text-display">
-                {REFERRER.first} invited you to Airtel
-              </motion.h1>
-              <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.18 }} className="mt-2 text-[15px] leading-[22px] text-airtel-sub">
-                Complete your first eligible recharge and you'll both get {inr(rules.friendReward)}.
-              </motion.p>
-              {r && (
-                <motion.div initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.26 }} className="mt-5 flex items-center gap-2 rounded-full bg-airtel-surface px-3.5 py-2 text-[12.5px] font-semibold text-airtel-sub">
-                  <LinkIcon className="size-3.5" /> Invite code {activeLink(r).code} applied automatically
-                </motion.div>
-              )}
-            </div>
-            <div className="px-5 pb-[34px]">
-              <Button size="lg" block onClick={() => navigate("b_register")}>
-                Continue
-              </Button>
-              <SimNote className="mt-3">{via === "store" ? "Deferred deep link — no code entry needed" : "Direct deep link into the installed app"}</SimNote>
-            </div>
-          </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );

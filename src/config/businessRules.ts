@@ -13,6 +13,9 @@ export interface BusinessRules {
   referrerReward: number; // ₹ to User A
   friendReward: number; // ₹ to User B
   friendDataGB: number; // bonus data (GB) to User B on first recharge / bill payment
+  referralCapMonth: number; // max rewarded referrals per user per month
+  referralCapYear: number; // max rewarded referrals per user per year
+  cashbackValidityDays: number; // cashback must be used within N days of allocation
   minTransaction: number; // ₹ minimum qualifying recharge
   linkValidityHours: number; // invitation link lifetime
   attribution: "first_valid_link_opened";
@@ -26,6 +29,9 @@ export const DEFAULT_RULES: BusinessRules = {
   referrerReward: 25,
   friendReward: 25,
   friendDataGB: 2,
+  referralCapMonth: 50,
+  referralCapYear: 200,
+  cashbackValidityDays: 30,
   minTransaction: 100,
   linkValidityHours: 24,
   attribution: "first_valid_link_opened",

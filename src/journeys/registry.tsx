@@ -14,6 +14,7 @@ import { UnlockedScreen } from "./referrer/UnlockedScreen";
 import { SmsScreen } from "./friend/SmsScreen";
 import { AppStoreScreen } from "./friend/AppStoreScreen";
 import { LaunchScreen } from "./friend/LaunchScreen";
+import { InvitedScreen } from "./friend/InvitedScreen";
 import { RegisterScreen } from "./friend/RegisterScreen";
 import { EligibilityScreen } from "./friend/EligibilityScreen";
 import { FriendHomeScreen } from "./friend/FriendHomeScreen";
@@ -41,6 +42,7 @@ export const SCREENS: Record<ScreenId, ComponentType<ScreenProps>> = {
   b_appstore: AppStoreScreen,
   b_launch: LaunchScreen,
   b_register: RegisterScreen,
+  b_invited: InvitedScreen,
   b_eligibility: EligibilityScreen,
   b_home: FriendHomeScreen,
   b_plans: PlansScreen,

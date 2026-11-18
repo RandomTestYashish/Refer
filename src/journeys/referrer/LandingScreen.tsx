@@ -45,15 +45,6 @@ export function LandingScreen() {
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 160, damping: 14 }}
             />
-            {/* gift */}
-            <motion.img
-              src={home("tile-rewards.png")}
-              alt=""
-              className="absolute right-[-6px] top-[112px] h-[78px] w-[130px] object-contain"
-              initial={{ y: 16, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            />
             {/* reward badges */}
             {[
               { cls: "left-[6px] top-[96px]", d: 0.25 },
@@ -98,10 +89,33 @@ export function LandingScreen() {
             </p>
           </div>
 
-          <div className="relative mx-4 mt-5 grid grid-cols-2 gap-2">
+          {/* Max earning — 50 referrals/month, 200/year */}
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="relative mx-4 mt-5 flex items-center gap-3 rounded-[16px] bg-[#292C31] px-4 py-3 text-white shadow-[0_10px_24px_rgba(41,44,49,0.25)]"
+          >
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#FC5252,#E32121)] text-[18px] font-bold">₹</span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-white/60">Earn up to</p>
+              <p className="text-[22px] font-bold leading-7">
+                {inr(rules.referrerReward * rules.referralCapYear)}
+                <span className="text-[13px] font-medium text-white/70"> a year</span>
+              </p>
+            </div>
+            <div className="text-right text-[11px] leading-[15px] text-white/70">
+              <p>
+                <b className="text-white">{inr(rules.referrerReward * rules.referralCapMonth)}</b>/month
+              </p>
+              <p>up to {rules.referralCapYear} friends</p>
+            </div>
+          </motion.div>
+
+          <div className="relative mx-4 mt-3 grid grid-cols-2 gap-2">
             {[
-              { l: "You get", v: `${inr(rules.referrerReward)}`, d: "Cashback for every friend who registers" },
-              { l: "Friend gets", v: `${inr(rules.friendReward)} + ${rules.friendDataGB}GB`, d: "Cashback + data on first recharge or bill" },
+              { l: "You get", v: `${inr(rules.referrerReward)}`, d: `Cashback per friend, valid ${rules.cashbackValidityDays} days` },
+              { l: "Friend gets", v: `${inr(rules.friendReward)} + ${rules.friendDataGB}GB`, d: `On first recharge or bill of ${inr(rules.minTransaction)}+` },
             ].map(({ l, v, d }) => (
               <div key={l} className={`rounded-[16px] px-3 py-3 text-center ${CARD}`}>
                 <p className="text-[11px] font-bold uppercase tracking-[1.76px] text-[#696B6F]">{l}</p>
@@ -233,7 +247,7 @@ export function LandingScreen() {
               <AccordionTrigger>When will I get my reward?</AccordionTrigger>
               <AccordionContent>
                 Your {inr(rules.referrerReward)} cashback is credited for every friend who registers on Airtel with your link. Use it on your next recharge
-                or bill payment. Track every invite in My Referrals.
+                or bill payment within {rules.cashbackValidityDays} days. Track every invite in My Referrals.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="existing">
@@ -256,6 +270,11 @@ export function LandingScreen() {
                     Referee benefit: {inr(rules.friendReward)} cashback + {rules.friendDataGB}GB data on completing the first bill payment or recharge.
                   </li>
                   <li>Referee benefit applies to first-time users only.</li>
+                  <li>Minimum transaction of {inr(rules.minTransaction)} for reward eligibility.</li>
+                  <li>
+                    Up to {rules.referralCapMonth} rewarded referrals per month and {rules.referralCapYear} per year.
+                  </li>
+                  <li>Cashback must be used within {rules.cashbackValidityDays} days of being credited.</li>
                   <li>The referral goes to the first valid invite link your friend opens.</li>
                 </ul>
                 <p className="mt-2 text-[11px] italic">All values shown are provisional working assumptions.</p>
