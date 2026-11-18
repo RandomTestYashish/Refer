@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Gift, LinkIcon, Loader2, SearchX } from "lucide-react";
+import { Gift, LinkIcon, SearchX } from "lucide-react";
 import { AirtelMark, ContactAvatar, Screen, SimNote } from "@/components/app/primitives";
 import { ErrorState } from "@/components/app/ErrorState";
 import { Button } from "@/components/ui/button";
@@ -21,16 +21,13 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
   const resetTo = useProto((s) => s.resetTo);
   const setBRun = useProto((s) => s.setBRun);
   const [phase, setPhase] = useState<"splash" | "restoring" | "restored" | "failed">("splash");
-  const [step, setStep] = useState(0);
   const [attempt, setAttempt] = useState(0);
   useStatusTone("light", phase === "splash" || phase === "restoring");
 
   useEffect(() => {
     setPhase("splash");
-    setStep(0);
     const t: ReturnType<typeof setTimeout>[] = [];
-    t.push(setTimeout(() => setPhase("restoring"), 1100));
-    t.push(setTimeout(() => setStep(1), 1600));
+    t.push(setTimeout(() => setPhase("restoring"), 700));
     t.push(
       setTimeout(() => {
         // Deferred deep links can lose context; a direct deep link carries the code in the URL.
@@ -38,16 +35,9 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
           setPhase("failed");
           return;
         }
-        setStep(2);
-      }, 2300),
-    );
-    t.push(
-      setTimeout(() => {
-        if (via === "store" && useProto.getState().scenario.contextRestore === "failed") return;
-        setStep(3);
         setBRun({ contextRestored: true });
-        setTimeout(() => setPhase("restored"), 450);
-      }, 2900),
+        setPhase("restored");
+      }, 1800),
     );
     return () => t.forEach(clearTimeout);
   }, [attempt, via, setBRun]);
@@ -68,13 +58,6 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
       </Screen>
     );
 
-  const steps = [
-    "Opening Airtel",
-    via === "store" ? "Retrieving your invitation (deferred link)" : "Reading your invitation link",
-    "Verifying invite",
-    `Invite from ${REFERRER.first} restored`,
-  ];
-
   return (
     <div className="relative h-full overflow-hidden">
       <AnimatePresence mode="wait">
@@ -91,26 +74,6 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
               <AirtelMark white className="size-[84px]" />
             </motion.div>
             <p className="mt-4 text-[30px] font-extrabold tracking-[-0.04em]">airtel</p>
-            <AnimatePresence>
-              {phase === "restoring" && (
-                <motion.ul initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="mt-12 w-[250px] space-y-2.5">
-                  {steps.map((s, i) => (
-                    <li key={s} className="flex items-center gap-2.5 text-[13.5px]">
-                      {step > i || (i === 3 && step === 3) ? (
-                        <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex size-5 items-center justify-center rounded-full bg-white text-airtel-red">
-                          <Check className="size-3" strokeWidth={4} />
-                        </motion.span>
-                      ) : step === i ? (
-                        <Loader2 className="size-5 animate-spin text-white/80" />
-                      ) : (
-                        <span className="size-5 rounded-full border-2 border-white/30" />
-                      )}
-                      <span className={step >= i ? "text-white" : "text-white/50"}>{s}</span>
-                    </li>
-                  ))}
-                </motion.ul>
-              )}
-            </AnimatePresence>
           </motion.div>
         ) : (
           <motion.div key="restored" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col bg-white pt-[44px]">
