@@ -184,9 +184,9 @@ export const useProto = create<Store>()(
 
         setJourney: (journey) => set({ journey }),
         navigate: (id, params) =>
-          set((s) => ({ direction: 1, nav: { ...s.nav, [s.journey]: [...s.nav[s.journey], { id, params }] } })),
+          set((s) => ({ direction: 1, nav: { ...s.nav, [s.journey]: [...s.nav[s.journey], { id, params, key: uid("s") }] } })),
         replace: (id, params) =>
-          set((s) => ({ direction: 1, nav: { ...s.nav, [s.journey]: [...s.nav[s.journey].slice(0, -1), { id, params }] } })),
+          set((s) => ({ direction: 1, nav: { ...s.nav, [s.journey]: [...s.nav[s.journey].slice(0, -1), { id, params, key: uid("s") }] } })),
         back: () =>
           set((s) => {
             const stack = s.nav[s.journey];
@@ -200,7 +200,7 @@ export const useProto = create<Store>()(
               s.journey === "A"
                 ? id === "a_home" ? [] : id === "a_landing" ? ["a_home"] : ["a_home", "a_landing"]
                 : id === "b_sms" ? [] : ["b_home", "b_plans", "b_payment", "b_success", "b_complete"].includes(id) && id !== "b_home" ? ["b_sms", "b_home"] : ["b_sms"];
-            const stack: ScreenRef[] = [...base.map((b) => ({ id: b })), { id, params }];
+            const stack: ScreenRef[] = [...base.map((b) => ({ id: b, key: uid("s") })), { id, params, key: uid("s") }];
             return { direction: -1, nav: { ...s.nav, [s.journey]: stack } };
           }),
         setScenario: (patch) => set((s) => ({ scenario: { ...s.scenario, ...patch } })),
@@ -244,7 +244,7 @@ export const useProto = create<Store>()(
             focusReferralId: created[0]?.id ?? s.focusReferralId,
             bRun: created.length ? EMPTY_BRUN : s.bRun,
             // User B's phone receives a fresh SMS — restart B's journey at the inbox.
-            nav: created.length ? { ...s.nav, B: [{ id: "b_sms" }] } : s.nav,
+            nav: created.length ? { ...s.nav, B: [{ id: "b_sms", key: uid("s") }] } : s.nav,
           }));
           return created.map((r) => r.id);
         },
@@ -272,7 +272,7 @@ export const useProto = create<Store>()(
             }),
             { kind: "resent", at: Date.now(), note: "New link generated — previous history kept" },
           );
-          set((s) => (s.focusReferralId === id ? { bRun: EMPTY_BRUN, nav: { ...s.nav, B: [{ id: "b_sms" }] } } : {}));
+          set((s) => (s.focusReferralId === id ? { bRun: EMPTY_BRUN, nav: { ...s.nav, B: [{ id: "b_sms", key: uid("s") }] } } : {}));
         },
         remind: (id) => patchReferral(id, () => ({}), { kind: "reminder", at: Date.now(), note: "Reminder sent" }),
         expireLink: (id) => {
@@ -489,7 +489,7 @@ export const useProto = create<Store>()(
             const jj = j ?? s.journey;
             return {
               direction: -1,
-              nav: { ...s.nav, [jj]: [{ id: HOME_SCREEN[jj] }] },
+              nav: { ...s.nav, [jj]: [{ id: HOME_SCREEN[jj], key: uid("s") }] },
               ...(jj === "B" ? { bRun: EMPTY_BRUN } : { selectedContactIds: [] }),
             };
           }),

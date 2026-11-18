@@ -91,6 +91,8 @@ export type ScreenId =
 export interface ScreenRef {
   id: ScreenId;
   params?: Record<string, string>;
+  /** Unique per navigation so re-entering the same screen remounts it. */
+  key?: string;
 }
 
 /** Developer scenario switches — prototype testing only. */

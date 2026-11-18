@@ -15,7 +15,7 @@ export function ScreenStage() {
   const dir = useProto((s) => s.direction);
   const top = stack[stack.length - 1];
   const Comp = SCREENS[top.id] ?? SCREENS.a_home;
-  const key = `${journey}:${stack.length}:${top.id}:${JSON.stringify(top.params ?? {})}`;
+  const key = `${journey}:${stack.length}:${top.id}:${top.key ?? JSON.stringify(top.params ?? {})}`;
 
   return (
     <AnimatePresence initial={false} custom={dir} mode="sync">

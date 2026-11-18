@@ -66,7 +66,7 @@ export function ScenarioPanel() {
 
   return (
     <div className="pb-10 text-airtel-ink">
-      <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-airtel-line bg-white/95 px-4 py-3 backdrop-blur">
+      <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-airtel-line bg-white/95 py-3 pl-4 pr-10 backdrop-blur xl:pr-4">
         <FlaskConical className="size-4 text-airtel-red" />
         <p className="text-[13px] font-bold">Developer scenario controls</p>
         <span className="ml-auto rounded bg-airtel-surface px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-airtel-sub">Not in app UI</span>
