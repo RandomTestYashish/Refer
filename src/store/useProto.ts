@@ -543,7 +543,8 @@ export function referralStats(referrals: Referral[], pastSuccesses: number, rewa
     pending,
     successful,
     milestoneCount: successful + pastSuccesses,
-    earned: successful * reward,
+    // Cumulative: includes historic successes so earnings, milestones and badges always agree.
+    earned: (successful + pastSuccesses) * reward,
     pendingRewards: referrals.filter((r) => r.rewardA === "validating" || r.rewardA === "delayed").length * reward,
   };
 }

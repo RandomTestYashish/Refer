@@ -1,293 +1,262 @@
-import { ChevronRight, UserPlus } from "lucide-react";
-import { AppBar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
+import { Headphones, UserPlus } from "lucide-react";
+import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
 import { ReferralLinkField, ShareRow } from "@/components/app/InviteKit";
-import { CARD, LinkButton, SectionTitle } from "@/components/app/gen4";
-import { MilestoneTrack } from "@/components/app/Milestones";
-import { motion } from "framer-motion";
-import { home } from "@/assets/home";
-import { ContactAvatar } from "@/components/app/primitives";
-import { CONTACTS } from "@/domain/data";
+import { CARD, SectionTitle } from "@/components/app/gen4";
+import { EarnHero } from "@/components/app/refer/EarnHero";
+import { HowItWorks } from "@/components/app/refer/HowItWorks";
+import { ReferralProgress, currentMilestone } from "@/components/app/refer/ReferralProgress";
+import { ReferralActivity } from "@/components/app/refer/ReferralActivity";
+import { MilestoneUnlockSheet } from "@/components/app/refer/MilestoneUnlockSheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { referralStats, useProto } from "@/store/useProto";
+import { track, trackWhenVisible } from "@/lib/analytics";
 import { inr } from "@/lib/utils";
 
-/** A02 — Refer & Earn landing, in the Airtel Home (Gen4 Figma) visual language. */
-export function LandingScreen() {
+const BADGE_KEY = "refer:lastSeenBadge";
+
+function readSeenBadge() {
+  try {
+    return localStorage.getItem(BADGE_KEY);
+  } catch {
+    return null;
+  }
+}
+function writeSeenBadge(id: string) {
+  try {
+    localStorage.setItem(BADGE_KEY, id);
+  } catch {
+    /* storage can be unavailable; the celebration may simply show again */
+  }
+}
+
+/**
+ * A02 — Refer & Earn landing (Enhance Prompt Zero).
+ * Hierarchy: Hero (₹5,000/year) → Invite → How it works → Progress → Activity → FAQs → T&C → Support.
+ * Same page for both entry points (Home "Invite a Friend" and menu "Refer a Friend").
+ */
+export function LandingScreen({ params }: { params?: Record<string, string> }) {
   const rules = useProto((s) => s.rules);
   const referrals = useProto((s) => s.referrals);
   const past = useProto((s) => s.pastSuccesses);
   const granted = useProto((s) => s.contactsGranted);
+  const network = useProto((s) => s.scenario.network);
   const navigate = useProto((s) => s.navigate);
   const stats = referralStats(referrals, past, rules.referrerReward);
-  const nextM = rules.milestones.find((m) => stats.milestoneCount < m.target);
-  const inviteContacts = () => navigate(granted ? "a_contacts" : "a_permission");
+  const successful = stats.milestoneCount;
+  const badge = currentMilestone(rules.milestones, successful);
+  const nextM = rules.milestones.find((m) => successful < m.target);
+
+  // Primary CTA: single navigation, no duplicate taps.
+  const inviting = useRef(false);
+  const invite = (source: string) => {
+    if (inviting.current) return;
+    inviting.current = true;
+    track(source === "hero" ? "hero_cta_clicked" : "invite_friends_clicked", { source });
+    navigate(granted ? "a_contacts" : "a_permission");
+    setTimeout(() => (inviting.current = false), 800);
+  };
+
+  // Sticky CTA only once the hero CTA has scrolled away.
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [showSticky, setShowSticky] = useState(false);
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setShowSticky(!e.isIntersecting), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Analytics: page view + section views.
+  const howRef = useRef<HTMLElement>(null);
+  const progressRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    track("refer_page_viewed", { entry: params?.entry ?? "direct", successful, earned: stats.earned });
+    const a = trackWhenVisible(howRef.current, "how_it_works_viewed");
+    const b = trackWhenVisible(progressRef.current, "milestone_section_viewed", { badge: badge?.id ?? "none" });
+    return () => {
+      a();
+      b();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Achievement moment the first time a new badge is seen.
+  const [unlockOpen, setUnlockOpen] = useState(false);
+  useEffect(() => {
+    if (!badge || readSeenBadge() === badge.id) return;
+    const t = setTimeout(() => {
+      setUnlockOpen(true);
+      writeSeenBadge(badge.id);
+      track("milestone_unlocked", { badge: badge.id, successful });
+    }, 900);
+    return () => clearTimeout(t);
+  }, [badge, successful]);
+
+  const offline = network === "failure";
+  const retry = () => {
+    if (useProto.getState().scenario.network === "failure") toast.error("Still offline", { description: "Your referral data is saved. Try again when you're connected." });
+    else toast.success("Activity updated");
+  };
 
   return (
     <Screen className="bg-[#FFE3E3]">
       <AppBar title="Refer & Earn" transparent className="bg-[#FFE3E3]" />
-      <ScreenBody className="bg-white pb-8">
-        {/* Hero — illustrated stage in the curated-banner style */}
-        <div className="relative overflow-hidden bg-[linear-gradient(180deg,#FFE3E3_0%,#FFF1EC_55%,#FFFFFF_100%)] pb-6">
-          {/* concentric rings (Explore card motif), faded at the top so there's no hard edge under the header */}
-          <div className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(180deg,transparent_0%,black_35%,black_70%,transparent_100%)]">
-            <span className="absolute left-1/2 top-[-60px] size-[360px] -translate-x-1/2 rounded-full border-[28px] border-white/45" />
-            <span className="absolute left-1/2 top-[10px] size-[220px] -translate-x-1/2 rounded-full border-[22px] border-white/50" />
-          </div>
-
-          <div className="relative mx-auto h-[196px] w-[343px]">
-            {/* megaphone */}
-            <motion.img
-              src={home("tile-refer.png")}
-              alt=""
-              className="absolute left-[54px] top-[34px] h-[140px] w-[236px] object-contain drop-shadow-[0_14px_18px_rgba(150,20,30,0.18)]"
-              initial={{ scale: 0.85, opacity: 0, rotate: -6 }}
-              animate={{ scale: 1, opacity: 1, rotate: 0 }}
-              transition={{ type: "spring", stiffness: 160, damping: 14 }}
-            />
-            {/* reward badges */}
-            {[
-              { cls: "left-[6px] top-[96px]", d: 0.25 },
-              { cls: "right-[34px] top-[22px]", d: 0.35 },
-            ].map((b, i) => (
-              <motion.span
-                key={i}
-                className={`absolute ${b.cls} rounded-[12px] bg-[linear-gradient(180deg,#FC5252,#E32121)] px-3 py-1.5 text-[18px] font-bold text-white shadow-[0_8px_16px_rgba(227,33,33,0.35)]`}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1, y: [0, -4, 0] }}
-                transition={{ scale: { delay: b.d, type: "spring" }, y: { duration: 3, repeat: Infinity, delay: b.d } }}
-              >
-                {inr(rules.referrerReward)}
-              </motion.span>
-            ))}
-            {/* friends */}
-            {[
-              { img: "avatar-1.jpg", cls: "left-[18px] top-[18px]", s: 44 },
-              { img: "avatar-2.jpg", cls: "left-[150px] top-[4px]", s: 38 },
-              { img: "avatar-3.jpg", cls: "right-[96px] top-[146px]", s: 40 },
-            ].map(({ img, cls, s: size }, i) => (
-              <motion.span
-                key={img}
-                className={`absolute ${cls} rounded-full ring-[3px] ring-white shadow-[0_6px_14px_rgba(0,0,0,0.12)]`}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1, y: [0, -5, 0] }}
-                transition={{ scale: { delay: 0.15 + i * 0.08, type: "spring" }, y: { duration: 3.4, repeat: Infinity, delay: i * 0.6 } }}
-              >
-                <img src={home(img)} alt="" className="block rounded-full object-cover" style={{ width: size, height: size }} />
-              </motion.span>
-            ))}
-          </div>
-
-          <div className="relative px-5 text-center">
-            <h1 className="mt-1 text-[26px] font-bold leading-8 text-[#292C31]">
-              Invite friends, get
-              <br />
-              <span className="text-[#E32121]">{inr(rules.referrerReward)} cashback</span> each
-            </h1>
-            <p className="mx-auto mt-2 max-w-[290px] text-[13px] leading-[19px] text-[#3E4146]">
-              Credited when your friend registers. They get {inr(rules.friendReward)} cashback + {rules.friendDataGB}GB data on their first recharge or bill payment.
-            </p>
-          </div>
-
-          {/* Max earning — 50 referrals/month, 200/year */}
-          <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="relative mx-4 mt-5 flex items-center gap-3 rounded-[16px] bg-[#292C31] px-4 py-3 text-white shadow-[0_10px_24px_rgba(41,44,49,0.25)]"
-          >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,#FC5252,#E32121)] text-[18px] font-bold">₹</span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold uppercase tracking-[1.5px] text-white/60">Earn up to</p>
-              <p className="text-[22px] font-bold leading-7">
-                {inr(rules.referrerReward * rules.referralCapYear)}
-                <span className="text-[13px] font-medium text-white/70"> a year</span>
-              </p>
-            </div>
-            <div className="text-right text-[11px] leading-[15px] text-white/70">
-              <p>
-                <b className="text-white">{inr(rules.referrerReward * rules.referralCapMonth)}</b>/month
-              </p>
-              <p>up to {rules.referralCapYear} friends</p>
-            </div>
-          </motion.div>
-
-          <div className="relative mx-4 mt-3 grid grid-cols-2 gap-2">
-            {[
-              { l: "You get", v: `${inr(rules.referrerReward)}`, d: `Cashback per friend, valid ${rules.cashbackValidityDays} days` },
-              { l: "Friend gets", v: `${inr(rules.friendReward)} + ${rules.friendDataGB}GB`, d: `On first recharge or bill of ${inr(rules.minTransaction)}+` },
-            ].map(({ l, v, d }) => (
-              <div key={l} className={`rounded-[16px] px-3 py-3 text-center ${CARD}`}>
-                <p className="text-[11px] font-bold uppercase tracking-[1.76px] text-[#696B6F]">{l}</p>
-                <p className="mt-0.5 text-[22px] font-bold text-[#292C31]">{v}</p>
-                <p className="mt-0.5 text-[11px] leading-[14px] text-[#696B6F]">{d}</p>
-              </div>
-            ))}
-          </div>
+      <ScreenBody className="bg-white pb-28">
+        {/* 1 — Hero + primary CTA */}
+        <div ref={heroRef}>
+          <EarnHero rules={rules} onInvite={() => invite("hero")} />
         </div>
 
-        {/* Share */}
-        <div className="mt-8 px-4">
-          <SectionTitle>your invite link</SectionTitle>
+        {/* 2 — Share your link */}
+        <section aria-labelledby="share-title" className="mt-6 px-4">
+          <SectionTitle>
+            <span id="share-title">or share your link</span>
+          </SectionTitle>
           <ReferralLinkField className="mt-4" />
           <p className="mt-2 text-[12px] leading-[16px] text-[#696B6F]">Each invite gets its own link, valid for {rules.linkValidityHours} hours.</p>
           <div className="mt-5">
-            <ShareRow onShare={() => navigate("a_preview", { mode: "manual" })} />
+            <ShareRow
+              onShare={(channel) => {
+                track("invite_friends_clicked", { source: `share_${channel}` });
+                navigate("a_preview", { mode: "manual" });
+              }}
+            />
           </div>
-        </div>
+        </section>
 
-        {/* Your referrals — single summary card */}
-        <div className="mt-8 px-4">
-          <SectionTitle>your referrals</SectionTitle>
-          <button onClick={() => navigate("a_dashboard")} className={`mt-4 block w-full rounded-[16px] text-left active:scale-[0.99] ${CARD}`}>
-            <div className="grid grid-cols-3 divide-x divide-[#E6E9EF] py-4 text-center">
-              {[
-                { l: "Earned", v: inr(stats.earned), c: "text-[#292C31]" },
-                { l: "Pending", v: String(stats.pending), c: stats.pending ? "text-[#DA9802]" : "text-[#292C31]" },
-                { l: "Successful", v: String(stats.successful), c: stats.successful ? "text-[#0F7033]" : "text-[#292C31]" },
-              ].map(({ l, v, c }) => (
-                <div key={l}>
-                  <p className={`text-[20px] font-bold leading-6 tabular ${c}`}>{v}</p>
-                  <p className="mt-1 text-[11px] font-medium text-[#696B6F]">{l}</p>
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 border-t border-[#E6E9EF] px-4 py-3">
-              {referrals.length > 0 ? (
-                <span className="flex -space-x-2">
-                  {referrals.slice(0, 3).map((r) => {
-                    const c = CONTACTS.find((x) => x.id === r.contactId);
-                    return <ContactAvatar key={r.id} name={r.name} hue={c?.hue ?? 200} size={26} className="ring-2 ring-white" />;
-                  })}
-                </span>
-              ) : null}
-              <span className="flex-1 text-[13px] font-medium text-[#3E4146]">
-                {stats.total === 0 ? "No friends invited yet" : `${stats.total} ${stats.total === 1 ? "friend" : "friends"} invited`}
-              </span>
-              <span className="flex items-center text-[14px] font-medium text-[#075EE8]">
-                View all <ChevronRight className="size-4" />
-              </span>
-            </div>
-          </button>
-        </div>
+        {/* 3 — How it works */}
+        <HowItWorks ref={howRef} rules={rules} />
 
-        {/* Milestones — highlighted */}
-        <div className="mt-8 px-4">
-          <SectionTitle action={<LinkButton onClick={() => navigate("a_milestones")}>View all</LinkButton>}>milestones</SectionTitle>
-          <button
-            onClick={() => navigate("a_milestones")}
-            className="relative mt-4 block w-full overflow-hidden rounded-[20px] border border-[#FFD5D7] bg-[linear-gradient(135deg,#FFF0F0_0%,#FFF8EE_100%)] text-left shadow-[0_8px_24px_rgba(227,33,33,0.10)] active:scale-[0.99]"
-          >
-            <span className="pointer-events-none absolute -right-10 -top-12 size-40 rounded-full border-[18px] border-white/60" />
-            <div className="relative flex items-center gap-3 px-4 pt-4">
-              <img src={home("tile-rewards.png")} alt="" className="h-[58px] w-[92px] shrink-0 object-contain drop-shadow-[0_6px_10px_rgba(120,60,20,0.18)]" />
-              <div className="min-w-0 flex-1">
-                {nextM ? (
-                  <>
-                    <p className="text-[10px] font-bold uppercase tracking-[1.76px] text-[#E32121]">Next level</p>
-                    <p className="text-[18px] font-bold leading-6 text-[#292C31]">{nextM.label}</p>
-                    <p className="text-[12px] leading-4 text-[#3E4146]">
-                      <b>{nextM.target - stats.milestoneCount}</b> more {nextM.target - stats.milestoneCount === 1 ? "referral" : "referrals"} to unlock
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-[10px] font-bold uppercase tracking-[1.76px] text-[#E32121]">All levels unlocked</p>
-                    <p className="text-[18px] font-bold leading-6 text-[#292C31]">You're at Gold</p>
-                  </>
-                )}
-              </div>
-            </div>
-            {nextM && (
-              <div className="relative mx-4 mt-3 flex items-center gap-3">
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white">
-                  <motion.div
-                    className="h-full rounded-full bg-[linear-gradient(90deg,#FC5252,#E32121)]"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${Math.max(4, (stats.milestoneCount / nextM.target) * 100)}%` }}
-                    transition={{ duration: 0.9, delay: 0.2 }}
-                  />
-                </div>
-                <span className="text-[12px] font-bold text-[#292C31] tabular">
-                  {stats.milestoneCount}/{nextM.target}
-                </span>
-              </div>
-            )}
-            <div className="relative mx-4 mb-4 mt-4 rounded-[14px] bg-white/80 px-2 pb-3 pt-4">
-              <MilestoneTrack milestones={rules.milestones} count={stats.milestoneCount} />
-            </div>
-          </button>
-        </div>
+        {/* 4 — Milestones */}
+        <ReferralProgress
+          ref={progressRef}
+          rules={rules}
+          successful={successful}
+          earned={stats.earned}
+          onViewAll={() => navigate("a_milestones")}
+          onInvite={() => invite("progress")}
+        />
 
-        {/* How it works */}
-        <div className="mt-8 px-4">
-          <SectionTitle>how it works</SectionTitle>
-          <ol className="mt-4 space-y-4">
+        {/* 5 — Referral activity */}
+        <ReferralActivity
+          referrals={referrals}
+          reward={rules.referrerReward}
+          offline={offline}
+          onRetry={retry}
+          onOpen={(id) => {
+            track("referral_activity_opened", { id });
+            navigate("a_detail", { id });
+          }}
+          onViewAll={() => {
+            track("referral_activity_opened", { id: "all" });
+            navigate("a_dashboard");
+          }}
+          onInvite={() => invite("activity_empty")}
+        />
+
+        {/* 6 — FAQs */}
+        <section aria-labelledby="faq-title" className="mt-8 px-4">
+          <SectionTitle>
+            <span id="faq-title">questions</span>
+          </SectionTitle>
+          <Accordion type="single" collapsible className="mt-1" onValueChange={(v) => v && track("faq_opened", { question: v })}>
             {[
-              ["Share your link", "By SMS, WhatsApp, QR or any app."],
-              [`Friend registers, you get ${inr(rules.referrerReward)}`, "Cashback you can use on your next recharge or bill payment."],
-              [`Friend gets ${inr(rules.friendReward)} + ${rules.friendDataGB}GB`, "Cashback and data on their first recharge or bill payment."],
-            ].map(([t, d], i) => (
-              <li key={t} className="flex items-start gap-3">
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#F0F4F9] text-[13px] font-bold text-[#292C31]">{i + 1}</span>
-                <span>
-                  <span className="block text-[14px] font-bold leading-[18px] text-[#292C31]">{t}</span>
-                  <span className="block text-[12px] leading-[18px] text-[#696B6F]">{d}</span>
-                </span>
-              </li>
+              ["earn", "How can I earn rewards?", `Share your link. You earn ${inr(rules.referrerReward)} cashback for every friend who joins Airtel and completes an eligible recharge or bill payment, up to ${inr(rules.referrerReward * rules.referralCapYear)} a year.`],
+              ["successful", "What makes a referral successful?", `Your friend joins through your link and completes their first recharge or bill payment of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days, and the transaction passes validation.`],
+              ["friend", "What does my friend need to do?", `Open your invitation, sign in to the Airtel app and complete a first recharge or bill payment of ${inr(rules.minTransaction)}+. They get ${inr(rules.friendReward)} cashback + ${rules.friendDataGB}GB data (first-time users only).`],
+              ["when", "When will I receive my reward?", `After your friend's transaction is validated, which can take up to ${rules.rewardValidationDays} days. Use your cashback within ${rules.cashbackValidityDays} days on a recharge or bill payment.`],
+              ["limit", "Is there a monthly invitation limit?", `Yes. Up to ${rules.referralCapMonth} rewarded referrals a month and ${rules.referralCapYear} a year.`],
+              ["track", "How can I track my referrals?", "Referral activity on this page shows your latest invites. Tap View all to see every invite and its full timeline in My Referrals."],
+              ["pending", "Why is my reward still pending?", "Your friend may not have completed the eligible action yet, or the transaction is still being validated. You'll be notified when it's credited."],
+              ["ineligible", "Why was my referral not eligible?", "Common reasons: your friend was already an Airtel user, joined through someone else's link first, or didn't complete the eligible action in time."],
+              ["expired", "What happens if an invitation expires?", `Links last ${rules.linkValidityHours} hours. You can resend from My Referrals to create a fresh link; the earlier invite stays in your history.`],
+            ].map(([id, q, a]) => (
+              <AccordionItem key={id} value={id}>
+                <AccordionTrigger>{q}</AccordionTrigger>
+                <AccordionContent>{a}</AccordionContent>
+              </AccordionItem>
             ))}
-          </ol>
-        </div>
+          </Accordion>
+        </section>
 
-        {/* FAQ */}
-        <div className="mt-8 px-4">
-          <SectionTitle>questions</SectionTitle>
-          <Accordion type="single" collapsible className="mt-1">
-            <AccordionItem value="when">
-              <AccordionTrigger>When will I get my reward?</AccordionTrigger>
-              <AccordionContent>
-                Your {inr(rules.referrerReward)} cashback is credited for every friend who registers on Airtel with your link. Use it on your next recharge
-                or bill payment within {rules.cashbackValidityDays} days. Track every invite in My Referrals.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="existing">
-              <AccordionTrigger>What does my friend get?</AccordionTrigger>
-              <AccordionContent>
-                {inr(rules.friendReward)} cashback plus {rules.friendDataGB}GB data, credited when they complete their first bill payment or recharge. Only for
-                first-time Airtel users.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="expired">
-              <AccordionTrigger>My friend's link expired. What now?</AccordionTrigger>
-              <AccordionContent>Links last {rules.linkValidityHours} hours. Resend from My Referrals to create a fresh one.</AccordionContent>
-            </AccordionItem>
+        {/* 7 — Terms & Conditions */}
+        <section aria-labelledby="tnc-title" className="mt-8 px-4">
+          <SectionTitle>
+            <span id="tnc-title">terms &amp; conditions</span>
+          </SectionTitle>
+          <Accordion type="single" collapsible className="mt-1" onValueChange={(v) => v && track("terms_viewed")}>
             <AccordionItem value="tnc">
-              <AccordionTrigger>Terms & Conditions</AccordionTrigger>
+              <AccordionTrigger>Read the programme terms</AccordionTrigger>
               <AccordionContent>
                 <ul className="list-disc space-y-1.5 pl-4">
-                  <li>Referrer benefit: {inr(rules.referrerReward)} cashback for every user that registers, usable on the next recharge or bill payment.</li>
-                  <li>
-                    Referee benefit: {inr(rules.friendReward)} cashback + {rules.friendDataGB}GB data on completing the first bill payment or recharge.
-                  </li>
-                  <li>Referee benefit applies to first-time users only.</li>
-                  <li>Minimum transaction of {inr(rules.minTransaction)} for reward eligibility.</li>
-                  <li>
-                    Up to {rules.referralCapMonth} rewarded referrals per month and {rules.referralCapYear} per year.
-                  </li>
-                  <li>Cashback must be used within {rules.cashbackValidityDays} days of being credited.</li>
-                  <li>The referral goes to the first valid invite link your friend opens.</li>
+                  <li>Referrer benefit: {inr(rules.referrerReward)} cashback for every eligible referred user, usable on the next recharge or bill payment.</li>
+                  <li>Referee benefit: {inr(rules.friendReward)} cashback + {rules.friendDataGB}GB data on completing the first bill payment or recharge. First-time users only.</li>
+                  <li>Minimum transaction value of {inr(rules.minTransaction)} for reward eligibility.</li>
+                  <li>Cap on referrals per user: {rules.referralCapMonth} per month, {rules.referralCapYear} per year.</li>
+                  <li>Cashback must be consumed within {rules.cashbackValidityDays} days from allocation.</li>
+                  <li>The referred friend must complete the qualifying transaction within {rules.firstTxnDeadlineDays} days of joining.</li>
+                  <li>Rewards are credited after validation, which can take up to {rules.rewardValidationDays} days.</li>
+                  <li>The referral is attributed to the first valid invitation link the friend opens. Links are valid for {rules.linkValidityHours} hours.</li>
+                  <li>Reversed or refunded transactions are not eligible.</li>
+                  <li>Milestone badges are recognition only and carry no additional cash reward.</li>
                 </ul>
-                <p className="mt-2 text-[11px] italic">All values shown are provisional working assumptions.</p>
+                <p className="mt-2 text-[11px] italic">Prototype: values shown are working assumptions pending business approval.</p>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </div>
+        </section>
+
+        {/* 8 — Support */}
+        <section className="mt-6 px-4">
+          <button
+            onClick={() => {
+              track("support_clicked");
+              toast("Connecting you to Airtel support", { description: "Prototype: no ticket is actually raised." });
+            }}
+            className={`flex w-full items-center gap-3 rounded-[16px] px-4 py-3.5 text-left active:scale-[0.99] ${CARD}`}
+          >
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F0F4F9]">
+              <Headphones className="size-5 text-[#292C31]" strokeWidth={1.6} />
+            </span>
+            <span className="flex-1">
+              <span className="block text-[14px] font-bold text-[#292C31]">Need help with a referral?</span>
+              <span className="block text-[12px] text-[#696B6F]">Contact Airtel support</span>
+            </span>
+          </button>
+        </section>
       </ScreenBody>
-      <ScreenFooter className="bg-white">
-        <Button size="lg" block onClick={inviteContacts}>
-          <UserPlus /> Invite from contacts
-        </Button>
-      </ScreenFooter>
+
+      {/* Sticky CTA, shown once the hero CTA scrolls away */}
+      <AnimatePresence>
+        {showSticky && (
+          <motion.div
+            initial={{ y: 90 }}
+            animate={{ y: 0 }}
+            exit={{ y: 90 }}
+            transition={{ type: "spring", stiffness: 380, damping: 34 }}
+            className="absolute inset-x-0 bottom-0 z-10 border-t border-[#E6E9EF] bg-white px-5 pb-[30px] pt-3"
+          >
+            <Button size="lg" block onClick={() => invite("sticky")}>
+              <UserPlus /> Invite Friends
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <MilestoneUnlockSheet
+        open={unlockOpen}
+        onOpenChange={setUnlockOpen}
+        badge={badge}
+        next={nextM}
+        successful={successful}
+        earned={stats.earned}
+        onInvite={() => invite("milestone_unlock")}
+      />
     </Screen>
   );
 }

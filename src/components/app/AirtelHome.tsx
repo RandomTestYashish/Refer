@@ -247,9 +247,9 @@ export function AirtelHome({
           <HeroCard className="mt-4">
             <button onClick={refer} className="flex w-full items-center gap-3 text-left" aria-label="Refer & Earn">
               <span className="min-w-0 flex-1">
-                <span className="block text-[16px] font-bold leading-5 text-[#292C31]">Invite friends to Airtel</span>
+                <span className="block text-[16px] font-bold leading-5 text-[#292C31]">Invite a Friend</span>
                 <span className="mt-1 block text-[12px] leading-[18px] text-[#3E4146]">
-                  ₹{rules.referrerReward} cashback for every friend who registers. They get ₹{rules.friendReward} + {rules.friendDataGB}GB data
+                  Earn up to ₹{(rules.referrerReward * rules.referralCapYear).toLocaleString("en-IN")} a year. ₹{rules.referrerReward} cashback for every successful referral.
                 </span>
               </span>
               <img src={home("tile-refer.png")} alt="" className="h-[64px] w-[104px] shrink-0 object-contain" />

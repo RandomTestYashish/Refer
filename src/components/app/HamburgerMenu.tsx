@@ -204,9 +204,9 @@ export function HamburgerMenu({
               </span>
               <span className="flex min-w-0 flex-1 flex-col justify-center gap-1 self-stretch leading-[18px]">
                 <span className="flex items-center gap-2 text-[16px] font-bold text-[#1A1A1A]">
-                  Refer &amp; Earn
+                  Refer a Friend
                 </span>
-                <span className="text-[12px] text-[#696B6F]">₹{rules.referrerReward} cashback for every friend who registers</span>
+                <span className="text-[12px] text-[#696B6F]">Earn up to ₹{(rules.referrerReward * rules.referralCapYear).toLocaleString("en-IN")} a year</span>
               </span>
               <Icon name="hm-chevron.svg" className="-rotate-90" />
             </button>
