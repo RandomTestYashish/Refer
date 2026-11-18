@@ -6,7 +6,7 @@ export const SCREEN_META: Record<ScreenId, { code: string; name: string; journey
   a_milestones: { code: "A03", name: "Milestones", journey: "A" },
   a_permission: { code: "A04", name: "Contact Permission", journey: "A" },
   a_contacts: { code: "A05", name: "Contact Selection", journey: "A" },
-  a_preview: { code: "A06", name: "Invitation Preview", journey: "A" },
+  a_preview: { code: "A06", name: "Invitation Ready", journey: "A" },
   a_sending: { code: "A07", name: "Sending Invitation", journey: "A" },
   a_dashboard: { code: "A08", name: "My Referrals", journey: "A" },
   a_detail: { code: "A09", name: "Referral Detail", journey: "A" },

@@ -9,7 +9,7 @@ import { useCurrentScreen, useProto } from "@/store/useProto";
 import { prepare } from "./jump";
 
 /** Developer preview controls that sit OUTSIDE the simulated phone. */
-export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
+export function ControlBar({ onTogglePanel, compact }: { onTogglePanel: () => void; compact?: boolean }) {
   const journey = useProto((s) => s.journey);
   const scenario = useProto((s) => s.scenario);
   const setJourney = useProto((s) => s.setJourney);
@@ -46,7 +46,7 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
 
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-[#E6E9EF] bg-white px-4 py-2">
-      <div className="flex items-center gap-2 pr-1">
+      <div className={compact ? "hidden" : "flex items-center gap-2 pr-1"}>
         <span className="flex size-7 items-center justify-center rounded-[8px] bg-airtel-red text-[13px] font-black text-white">R</span>
         <div className="hidden leading-tight sm:block">
           <p className="text-[13px] font-bold">Refer & Earn</p>
@@ -112,7 +112,7 @@ export function ControlBar({ onTogglePanel }: { onTogglePanel: () => void }) {
           </TooltipTrigger>
           <TooltipContent>Clear all mock data, scenarios and progress.</TooltipContent>
         </Tooltip>
-        <Button size="sm" variant="outline" onClick={onTogglePanel}>
+        <Button size="sm" variant="outline" className={compact ? "hidden" : undefined} onClick={onTogglePanel}>
           <SlidersHorizontal /> Scenarios
         </Button>
       </div>

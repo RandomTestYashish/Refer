@@ -34,7 +34,75 @@ export function StatusBar({ tone = "dark", className }: { tone?: "dark" | "light
  * The whole device is uniformly scaled to fit the available space — the
  * internal UI is never reflowed or distorted.
  */
+/** True on phone-sized viewports, where the prototype runs full-screen without the device frame. */
+export function useIsPhoneViewport() {
+  const query = "(max-width: 640px)";
+  const [match, setMatch] = useState(() => typeof window !== "undefined" && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setMatch(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return match;
+}
+
+/**
+ * Full-screen variant for real phones: no bezel, fake status bar, island or home indicator.
+ * The 375-wide UI is scaled to the device width and the screen height fills the viewport.
+ */
+function FullScreen({ children, overlay }: { children: React.ReactNode; overlay?: React.ReactNode }) {
+  const [screenEl, setScreenEl] = useState<HTMLDivElement | null>(null);
+  const [size, setSize] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
+  useEffect(() => {
+    const on = () => setSize({ w: window.innerWidth, h: window.visualViewport?.height ?? window.innerHeight });
+    on();
+    window.addEventListener("resize", on);
+    window.visualViewport?.addEventListener("resize", on);
+    return () => {
+      window.removeEventListener("resize", on);
+      window.visualViewport?.removeEventListener("resize", on);
+    };
+  }, []);
+  const scale = size.w / SCREEN_W;
+  return (
+    <div className="fixed inset-0 overflow-hidden bg-white">
+      <div
+        ref={setScreenEl}
+        className="relative origin-top-left overflow-hidden bg-white"
+        style={{ width: SCREEN_W, height: size.h / scale, transform: `scale(${scale})` }}
+        data-phone-screen
+      >
+        <PortalContainerContext.Provider value={screenEl}>
+          <div className="absolute inset-0">{children}</div>
+          {overlay}
+        </PortalContainerContext.Provider>
+      </div>
+    </div>
+  );
+}
+
 export function PhoneFrame({
+  children,
+  statusTone = "dark",
+  overlay,
+  fullscreen,
+}: {
+  children: React.ReactNode;
+  statusTone?: "dark" | "light";
+  overlay?: React.ReactNode;
+  /** Render edge-to-edge (real phones) instead of inside the device mock. */
+  fullscreen?: boolean;
+}) {
+  if (fullscreen) return <FullScreen overlay={overlay}>{children}</FullScreen>;
+  return (
+    <FramedPhone statusTone={statusTone} overlay={overlay}>
+      {children}
+    </FramedPhone>
+  );
+}
+
+function FramedPhone({
   children,
   statusTone = "dark",
   overlay,
