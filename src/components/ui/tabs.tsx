@@ -1,3 +1,4 @@
+// Gen4 Tabs (Figma: ❖ Tabs) — Primary: segmented container (white, #CDD3DD stroke, radius 12, 4 inset), 40px tabs, selected #075EE8.
 import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { cn } from "@/lib/utils";
@@ -8,7 +9,7 @@ const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => (
-  <TabsPrimitive.List ref={ref} className={cn("inline-flex h-10 items-center rounded-[12px] bg-airtel-surface p-1 text-airtel-sub", className)} {...props} />
+  <TabsPrimitive.List ref={ref} className={cn("inline-flex h-12 items-center gap-1 rounded-[12px] border border-gen4-bg-200 bg-white p-1 text-black", className)} {...props} />
 ));
 TabsList.displayName = TabsPrimitive.List.displayName;
 
@@ -19,7 +20,7 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-[9px] px-3 py-1.5 text-[13px] font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 data-[state=active]:bg-white data-[state=active]:text-airtel-ink data-[state=active]:shadow-sm",
+      "inline-flex h-10 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-[8px] px-2 text-[14px] font-bold leading-4 text-black transition-colors hover:bg-gen4-action-soft active:bg-gen4-action-line focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:text-gen4-black-500 data-[state=active]:bg-gen4-action data-[state=active]:text-white",
       className,
     )}
     {...props}

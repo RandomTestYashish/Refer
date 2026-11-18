@@ -8,13 +8,13 @@ const Switch = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SwitchPrimitives.Root
     className={cn(
-      "peer inline-flex h-[22px] w-[38px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-airtel-red data-[state=unchecked]:bg-[#D6D6D6]",
+      "peer group inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border px-[1px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed data-[state=checked]:border-gen4-action data-[state=checked]:bg-gen4-action data-[state=checked]:hover:bg-gen4-action-hover data-[state=unchecked]:border-airtel-ink data-[state=unchecked]:bg-white data-[state=unchecked]:hover:border-airtel-sub disabled:!border-gen4-black-400 disabled:!bg-airtel-surface",
       className,
     )}
     {...props}
     ref={ref}
   >
-    <SwitchPrimitives.Thumb className="pointer-events-none block size-[18px] rounded-full bg-white shadow-md ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0" />
+    <SwitchPrimitives.Thumb className="pointer-events-none block size-5 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=checked]:bg-white data-[state=unchecked]:translate-x-0 data-[state=unchecked]:bg-black group-disabled:!bg-gen4-black-400" />
   </SwitchPrimitives.Root>
 ));
 Switch.displayName = SwitchPrimitives.Root.displayName;

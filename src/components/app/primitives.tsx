@@ -54,6 +54,7 @@ export function ScreenFooter({ children, className }: { children: React.ReactNod
   );
 }
 
+/** Gen4 Top Nav (L1 pages): back icon (24 in 32), centred Body/XL/Bold 20 heading + Body/XS 12 sub-heading, #CDD3DD divider. */
 export function AppBar({
   title,
   subtitle,
@@ -71,19 +72,25 @@ export function AppBar({
 }) {
   const back = useProto((s) => s.back);
   return (
-    <header className={cn("relative z-10 flex h-14 shrink-0 items-center gap-1 px-2", !transparent && "bg-white", className)}>
+    <header
+      className={cn(
+        "relative z-10 grid h-14 shrink-0 grid-cols-[auto_1fr_auto] items-center gap-2 px-3",
+        !transparent && "border-b border-gen4-bg-200 bg-white",
+        className,
+      )}
+    >
       <button
         onClick={onBack ?? back}
-        className="flex size-10 items-center justify-center rounded-full transition active:scale-90 active:bg-black/5"
+        className="flex size-8 items-center justify-center rounded-full text-black transition active:scale-90 active:bg-black/5"
         aria-label="Back"
       >
         <ChevronLeft className="size-6" />
       </button>
-      <div className="min-w-0 flex-1">
-        {title && <div className="truncate text-[17px] font-semibold tracking-[-0.01em]">{title}</div>}
-        {subtitle && <div className="truncate text-[12px] text-airtel-sub">{subtitle}</div>}
+      <div className="min-w-0 text-center">
+        {title && <div className="truncate text-[20px] font-bold leading-[22px] text-airtel-ink">{title}</div>}
+        {subtitle && <div className="truncate text-[12px] leading-[18px] text-gen4-black-800">{subtitle}</div>}
       </div>
-      <div className="flex items-center gap-1 pr-1">{right}</div>
+      <div className="flex min-w-8 items-center justify-end gap-1">{right}</div>
     </header>
   );
 }
@@ -103,7 +110,7 @@ export function ContactAvatar({ name, hue = 0, size = 40, className }: { name: s
 export function SectionTitle({ children, action, className }: { children: React.ReactNode; action?: React.ReactNode; className?: string }) {
   return (
     <div className={cn("mb-2.5 flex items-center justify-between px-5", className)}>
-      <h3 className="text-[15px] font-bold tracking-[-0.01em]">{children}</h3>
+      <h3 className="text-[16px] font-bold leading-[18px] text-airtel-ink">{children}</h3>
       {action}
     </div>
   );

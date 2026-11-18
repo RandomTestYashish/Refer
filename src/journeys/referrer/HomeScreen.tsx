@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { Screen, ScreenBody, Wordmark, ContactAvatar } from "@/components/app/primitives";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
+import { Badge, Notifier } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -80,9 +80,7 @@ export function HomeScreen() {
         >
           <Bell className="size-[22px]" />
           {unread > 0 && (
-            <span className="absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full bg-airtel-red text-[9px] font-bold text-white">
-              {unread}
-            </span>
+            <Notifier count={unread} className="absolute -right-0.5 top-0.5" />
           )}
         </button>
         <button aria-label="Profile" onClick={() => setMenu(true)} className="rounded-full">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertTriangle, Check } from "lucide-react";
+import { Check } from "lucide-react";
+import { Callout } from "@/components/ui/callout";
 import { AppBar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
@@ -88,15 +89,14 @@ export function PlansScreen() {
         <AnimatePresence>
           {below && rewardActive && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="mb-3 flex gap-2.5 rounded-[14px] bg-airtel-warning-soft p-3 text-[12.5px] leading-[17px] text-[#7A5310]">
-                <AlertTriangle className="size-4 shrink-0 text-airtel-warning" />
-                <span>
-                  {inr(sel.price)} is below the {inr(rules.minTransaction)} minimum, so it won't unlock your referral reward.{" "}
-                  <button className="font-bold underline" onClick={() => setPlan("p199")}>
-                    Switch to ₹199
-                  </button>
-                </span>
-              </div>
+              <Callout
+                tone="warning"
+                title={`Below the ${inr(rules.minTransaction)} minimum`}
+                className="mb-3"
+                action={{ label: "Switch to ₹199", onClick: () => setPlan("p199") }}
+              >
+                {inr(sel.price)} won't unlock your referral reward.
+              </Callout>
             </motion.div>
           )}
         </AnimatePresence>

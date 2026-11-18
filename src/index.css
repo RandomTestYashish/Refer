@@ -6,31 +6,31 @@
   :root {
     /* shadcn/ui semantic tokens mapped to the Airtel palette */
     --background: 0 0% 100%;
-    --foreground: 0 0% 9%;            /* #171717 */
+    --foreground: 220 9% 18%;         /* #292C31 */
     --card: 0 0% 100%;
     --card-foreground: 0 0% 9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
-    --primary: 349 100% 45%;          /* #E4002B */
+    --primary: 359 68% 47%;           /* #CA262B brand */
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 96.5%;          /* #F6F6F6 */
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.5%;
-    --muted-foreground: 0 0% 47%;     /* #777777 */
+    --muted-foreground: 220 3% 43%;   /* #696B6F */
     --accent: 350 85% 96%;
     --accent-foreground: 349 100% 40%;
-    --destructive: 4 71% 50%;         /* #D93025 */
+    --destructive: 358 69% 35%;       /* #981C20 */
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 91.8%;             /* #EAEAEA */
-    --input: 0 0% 91.8%;
-    --ring: 349 100% 45%;
-    --radius: 14px;
+    --border: 220 20% 92%;            /* #E6E9EF */
+    --input: 214 43% 96%;             /* #F0F4F9 */
+    --ring: 217 94% 47%;              /* #075EE8 focus */
+    --radius: 12px;
   }
   * { @apply border-border; }
   html, body, #root { height: 100%; }
   body {
     @apply bg-[#EEEEF0] text-foreground antialiased;
-    font-feature-settings: "cv11", "ss01";
+    font-feature-settings: "liga" 0;
     -webkit-tap-highlight-color: transparent;
   }
   button { -webkit-tap-highlight-color: transparent; }

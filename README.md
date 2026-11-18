@@ -23,6 +23,10 @@ Production build: `npm run build` (output in `dist/`, relative base so it works 
 - **Jump to error / edge case**: all 20 User A and 16 User B error scenarios.
 - **Business rules (provisional)**: reward amounts, ₹100 minimum, 24h link validity, 10-day first-transaction deadline, 30-day reward validation — editable live.
 
+## Design system
+
+UI components follow the **Gen4 Foundations** Figma library: colour primitives (black, blue-grey, gen4 red, green, yellow, blue), the Inter type scale (Headline H1–H6, Body XL–3XS, Title), Shadow-Level2, and component specs for Button (Primary/Brand/Secondary/Ghost/Accent/Tertiary/Alternate · 40/48/56), Info Tag, Card, Toast, Callout, Bottom Sheet/Modal, Top Nav, Field, Checkbox, Radio, Switch, Tabs, Progress bar and Notifier. Tokens live in `tailwind.config.js` (`airtel.*` / `gen4.*`); components in `src/components/ui`.
+
 ## Stack
 
 React 18 · TypeScript · Vite · Tailwind CSS · shadcn/ui components (Radix primitives, customised with Airtel tokens in `src/components/ui`) · Framer Motion · Lucide · Sonner · Zustand.

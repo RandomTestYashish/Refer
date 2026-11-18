@@ -40,7 +40,7 @@ const sheetVariants = cva(
     variants: {
       side: {
         bottom:
-          "inset-x-0 bottom-0 max-h-[88%] rounded-t-[26px] data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
+          "inset-x-0 bottom-0 max-h-[82%] rounded-t-[24px] data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom",
         left: "inset-y-0 left-0 h-full w-[84%] data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left",
         right: "inset-y-0 right-0 h-full w-[84%] data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right",
       },
@@ -60,7 +60,7 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
     const container = usePortalContainer();
     return (
       <SheetPrimitive.Portal container={container}>
-        <div className="absolute inset-0 z-50 bg-black/45 animate-in fade-in-0" aria-hidden />
+        <div className="absolute inset-0 z-50 bg-black/60 animate-in fade-in-0" aria-hidden />
         <SheetPrimitive.Content
           ref={ref}
           className={cn(sheetVariants({ side }), className)}
@@ -70,11 +70,15 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
             props.onInteractOutside?.(e);
           }}
         >
-          {side === "bottom" && <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-[#DADADA]" aria-hidden />}
           {children}
           {!hideClose && (
-            <SheetPrimitive.Close className="absolute right-4 top-4 rounded-full bg-airtel-surface p-1.5 text-airtel-sub transition hover:text-airtel-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-              <X className="size-4" />
+            <SheetPrimitive.Close
+              className={cn(
+                "flex size-7 items-center justify-center rounded-full bg-white text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                side === "bottom" ? "absolute -top-[52px] left-1/2 -translate-x-1/2" : "absolute right-4 top-4 bg-airtel-surface",
+              )}
+            >
+              <X className="size-5" />
               <span className="sr-only">Close</span>
             </SheetPrimitive.Close>
           )}
@@ -86,13 +90,13 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
 const SheetHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col gap-1 px-5 pt-4", className)} {...props} />
+  <div className={cn("flex flex-col gap-1 px-5 pt-6", className)} {...props} />
 );
 const SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <SheetPrimitive.Title ref={ref} className={cn("text-title text-airtel-ink", className)} {...props} />
+  <SheetPrimitive.Title ref={ref} className={cn("text-heading text-black", className)} {...props} />
 ));
 SheetTitle.displayName = SheetPrimitive.Title.displayName;
 const SheetDescription = React.forwardRef<

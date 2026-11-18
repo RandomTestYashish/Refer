@@ -21,20 +21,44 @@ export default {
         accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
         popover: { DEFAULT: "hsl(var(--popover))", foreground: "hsl(var(--popover-foreground))" },
         card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
+        // Gen4 Foundations (Figma) — the legacy `airtel.*` names are kept so every screen picks up the new values.
         airtel: {
-          red: "#E4002B",
-          "red-dark": "#B8001F",
-          "red-soft": "#FDECEF",
-          ink: "#171717",
-          sub: "#777777",
-          surface: "#F6F6F6",
-          line: "#EAEAEA",
-          success: "#16834A",
-          "success-soft": "#E8F5EE",
-          warning: "#E9A23B",
-          "warning-soft": "#FDF4E6",
-          error: "#D93025",
-          "error-soft": "#FCEBEA",
+          red: "#CA262B", // brand surface (gen4red/600)
+          "red-dark": "#981C20", // brand selected (gen4red/700)
+          "red-bright": "#FD2F36", // brand hover (gen4red/500)
+          "red-soft": "#FFD5D7", // gen4red/50
+          ink: "#292C31", // black/900 — primary text
+          sub: "#696B6F", // black/700 — body / help text
+          surface: "#F6F6F6", // black/100
+          line: "#E6E9EF", // border/card (blueGrey/100)
+          success: "#0F7033", // green/800 text
+          "success-soft": "#D1EFDC",
+          "success-line": "#A3DFB9",
+          warning: "#D79A00", // yellow/600
+          "warning-text": "#8F4C00",
+          "warning-soft": "#FFF0B8",
+          "warning-line": "#FFE48A",
+          error: "#981C20",
+          "error-soft": "#FFD5D7",
+          "error-line": "#FEACAF",
+        },
+        gen4: {
+          black: "#000000",
+          "black-200": "#EAEAEA",
+          "black-300": "#D4D5D6",
+          "black-400": "#BFC0C1",
+          "black-500": "#A0A2A4",
+          "black-800": "#3E4146",
+          action: "#075EE8", // blue/500
+          "action-hover": "#064BBA",
+          "action-pressed": "#04388B",
+          "action-soft": "#E6F0FF",
+          "action-line": "#9CBFF6",
+          "bg-50": "#F0F4F9", // blueGrey/50 — field surface
+          "bg-100": "#E6E9EF",
+          "bg-200": "#CDD3DD",
+          "bg-400": "#8E9AA9",
+          "bg-600": "#485B76",
         },
       },
       borderRadius: {
@@ -46,18 +70,19 @@ export default {
       },
       fontSize: {
         // Airtel type scale
-        "display": ["28px", { lineHeight: "34px", letterSpacing: "-0.02em", fontWeight: "700" }],
-        "title": ["22px", { lineHeight: "28px", letterSpacing: "-0.015em", fontWeight: "700" }],
-        "heading": ["17px", { lineHeight: "22px", letterSpacing: "-0.01em", fontWeight: "600" }],
-        "body": ["15px", { lineHeight: "22px" }],
-        "small": ["13px", { lineHeight: "18px" }],
-        "micro": ["11px", { lineHeight: "14px", letterSpacing: "0.02em" }],
+        // Gen4 type scale (Inter): Headline H5/H6, Body LG/MD/SM/XS, Title (tracked caps)
+        "display": ["28px", { lineHeight: "36px", fontWeight: "700" }], // Headline/H5-28/Bold
+        "title": ["24px", { lineHeight: "32px", fontWeight: "700" }], // Headline/H6-24/Bold
+        "heading": ["18px", { lineHeight: "26px", fontWeight: "700" }], // Body/LG/paragraph/Bold
+        "body": ["16px", { lineHeight: "24px" }], // Body/MD/paragraph
+        "small": ["14px", { lineHeight: "20px" }], // Body/SM/paragraph
+        "micro": ["12px", { lineHeight: "14px", letterSpacing: "0.16em", fontWeight: "700" }], // Title/MD
       },
       boxShadow: {
-        card: "0 1px 2px rgba(23,23,23,0.04), 0 4px 16px rgba(23,23,23,0.05)",
-        lift: "0 8px 30px rgba(23,23,23,0.10)",
-        sheet: "0 -8px 40px rgba(23,23,23,0.16)",
-        red: "0 8px 20px rgba(228,0,43,0.28)",
+        card: "0 5px 5.62px rgba(180,180,180,0.2)", // Shadow-Level2 (Default)
+        lift: "0 8px 24px rgba(41,44,49,0.12)",
+        sheet: "0 -8px 32px rgba(0,0,0,0.12)",
+        red: "none",
       },
       keyframes: {
         "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },

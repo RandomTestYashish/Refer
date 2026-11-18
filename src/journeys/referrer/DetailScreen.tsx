@@ -1,4 +1,5 @@
-import { AlertCircle, ChevronRight, Gift, Link2, Lock } from "lucide-react";
+import { ChevronRight, Gift, Link2, Lock } from "lucide-react";
+import { Callout } from "@/components/ui/callout";
 import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter, SectionTitle } from "@/components/app/primitives";
 import { RewardBadge, StatusBadge } from "@/components/app/status";
 import { ReferralTimeline } from "@/components/app/Timeline";
@@ -60,18 +61,14 @@ export function DetailScreen({ params }: { params?: Record<string, string> }) {
         </div>
 
         {reason && (
-          <div className="mt-3 flex gap-3 rounded-[16px] border border-airtel-error/15 bg-airtel-error-soft/60 p-3.5">
-            <AlertCircle className="mt-0.5 size-5 shrink-0 text-airtel-error" />
-            <div>
-              <p className="text-[14px] font-semibold">{reason.title}</p>
-              <p className="mt-0.5 text-[12.5px] leading-[18px] text-airtel-sub">{reason.body}</p>
-            </div>
-          </div>
+          <Callout tone={r.status === "expired" ? "warning" : "error"} title={reason.title} className="mt-3">
+            {reason.body}
+          </Callout>
         )}
         {r.status === "pending_recharge" && (
-          <div className="mt-3 rounded-[16px] border border-airtel-warning/30 bg-airtel-warning-soft p-3.5 text-[12.5px] leading-[18px] text-[#7A5310]">
-            Waiting for {r.name.split(" ")[0]}'s first recharge of {inr(rules.minTransaction)}+ (deadline: {rules.firstTxnDeadlineDays} days from joining).
-          </div>
+          <Callout tone="warning" title="Waiting for first recharge" className="mt-3">
+            {r.name.split(" ")[0]} needs to recharge {inr(rules.minTransaction)}+ within {rules.firstTxnDeadlineDays} days of joining.
+          </Callout>
         )}
 
         <div className="mt-4 rounded-[20px] bg-white p-4 pb-1 shadow-card">

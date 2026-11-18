@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, BellRing, ChevronRight, Gift, Lock, Send, Users } from "lucide-react";
 import { toast } from "sonner";
+import { Callout } from "@/components/ui/callout";
 import { AvatarStack, ReferralLinkField } from "@/components/app/InviteKit";
 import { canRemind } from "@/components/app/ReferralActions";
 import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
@@ -93,17 +94,11 @@ export function DashboardScreen() {
             {/* Live notice */}
             <AnimatePresence>
               {unread.length > 0 && (
-                <motion.button
-                  initial={{ y: -12, opacity: 0, height: 0 }}
-                  animate={{ y: 0, opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  onClick={markRead}
-                  className="mx-4 mb-3 flex w-[calc(100%-32px)] items-center gap-2.5 overflow-hidden rounded-[14px] bg-airtel-ink px-3.5 py-3 text-left text-white"
-                >
-                  <Bell className="size-4 shrink-0 text-[#FFB4C0]" />
-                  <span className="flex-1 text-[13px] font-medium">{unread[0].text}</span>
-                  <span className="text-[11px] text-white/60">Dismiss</span>
-                </motion.button>
+                <motion.div initial={{ y: -12, opacity: 0, height: 0 }} animate={{ y: 0, opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mx-4 mb-3 overflow-hidden">
+                  <Callout tone="dark" title={unread[0].text} icon={<Bell strokeWidth={1.6} />} onDismiss={markRead}>
+                    {unread.length > 1 ? `+${unread.length - 1} more referral update${unread.length > 2 ? "s" : ""}` : "Referral update"}
+                  </Callout>
+                </motion.div>
               )}
             </AnimatePresence>
 
@@ -182,7 +177,7 @@ export function DashboardScreen() {
             {/* List */}
             <div className="mt-5 px-4">
               <Tabs value={tab} onValueChange={(v) => setTab(v as keyof typeof FILTERS)}>
-                <TabsList className="w-full bg-[#EBEBEB]">
+                <TabsList className="w-full">
                   <TabsTrigger value="all">All</TabsTrigger>
                   <TabsTrigger value="pending">Pending</TabsTrigger>
                   <TabsTrigger value="successful">Successful</TabsTrigger>

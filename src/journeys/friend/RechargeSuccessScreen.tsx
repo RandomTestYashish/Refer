@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { AlertTriangle, Clock3, Hourglass } from "lucide-react";
+import { Clock3, Hourglass } from "lucide-react";
+import { Callout } from "@/components/ui/callout";
 import { AnimatedCheck, Screen, ScreenBody } from "@/components/app/primitives";
 import { Confetti } from "@/components/app/Confetti";
 import { Button } from "@/components/ui/button";
@@ -56,36 +57,24 @@ export function RechargeSuccessScreen({ params }: { params?: Record<string, stri
 
         {/* Referral reward validation */}
         {eligible && qualifying && (
-          <motion.div initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="mt-4 rounded-[18px] border border-airtel-warning/30 bg-airtel-warning-soft p-4">
-            <div className="flex items-center gap-2 text-[14px] font-bold">
-              <Clock3 className="size-4 text-airtel-warning" /> Referral reward: validating
-            </div>
-            <p className="mt-1 text-[12.5px] leading-[18px] text-[#7A5310]">
-              Your recharge qualifies! We're validating it now. {inr(rules.friendReward)} for you and {inr(rules.referrerReward)} for {REFERRER.first} will be credited
-              once it's confirmed.
-            </p>
-            <Progress value={70} className="mt-3 h-1.5 bg-white" indicatorClassName="bg-airtel-warning" />
+          <motion.div initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 }} className="mt-4">
+            <Callout tone="default" title="Referral reward: validating" icon={<Clock3 strokeWidth={1.6} />}>
+              Your recharge qualifies. {inr(rules.friendReward)} for you and {inr(rules.referrerReward)} for {REFERRER.first} will be credited once it's
+              confirmed.
+              <Progress value={70} className="mt-2 h-2 bg-white" />
+            </Callout>
           </motion.div>
         )}
         {eligible && !qualifying && below && !deadlinePassed && (
-          <div className="mt-4 flex gap-3 rounded-[18px] border border-airtel-warning/30 bg-airtel-warning-soft p-4">
-            <AlertTriangle className="size-5 shrink-0 text-airtel-warning" />
-            <div>
-              <p className="text-[14px] font-bold">Below {inr(rules.minTransaction)} — reward not unlocked</p>
-              <p className="mt-1 text-[12.5px] leading-[18px] text-[#7A5310]">
-                This {inr(plan.price)} recharge doesn't qualify. Recharge {inr(rules.minTransaction)}+ within {rules.firstTxnDeadlineDays} days to unlock rewards for
-                you and {REFERRER.first}.
-              </p>
-            </div>
-          </div>
+          <Callout tone="warning" title={`Below ${inr(rules.minTransaction)} — reward not unlocked`} className="mt-4">
+            This {inr(plan.price)} recharge doesn't qualify. Recharge {inr(rules.minTransaction)}+ within {rules.firstTxnDeadlineDays} days to unlock rewards for
+            you and {REFERRER.first}.
+          </Callout>
         )}
         {deadlinePassed && (
-          <div className="mt-4 flex gap-3 rounded-[18px] bg-airtel-surface p-4">
-            <Hourglass className="size-5 shrink-0 text-airtel-sub" />
-            <p className="text-[12.5px] leading-[18px] text-airtel-sub">
-              The referral window had already expired, so this recharge doesn't unlock referral rewards.
-            </p>
-          </div>
+          <Callout tone="dark" title="Referral window expired" icon={<Hourglass strokeWidth={1.6} />} className="mt-4">
+            This recharge doesn't unlock referral rewards because the offer had already expired.
+          </Callout>
         )}
       </ScreenBody>
       <div className="space-y-2 px-5 pb-[34px]">
