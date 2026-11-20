@@ -139,19 +139,8 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             <OfferCard rules={rules} />
           </section>
 
-          {/* Milestones up top */}
-          <ReferralProgress
-            className="pt-5"
-            ref={progressRef}
-            rules={rules}
-            successful={successful}
-            earned={stats.earned}
-            onViewAll={() => navigate("a_milestones")}
-            onInvite={() => invite("progress")}
-          />
-
           {/* Invite — the primary action */}
-          <section aria-labelledby="invite-title" className="px-4 pt-8">
+          <section aria-labelledby="invite-title" className="px-4 pt-5">
             <QuickInvite ref={ctaRef} rules={rules} onInvite={invite} onMore={() => invite("quick_more")} />
 
             {/* Secondary: share the link yourself */}
@@ -167,6 +156,16 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             </div>
             <p className="mt-3 text-center text-[11px] leading-[15px] text-[#696B6F]">Each invite gets its own link, valid for {rules.linkValidityHours} hours.</p>
           </section>
+
+          {/* Milestones */}
+          <ReferralProgress
+            ref={progressRef}
+            rules={rules}
+            successful={successful}
+            earned={stats.earned}
+            onViewAll={() => navigate("a_milestones")}
+            onInvite={() => invite("progress")}
+          />
 
           <ReferralActivity
             referrals={referrals}
