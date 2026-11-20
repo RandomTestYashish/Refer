@@ -1,8 +1,6 @@
 import { forwardRef } from "react";
-import { ChevronRight, Users, WifiOff } from "lucide-react";
-import { CARD, LinkButton, SectionTitle } from "@/components/app/gen4";
-import { ContactAvatar } from "@/components/app/primitives";
-import { CONTACTS } from "@/domain/data";
+import { ArrowDownLeft, ChevronRight, Clock3, Send, Users, WifiOff, X } from "lucide-react";
+import { ListRow, SheetSection } from "@/components/app/refer/SheetUI";
 import type { Referral } from "@/domain/types";
 import { cn, formatDate, inr } from "@/lib/utils";
 
@@ -38,13 +36,20 @@ export function referralStatusCopy(r: Referral, reward: number): { label: string
   }
 }
 
-const TONE: Record<Tone, string> = {
-  neutral: "bg-[#F0F4F9] text-[#3E4146]",
-  warning: "bg-[#FFF0B8] text-[#8F4C00]",
-  success: "bg-[#D1EFDC] text-[#0F7033]",
-  error: "bg-[#FFD5D7] text-[#981C20]",
+const TONE: Record<Tone, { icon: string; label: string }> = {
+  neutral: { icon: "bg-[#F0F4F9] text-[#485B76]", label: "text-[#485B76]" },
+  warning: { icon: "bg-[#FFF3E2] text-[#B25E09]", label: "text-[#B25E09]" },
+  success: { icon: "bg-[#E7F6EC] text-[#0F7033]", label: "text-[#0F7033]" },
+  error: { icon: "bg-[#FFE8E9] text-[#C3202D]", label: "text-[#C3202D]" },
+};
+const ICON: Record<Tone, JSX.Element> = {
+  neutral: <Send />,
+  warning: <Clock3 />,
+  success: <ArrowDownLeft />,
+  error: <X />,
 };
 
+/** Recent activity — the Airtel rewards "Recent activity" list: icon, friend, plain status, amount + date. */
 export const ReferralActivity = forwardRef<
   HTMLElement,
   {
@@ -57,62 +62,74 @@ export const ReferralActivity = forwardRef<
     onInvite: () => void;
   }
 >(({ referrals, reward, offline, onRetry, onOpen, onViewAll, onInvite }, ref) => {
-  const latest = [...referrals].sort((a, b) => b.createdAt - a.createdAt).slice(0, 3);
+  const latest = [...referrals].sort((a, b) => b.createdAt - a.createdAt).slice(0, 4);
   return (
-    <section ref={ref} aria-labelledby="activity-title" className="mt-8 px-4">
-      <SectionTitle action={referrals.length > 0 ? <LinkButton onClick={onViewAll}>View all</LinkButton> : undefined}>
-        <span id="activity-title">referral activity</span>
-      </SectionTitle>
-
-      {offline ? (
-        <div className={`mt-4 flex items-center gap-3 rounded-[16px] p-4 ${CARD}`} role="status">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F0F4F9]">
-            <WifiOff className="size-5 text-[#696B6F]" />
-          </span>
-          <p className="min-w-0 flex-1 text-[12.5px] leading-[17px] text-[#3E4146]">
-            <b className="block text-[13px] text-[#292C31]">Couldn't refresh your activity</b>
-            Your referrals are safe. Check your connection and try again.
-          </p>
-          <button onClick={onRetry} className="h-9 shrink-0 rounded-[10px] border border-[#E6E9EF] bg-white px-3 text-[13px] font-medium text-[#292C31] active:bg-[#F0F4F9]">
-            Retry
-          </button>
-        </div>
-      ) : latest.length === 0 ? (
-        <div className={`mt-4 rounded-[16px] p-5 text-center ${CARD}`}>
-          <span className="mx-auto flex size-11 items-center justify-center rounded-full bg-[#F0F4F9]">
-            <Users className="size-5 text-[#696B6F]" />
-          </span>
-          <p className="mt-2 text-[14px] font-bold text-[#292C31]">No invitations yet</p>
-          <p className="mt-0.5 text-[12px] text-[#696B6F]">Invite a friend and track every step here.</p>
-          <button onClick={onInvite} className="mt-3 h-9 rounded-[10px] bg-black px-4 text-[13px] font-medium text-white active:bg-[#3E4146]">
-            Invite Friends
-          </button>
-        </div>
-      ) : (
-        <ul className={`mt-4 divide-y divide-[#E6E9EF] rounded-[16px] ${CARD}`}>
-          {latest.map((r) => {
-            const c = CONTACTS.find((x) => x.id === r.contactId);
-            const s = referralStatusCopy(r, reward);
-            return (
-              <li key={r.id}>
-                <button onClick={() => onOpen(r.id)} className="flex w-full items-start gap-3 px-4 py-3 text-left active:bg-[#F0F4F9]">
-                  <ContactAvatar name={r.name} hue={c?.hue ?? 200} size={36} />
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-2">
-                      <span className="truncate text-[14px] font-semibold text-[#292C31]">{r.name}</span>
-                      <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-bold", TONE[s.tone])}>{s.label}</span>
+    <div ref={ref as React.Ref<HTMLDivElement>}>
+      <SheetSection
+        id="activity-title"
+        title="Recent activity"
+        action={
+          referrals.length > 0 ? (
+            <button onClick={onViewAll} className="flex size-8 items-center justify-center rounded-full active:bg-[#F0F4F9]" aria-label="View all referrals">
+              <ChevronRight className="size-6 text-[#292C31]" />
+            </button>
+          ) : undefined
+        }
+      >
+        {offline ? (
+          <div className="flex items-center gap-3 rounded-[16px] border border-[#E6E9EF] p-4" role="status">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F0F4F9]">
+              <WifiOff className="size-5 text-[#696B6F]" />
+            </span>
+            <p className="min-w-0 flex-1 text-[12.5px] leading-[17px] text-[#3E4146]">
+              <b className="block text-[13px] text-[#292C31]">Couldn't refresh your activity</b>
+              Your referrals are safe. Check your connection and try again.
+            </p>
+            <button onClick={onRetry} className="h-9 shrink-0 rounded-[10px] border border-[#E6E9EF] bg-white px-3 text-[13px] font-medium text-[#292C31] active:bg-[#F0F4F9]">
+              Retry
+            </button>
+          </div>
+        ) : latest.length === 0 ? (
+          <div className="rounded-[16px] border border-dashed border-[#D8DCE3] p-5 text-center">
+            <span className="mx-auto flex size-11 items-center justify-center rounded-full bg-[#F0F4F9]">
+              <Users className="size-5 text-[#696B6F]" />
+            </span>
+            <p className="mt-2 text-[14px] font-bold text-[#292C31]">No invitations yet</p>
+            <p className="mt-0.5 text-[12px] text-[#696B6F]">Invite a friend and every step shows up here.</p>
+            <button onClick={onInvite} className="mt-3 text-[14px] font-medium text-[#075EE8]">
+              Invite a friend
+            </button>
+          </div>
+        ) : (
+          <div>
+            {latest.map((r) => {
+              const s = referralStatusCopy(r, reward);
+              const amount = s.tone === "success" ? `+${inr(reward)}` : s.tone === "warning" ? inr(reward) : "—";
+              return (
+                <ListRow
+                  key={r.id}
+                  onClick={() => onOpen(r.id)}
+                  icon={ICON[s.tone]}
+                  iconClass={TONE[s.tone].icon}
+                  title={r.name}
+                  sub={
+                    <>
+                      <span className={cn("font-semibold", TONE[s.tone].label)}>{s.label}</span> · {s.detail}
+                    </>
+                  }
+                  right={
+                    <span className="shrink-0 text-right">
+                      <span className={cn("block text-[14px] font-bold tabular-nums", s.tone === "success" ? "text-[#0F7033]" : "text-[#292C31]")}>{amount}</span>
+                      <span className="block text-[11px] text-[#696B6F]">{formatDate(r.createdAt).replace(/ \d{4}$/, "")}</span>
                     </span>
-                    <span className="mt-0.5 block text-[12px] leading-[16px] text-[#696B6F]">{s.detail}</span>
-                    <span className="mt-0.5 block text-[11px] text-[#A0A2A4]">Invited {formatDate(r.createdAt)}</span>
-                  </span>
-                  <ChevronRight className="mt-2 size-4 shrink-0 text-[#A0A2A4]" />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </section>
+                  }
+                />
+              );
+            })}
+          </div>
+        )}
+      </SheetSection>
+    </div>
   );
 });
 ReferralActivity.displayName = "ReferralActivity";

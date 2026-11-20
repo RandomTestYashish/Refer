@@ -50,3 +50,21 @@
   }
 }
 
+
+/* Refer hero: red serif amount with a light sweep passing through it. */
+.amount-shine {
+  background-image: linear-gradient(105deg, #C81E28 0%, #9E1119 38%, #FFD9B0 48%, #9E1119 58%, #6E0A10 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: amount-shine 3.8s ease-in-out 2.4s infinite;
+}
+@keyframes amount-shine {
+  0% { background-position: 100% 0; }
+  45%, 100% { background-position: 0% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .amount-shine { animation: none; background-position: 70% 0; }
+}

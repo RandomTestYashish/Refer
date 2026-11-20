@@ -1,47 +1,70 @@
-import { motion } from "framer-motion";
-import { Check, Lock, Medal, Sparkles } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Check } from "lucide-react";
 import type { Milestone } from "@/config/businessRules";
+import { CoinFace, type Metal } from "@/components/app/refer/CoinArt";
 import { cn } from "@/lib/utils";
 
-const MEDAL: Record<Milestone["id"], { bg: string; fg: string }> = {
-  first: { bg: "linear-gradient(145deg,#FF5A75,#E4002B)", fg: "#fff" },
-  bronze: { bg: "linear-gradient(145deg,#E3A06B,#A8622C)", fg: "#fff" },
-  silver: { bg: "linear-gradient(145deg,#E9EDF2,#9AA4B0)", fg: "#fff" },
-  gold: { bg: "linear-gradient(145deg,#FFDA6B,#D99A00)", fg: "#fff" },
-};
+/** Each level is minted in its own metal; locked levels are unminted grey coins. */
+export const LEVEL_METAL: Record<Milestone["id"], Metal> = { first: "ruby", bronze: "bronze", silver: "silver", gold: "gold" };
 
-export function MilestoneMedal({ m, unlocked, size = 44 }: { m: Milestone; unlocked: boolean; size?: number }) {
+const STAR = "M50 30 l5.6 11.4 12.6 1.8 -9.1 8.9 2.1 12.5 L50 58.7 38.8 64.6 40.9 52.1 31.8 43.2 44.4 41.4 z";
+const LOCK = (
+  <g fill="none" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="37" y="47" width="26" height="19" rx="3.5" />
+    <path d="M42 47 v-5 a8 8 0 0 1 16 0 v5" />
+  </g>
+);
+
+export type BadgeState = "unlocked" | "next" | "locked";
+
+/** Coin badge for a milestone level. */
+export function CoinBadge({ m, state, size = 44, pulse = true }: { m: Milestone; state: BadgeState; size?: number; pulse?: boolean }) {
+  const reduce = useReducedMotion();
+  const metal: Metal = state === "unlocked" ? LEVEL_METAL[m.id] : "locked";
+  const emboss = state === "unlocked" ? undefined : "#8E939B";
   return (
-    <motion.div
-      layout
-      className="relative flex shrink-0 items-center justify-center rounded-full"
-      style={{ width: size, height: size, background: unlocked ? MEDAL[m.id].bg : "#F1F1F1" }}
-      initial={false}
-      animate={unlocked ? { scale: [0.8, 1.12, 1] } : { scale: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {unlocked ? (
-        m.id === "first" ? <Sparkles className="size-[45%] text-white" /> : <Medal className="size-[48%] text-white" />
-      ) : (
-        <Lock className="size-[38%] text-[#B5B5B5]" />
+    <div className="relative shrink-0" style={{ width: size, height: size }} aria-label={`${m.label} ${state}`}>
+      {state === "next" && pulse && !reduce && (
+        <motion.span
+          className="absolute inset-[-5px] rounded-full border-2 border-[#E32121]"
+          animate={{ opacity: [0.9, 0.2, 0.9], scale: [1, 1.08, 1] }}
+          transition={{ duration: 1.8, repeat: Infinity }}
+        />
       )}
-      {unlocked && (
-        <span className="absolute -bottom-0.5 -right-0.5 flex size-[18px] items-center justify-center rounded-full border-2 border-white bg-airtel-success">
-          <Check className="size-2.5 text-white" strokeWidth={4} />
+      {state === "next" && (pulse && !reduce ? null : <span className="absolute inset-[-4px] rounded-full border-2 border-[#E32121]" />)}
+      <CoinFace size={size} metal={metal} glyph={state === "unlocked" && m.id === "first" ? "₹" : null} shine={state === "unlocked"}>
+        {state === "unlocked" && m.id !== "first" && <path d={STAR} fill={metal === "silver" ? "#7B8592" : metal === "bronze" ? "#7E4019" : "#A86A08"} />}
+        {state === "next" && (
+          <text x="50" y="52" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, sans-serif" fontWeight="800" fontSize={m.target >= 10 ? 30 : 36} fill="#E32121">
+            {m.target}
+          </text>
+        )}
+        {state === "locked" && <g stroke={emboss}>{LOCK}</g>}
+      </CoinFace>
+      {state === "unlocked" && (
+        <span className="absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full border-2 border-white bg-[#0F7033]" style={{ width: size * 0.38, height: size * 0.38 }}>
+          <Check className="text-white" style={{ width: size * 0.22, height: size * 0.22 }} strokeWidth={4} />
         </span>
       )}
+    </div>
+  );
+}
+
+/** Back-compat wrapper used by Milestones / Dashboard / Unlocked screens. */
+export function MilestoneMedal({ m, unlocked, size = 44 }: { m: Milestone; unlocked: boolean; size?: number }) {
+  return (
+    <motion.div initial={false} animate={unlocked ? { scale: [0.8, 1.12, 1] } : { scale: 1 }} transition={{ duration: 0.5 }}>
+      <CoinBadge m={m} state={unlocked ? "unlocked" : "locked"} size={size} pulse={false} />
     </motion.div>
   );
 }
 
 /**
- * Horizontal milestone track: 4 evenly spaced levels joined by a progress line.
- * Reached levels show their medal, the next level is outlined in black with its target,
- * future levels are muted with a lock.
+ * Coin stepper: four level coins on a gold line (the "streak" pattern from the Airtel rewards page).
+ * Reached levels show their metal, the next level pulses, future levels stay grey.
  */
-export function MilestoneTrack({ milestones, count, className }: { milestones: Milestone[]; count: number; className?: string }) {
+export function MilestoneTrack({ milestones, count, className, size = 40 }: { milestones: Milestone[]; count: number; className?: string; size?: number }) {
   const n = milestones.length;
-  // Fill: whole segments for reached levels + partial progress toward the next one.
   let filled = 0;
   for (let i = 1; i < n; i++) {
     const prev = milestones[i - 1].target;
@@ -56,34 +79,22 @@ export function MilestoneTrack({ milestones, count, className }: { milestones: M
   const nextIdx = milestones.findIndex((m) => count < m.target);
   return (
     <div className={cn("relative", className)}>
-      {/* line between first and last circle centres */}
-      <div className="absolute top-[19px] h-[3px] rounded-full bg-[#E6E9EF]" style={{ left: `${50 / n}%`, right: `${50 / n}%` }}>
+      <div className="absolute h-[3px] rounded-full bg-[#ECE6DA]" style={{ left: `${50 / n}%`, right: `${50 / n}%`, top: size / 2 - 1.5 }}>
         <motion.div
-          className="h-full rounded-full bg-[linear-gradient(90deg,#FC5252,#E32121)]"
+          className="h-full rounded-full bg-[linear-gradient(90deg,#F5C64F,#D79A1E)]"
           initial={{ width: 0 }}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+          whileInView={{ width: `${pct}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
         />
       </div>
       <div className="relative grid" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
         {milestones.map((m, i) => {
-          const reached = count >= m.target;
-          const next = i === nextIdx;
+          const state: BadgeState = count >= m.target ? "unlocked" : i === nextIdx ? "next" : "locked";
           return (
             <div key={m.id} className="flex flex-col items-center text-center">
-              {reached ? (
-                <MilestoneMedal m={m} unlocked size={40} />
-              ) : (
-                <span
-                  className={cn(
-                    "flex size-10 items-center justify-center rounded-full text-[13px] font-bold",
-                    next ? "border-2 border-[#E32121] bg-white text-[#E32121] shadow-[0_0_0_4px_rgba(227,33,33,0.12)]" : "border border-[#E6E9EF] bg-[#F0F4F9] text-[#A0A2A4]",
-                  )}
-                >
-                  {next ? m.target : <Lock className="size-3.5" />}
-                </span>
-              )}
-              <span className={cn("mt-2 text-[12px] font-semibold leading-[14px]", reached || next ? "text-[#292C31]" : "text-[#696B6F]")}>
+              <CoinBadge m={m} state={state} size={size} />
+              <span className={cn("mt-2 text-[12px] font-bold leading-[14px]", state === "locked" ? "text-[#696B6F]" : state === "next" ? "text-[#B25E09]" : "text-[#292C31]")}>
                 {m.label === "First referral" ? "First" : m.label}
               </span>
               <span className="mt-0.5 text-[11px] leading-[14px] text-[#696B6F]">

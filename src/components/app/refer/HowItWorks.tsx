@@ -1,56 +1,48 @@
-import { forwardRef } from "react";
-import { CARD, SectionTitle } from "@/components/app/gen4";
+import { forwardRef, useState } from "react";
+import { ChevronDown, Gift, Link2, Smartphone, Wallet } from "lucide-react";
+import { ListRow, SheetSection } from "@/components/app/refer/SheetUI";
 import type { BusinessRules } from "@/config/businessRules";
-import { inr } from "@/lib/utils";
+import { cn, inr } from "@/lib/utils";
 
-/** How it works — 4 steps plus the reward conditions, visible on the page (not only in T&C). */
+/** How it works — "Ways to earn" list pattern, plus the reward conditions one tap away. */
 export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ rules }, ref) => {
+  const [open, setOpen] = useState(false);
   const steps = [
-    ["Invite", "Share your referral link with friends."],
-    ["They join Airtel", "Your friend opens your invitation and signs in to the Airtel app."],
-    [
-      "They complete the eligible action",
-      `Their first recharge or bill payment of ${inr(rules.minTransaction)}+, within ${rules.firstTxnDeadlineDays} days.`,
-    ],
-    ["You earn", `${inr(rules.referrerReward)} cashback, credited after validation (up to ${rules.rewardValidationDays} days).`],
+    { icon: <Link2 />, t: "Share your link", d: "Send it on WhatsApp, SMS or any app." },
+    { icon: <Smartphone />, t: "Your friend joins Airtel", d: "They open your invite and sign in to the Airtel app." },
+    { icon: <Wallet />, t: `They recharge or pay a bill of ${inr(rules.minTransaction)}+`, d: `Their first one, within ${rules.firstTxnDeadlineDays} days.` },
+    { icon: <Gift />, t: `You both earn`, d: `${inr(rules.referrerReward)} cashback for you, ${inr(rules.friendReward)} + ${rules.friendDataGB}GB for them — after validation (up to ${rules.rewardValidationDays} days).` },
   ];
   const conditions = [
     ["Qualifying action", `First recharge or bill payment of ${inr(rules.minTransaction)}+`],
     ["Friend must complete it within", `${rules.firstTxnDeadlineDays} days`],
-    ["Your reward", `${inr(rules.referrerReward)} cashback per successful referral`],
-    ["Your friend gets", `${inr(rules.friendReward)} cashback + ${rules.friendDataGB}GB data (first-time users)`],
     ["Use cashback within", `${rules.cashbackValidityDays} days of credit`],
     ["Referral limit", `${rules.referralCapMonth} a month · ${rules.referralCapYear} a year`],
   ];
   return (
-    <section ref={ref} aria-labelledby="how-title" className="mt-8 px-4">
-      <SectionTitle>
-        <span id="how-title">how it works</span>
-      </SectionTitle>
-      <ol className="relative mt-4 space-y-4">
-        <span aria-hidden className="absolute bottom-3 left-[15px] top-3 w-px bg-[#E6E9EF]" />
-        {steps.map(([t, d], i) => (
-          <li key={t} className="relative flex items-start gap-3">
-            <span className="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-[#F0F4F9] text-[13px] font-bold text-[#292C31] ring-4 ring-white">{i + 1}</span>
-            <span>
-              <span className="block text-[14px] font-bold leading-[18px] text-[#292C31]">{t}</span>
-              <span className="block text-[12px] leading-[18px] text-[#696B6F]">{d}</span>
-            </span>
-          </li>
-        ))}
-      </ol>
-      <div className={`mt-5 rounded-[16px] ${CARD}`}>
-        <p className="border-b border-[#E6E9EF] px-4 py-3 text-[13px] font-bold text-[#292C31]">Reward conditions</p>
-        <dl className="divide-y divide-[#E6E9EF] text-[12.5px]">
-          {conditions.map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-3 px-4 py-2.5">
-              <dt className="text-[#696B6F]">{k}</dt>
-              <dd className="text-right font-semibold text-[#292C31]">{v}</dd>
-            </div>
+    <div ref={ref as React.Ref<HTMLDivElement>}>
+      <SheetSection id="how-title" title="How it works" subtitle="Four steps from invite to cashback.">
+        <div>
+          {steps.map((s) => (
+            <ListRow key={s.t} icon={s.icon} iconClass="bg-[#FFF3E2] text-[#B25E09]" title={s.t} sub={s.d} />
           ))}
-        </dl>
-      </div>
-    </section>
+          <button onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between py-3 text-[14px] font-medium text-[#075EE8]" aria-expanded={open}>
+            Reward conditions
+            <ChevronDown className={cn("size-5 transition-transform", open && "rotate-180")} />
+          </button>
+          {open && (
+            <dl className="rounded-[16px] border border-[#E6E9EF] text-[12.5px]">
+              {conditions.map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-3 border-b border-[#E6E9EF] px-4 py-2.5 last:border-0">
+                  <dt className="text-[#696B6F]">{k}</dt>
+                  <dd className="text-right font-semibold text-[#292C31]">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+      </SheetSection>
+    </div>
   );
 });
 HowItWorks.displayName = "HowItWorks";

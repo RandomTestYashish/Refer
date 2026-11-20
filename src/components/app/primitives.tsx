@@ -37,9 +37,12 @@ export function Screen({ children, className }: { children: React.ReactNode; cla
   return <div className={cn("flex h-full flex-col bg-white pt-[44px]", className)}>{children}</div>;
 }
 
-export const ScreenBody = React.forwardRef<HTMLDivElement, { children: React.ReactNode; className?: string }>(
-  ({ children, className }, ref) => (
-    <div ref={ref} className={cn("no-scrollbar relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden", className)}>
+export const ScreenBody = React.forwardRef<
+  HTMLDivElement,
+  { children: React.ReactNode; className?: string; onScroll?: React.UIEventHandler<HTMLDivElement> }
+>(
+  ({ children, className, onScroll }, ref) => (
+    <div ref={ref} onScroll={onScroll} className={cn("no-scrollbar relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden", className)}>
       {children}
     </div>
   ),
