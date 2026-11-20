@@ -10,7 +10,7 @@ import { inr } from "@/lib/utils";
  */
 
 export const HERO_BG = "#FDE6DE";
-export const HERO_HEIGHT = 468;
+export const HERO_HEIGHT = 492;
 
 export function PremiumHero({ rules }: { rules: BusinessRules }) {
   const reduce = useReducedMotion();
