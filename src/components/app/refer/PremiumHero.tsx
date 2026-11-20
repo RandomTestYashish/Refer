@@ -92,7 +92,7 @@ export function PremiumHero({ rules }: { rules: BusinessRules }) {
         </motion.p>
         <motion.h1
           id="hero-amount"
-          className="amount-shine pr-1 text-[48px] font-extrabold italic leading-[60px] tracking-[-1.92px] tabular-nums"
+          className="amount-shine -mr-2 px-2 text-[48px] font-extrabold italic leading-[60px] tracking-[-1.92px] tabular-nums"
           initial={reduce ? false : { opacity: 0, scale: 0.94 }}
           animate={reduce ? { opacity: 1 } : { opacity: 1, scale: [0.94, 1, 1, 1.05, 1] }}
           transition={reduce ? {} : { opacity: { delay: 0.55, duration: 0.3 }, scale: { delay: 0.55, duration: 4.2, times: [0, 0.12, 0.62, 0.8, 1], repeat: Infinity, repeatDelay: 0.6 } }}
