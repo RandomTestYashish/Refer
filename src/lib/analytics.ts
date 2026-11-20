@@ -5,6 +5,9 @@
  */
 export type ReferEvent =
   | "refer_page_viewed"
+  | "hero_scratch_started"
+  | "hero_scratch_revealed"
+  | "quick_invite_toggled"
   | "hero_cta_clicked"
   | "invite_friends_clicked"
   | "how_it_works_viewed"

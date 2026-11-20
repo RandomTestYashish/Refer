@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-motion";
 import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
@@ -11,6 +11,7 @@ import { ReferralProgress, currentMilestone } from "@/components/app/refer/Refer
 import { ReferralActivity } from "@/components/app/refer/ReferralActivity";
 import { MilestoneUnlockSheet } from "@/components/app/refer/MilestoneUnlockSheet";
 import { SheetSection } from "@/components/app/refer/SheetUI";
+import { QuickInvite } from "@/components/app/refer/QuickInvite";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { referralStats, useProto } from "@/store/useProto";
@@ -42,7 +43,6 @@ function writeSeenBadge(id: string) {
  * while a white sheet with a grabber scrolls up over it. Both entry points land here.
  */
 export function LandingScreen({ params }: { params?: Record<string, string> }) {
-  const reduce = useReducedMotion();
   const rules = useProto((s) => s.rules);
   const referrals = useProto((s) => s.referrals);
   const past = useProto((s) => s.pastSuccesses);
@@ -115,7 +115,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   };
 
   return (
-    <Screen className="bg-[#FDE6DE] pt-0">
+    <Screen className="bg-[#FFE9E4] pt-0">
       {/* Header floats over the banner; solid once the sheet reaches the top */}
       <div className="absolute inset-x-0 top-0 z-30 pt-[44px]">
         <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white" style={{ opacity: navBg }} aria-hidden />
@@ -136,41 +136,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
 
           {/* Invite — the primary action, given the biggest visual on the sheet */}
           <section aria-labelledby="invite-title" className="px-4 pt-5">
-            <div className="overflow-hidden rounded-[20px] bg-[#FEF4EA] ring-1 ring-[#F6E2D2]">
-              <motion.img
-                src={home("refer-invite.jpg")}
-                alt=""
-                className="block h-[168px] w-full object-cover"
-                initial={reduce ? false : { opacity: 0, scale: 0.96 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              />
-              <div className="px-4 pb-4">
-                <h2 id="invite-title" className="text-center text-[20px] font-extrabold leading-6 text-[#292C31]">
-                  Invite friends, earn together
-                </h2>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <div className="rounded-[12px] bg-white px-3 py-2.5 text-center">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#696B6F]">You get</p>
-                    <p className="text-[18px] font-extrabold text-[#292C31]">{inr(rules.referrerReward)}</p>
-                    <p className="text-[11px] text-[#696B6F]">cashback per friend</p>
-                  </div>
-                  <div className="rounded-[12px] bg-white px-3 py-2.5 text-center">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#696B6F]">Your friend gets</p>
-                    <p className="text-[18px] font-extrabold text-[#292C31]">
-                      {inr(rules.friendReward)} + {rules.friendDataGB}GB
-                    </p>
-                    <p className="text-[11px] text-[#696B6F]">on first recharge</p>
-                  </div>
-                </div>
-                <div ref={ctaRef} className="mt-4">
-                  <Button size="lg" block onClick={() => invite("sheet_cta")}>
-                    <UserPlus /> Invite Friends
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <QuickInvite ref={ctaRef} rules={rules} onInvite={invite} onMore={() => invite("quick_more")} />
 
             {/* Secondary: share the link yourself */}
             <p className="mt-5 text-[13px] font-semibold text-[#3E4146]">Or share your link</p>
