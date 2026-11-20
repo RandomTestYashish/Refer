@@ -83,7 +83,7 @@ export function PremiumHero({ rules }: { rules: BusinessRules }) {
   const captions = [
     { t: "Invite a friend", d: "Share your link on WhatsApp or SMS" },
     { t: `They recharge ${inr(rules.minTransaction)}+`, d: `Their first recharge or bill payment, within ${rules.firstTxnDeadlineDays} days` },
-    { t: `You both earn ${inr(rules.referrerReward)}`, d: `Your friend also gets ${rules.friendDataGB}GB data` },
+    { t: `You each earn ${inr(rules.referrerReward)}`, d: `Your friend also gets ${rules.friendDataGB} GB data` },
     { t: `Do it with ${rules.referralCapYear} friends`, d: `${inr(rules.referrerReward)} × ${rules.referralCapYear} friends = ${inr(yearly)} a year` },
   ];
   const k = `${cycle}-${step}`;
@@ -209,7 +209,7 @@ export function PremiumHero({ rules }: { rules: BusinessRules }) {
                   transition={{ duration: 0.9, delay: 0.45, ease: "easeOut" }}
                 >
                   <span className="flex items-center gap-1 rounded-full bg-white py-1 pl-1 pr-2.5 text-[12px] font-extrabold text-[#7A4A00] shadow-[0_8px_18px_rgba(229,154,0,0.3)]">
-                    <RewardCoin amount={rules.friendReward} size={28} /> + {rules.friendDataGB}GB
+                    <RewardCoin amount={rules.friendReward} size={28} /> + {rules.friendDataGB} GB
                   </span>
                 </motion.span>
               </motion.div>

@@ -21,7 +21,7 @@ export function ReferralAction({ r, size = "sm", block }: { r: Referral; size?: 
         onClick={(e) => {
           e.stopPropagation();
           resend(r.id);
-          toast.success(`New invite sent to ${r.name.split(" ")[0]}`, { description: "A fresh link was generated. Earlier history is kept." });
+          toast.success(`New invite sent to ${r.name.split(" ")[0]}.`, { description: "A fresh link was generated. Earlier history is kept." });
         }}
       >
         <RotateCw /> Resend
@@ -36,7 +36,7 @@ export function ReferralAction({ r, size = "sm", block }: { r: Referral; size?: 
         onClick={(e) => {
           e.stopPropagation();
           remind(r.id);
-          toast.success(`Reminder sent to ${r.name.split(" ")[0]}`);
+          toast.success(`Reminder sent to ${r.name.split(" ")[0]}.`);
         }}
       >
         <BellRing /> Remind

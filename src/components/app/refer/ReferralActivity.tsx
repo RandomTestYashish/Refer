@@ -23,7 +23,7 @@ export function referralStatusCopy(r: Referral, reward: number): { label: string
     case "transaction_completed":
     case "reward_processing":
       return r.rewardA === "failed"
-        ? { label: "Reward credit failed", detail: "We'll retry automatically. No action needed.", tone: "error" }
+        ? { label: "Reward credit unsuccessful", detail: "We'll retry automatically. No action needed.", tone: "error" }
         : { label: "Reward processing", detail: "Your referral is being validated.", tone: "warning" };
     case "reward_credited":
       return { label: "Reward credited", detail: `${inr(reward)} cashback has been credited.`, tone: "success" };
@@ -32,7 +32,7 @@ export function referralStatusCopy(r: Referral, reward: number): { label: string
     case "not_eligible":
       return { label: "Not eligible", detail: "This friend doesn't qualify under the programme rules.", tone: "error" };
     case "failed":
-      return { label: "Reward failed", detail: "Something went wrong crediting this reward. Contact support if it persists.", tone: "error" };
+      return { label: "Reward unsuccessful", detail: "Something went wrong crediting this reward. Contact support if it persists.", tone: "error" };
   }
 }
 
@@ -70,7 +70,7 @@ export const ReferralActivity = forwardRef<
         title="Recent activity"
         action={
           referrals.length > 0 ? (
-            <button onClick={onViewAll} className="flex size-8 items-center justify-center rounded-full active:bg-[#F0F4F9]" aria-label="View all referrals">
+            <button onClick={onViewAll} className="flex size-8 items-center justify-center rounded-full active:bg-[#F0F4F9]" aria-label="View All Referrals">
               <ChevronRight className="size-6 text-[#292C31]" />
             </button>
           ) : undefined
@@ -97,7 +97,7 @@ export const ReferralActivity = forwardRef<
             <p className="mt-2 text-[14px] font-bold text-[#292C31]">No invitations yet</p>
             <p className="mt-0.5 text-[12px] text-[#696B6F]">Invite a friend and every step shows up here.</p>
             <button onClick={onInvite} className="mt-3 text-[14px] font-medium text-[#075EE8]">
-              Invite a friend
+              Invite A Friend
             </button>
           </div>
         ) : (
@@ -127,7 +127,7 @@ export const ReferralActivity = forwardRef<
               );
             })}
             <button onClick={onViewAll} className="-mx-4 flex w-[calc(100%+2rem)] items-center justify-center gap-1 py-3 text-[14px] font-semibold text-[#075EE8] active:bg-[#F0F4F9]">
-              View all referrals <ChevronRight className="size-4" />
+              View All Referrals <ChevronRight className="size-4" />
             </button>
           </div>
         )}

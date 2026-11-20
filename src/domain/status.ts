@@ -4,15 +4,15 @@ type Tone = "success" | "warning" | "error" | "info" | "neutral" | "soft";
 
 export const STATUS_META: Record<ReferralStatus, { label: string; tone: Tone; step: number }> = {
   invited: { label: "Invited", tone: "neutral", step: 0 },
-  link_opened: { label: "Link Opened", tone: "info", step: 1 },
+  link_opened: { label: "Link opened", tone: "info", step: 1 },
   accepted: { label: "Accepted", tone: "info", step: 2 },
-  pending_recharge: { label: "Pending Recharge", tone: "warning", step: 3 },
-  transaction_completed: { label: "Transaction Completed", tone: "info", step: 4 },
-  reward_processing: { label: "Reward Processing", tone: "warning", step: 5 },
-  reward_credited: { label: "Reward Credited", tone: "success", step: 6 },
+  pending_recharge: { label: "Pending recharge", tone: "warning", step: 3 },
+  transaction_completed: { label: "Transaction completed", tone: "info", step: 4 },
+  reward_processing: { label: "Reward processing", tone: "warning", step: 5 },
+  reward_credited: { label: "Reward credited", tone: "success", step: 6 },
   expired: { label: "Expired", tone: "neutral", step: -1 },
-  not_eligible: { label: "Not Eligible", tone: "error", step: -1 },
-  failed: { label: "Failed", tone: "error", step: -1 },
+  not_eligible: { label: "Not eligible", tone: "error", step: -1 },
+  failed: { label: "Unsuccessful", tone: "error", step: -1 },
 };
 
 /** The happy-path timeline, in order. */
@@ -31,7 +31,7 @@ export const REWARD_META: Record<RewardState, { label: string; tone: Tone }> = {
   validating: { label: "Validation pending", tone: "warning" },
   delayed: { label: "Processing delayed", tone: "warning" },
   credited: { label: "Credited", tone: "success" },
-  failed: { label: "Failed", tone: "error" },
+  failed: { label: "Unsuccessful", tone: "error" },
   reversed: { label: "Reversed", tone: "error" },
   expired: { label: "Expired", tone: "neutral" },
   not_eligible: { label: "Not eligible", tone: "neutral" },
@@ -40,7 +40,7 @@ export const REWARD_META: Record<RewardState, { label: string; tone: Tone }> = {
 export const REASON_COPY: Record<ReferralReason, { title: string; body: string }> = {
   link_expired: {
     title: "Invitation link expired",
-    body: "This link was valid for a limited time and wasn't opened. Resend to create a fresh link — the earlier invite stays in history.",
+    body: "This link was valid for a limited time and wasn't opened. To create a fresh link, resend it. The earlier invite stays in history.",
   },
   attributed_other: {
     title: "Joined via another invite",
@@ -68,7 +68,7 @@ export const REASON_COPY: Record<ReferralReason, { title: string; body: string }
   },
   reward_expired: {
     title: "Reward expired",
-    body: "This reward wasn't validated within the validation window and has expired.",
+    body: "This reward wasn't validated in time, so it has expired.",
   },
 };
 

@@ -17,13 +17,17 @@ export function cn(...inputs: ClassValue[]) {
 
 export const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
+// Copy guideline: 3-letter months only (never "Sept"), e.g. "22 Jan 2020".
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 export function formatDateTime(ts: number) {
   const d = new Date(ts);
-  return d.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true });
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}, ${formatTime(ts)}`;
 }
 
 export function formatDate(ts: number) {
-  return new Date(ts).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  const d = new Date(ts);
+  return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 export function formatTime(ts: number) {
@@ -35,7 +39,7 @@ export function timeLeft(ms: number) {
   const h = Math.floor(ms / 3_600_000);
   const m = Math.floor((ms % 3_600_000) / 60_000);
   if (h >= 48) return `${Math.floor(h / 24)} days left`;
-  return `${h}h ${m}m left`;
+  return h > 0 ? `${h} hrs ${m} mins left` : `${m} mins left`;
 }
 
 export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

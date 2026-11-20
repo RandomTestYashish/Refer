@@ -68,8 +68,8 @@ export function MilestonesScreen() {
                 <Progress value={pct} className="mt-3 h-1.5" indicatorClassName={unlocked ? "bg-airtel-success" : undefined} />
                 <p className="mt-2.5 text-[12px] text-airtel-sub">
                   {m.id === "first"
-                    ? `Your first ₹${rules.referrerReward} referral reward.`
-                    : "Milestone benefit to be announced."}
+                    ? `Your first ₹${rules.referrerReward} referral reward`
+                    : "Milestone benefit to be announced"}
                 </p>
               </motion.div>
             );
@@ -82,7 +82,7 @@ export function MilestonesScreen() {
       </ScreenBody>
       <ScreenFooter>
         <Button size="lg" block onClick={() => navigate(granted ? "a_contacts" : "a_permission")}>
-          Invite friends
+          Invite Friends
         </Button>
       </ScreenFooter>
     </Screen>

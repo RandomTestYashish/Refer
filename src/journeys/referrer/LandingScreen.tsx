@@ -110,8 +110,8 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
 
   const offline = network === "failure";
   const retry = () => {
-    if (useProto.getState().scenario.network === "failure") toast.error("Still offline", { description: "Your referral data is saved. Try again when you're connected." });
-    else toast.success("Activity updated");
+    if (useProto.getState().scenario.network === "failure") toast.error("Still offline.", { description: "Your referral data is saved. Try again when you're connected." });
+    else toast.success("Activity updated.");
   };
 
   return (
@@ -190,12 +190,12 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
               {[
                 ["earn", "How can I earn rewards?", `Share your link. You earn ${inr(rules.referrerReward)} cashback for every friend who joins Airtel and completes an eligible recharge or bill payment, up to ${inr(rules.referrerReward * rules.referralCapYear)} a year.`],
                 ["successful", "What makes a referral successful?", `Your friend joins through your link and completes their first recharge or bill payment of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days, and the transaction passes validation.`],
-                ["friend", "What does my friend need to do?", `Open your invitation, sign in to the Airtel app and complete a first recharge or bill payment of ${inr(rules.minTransaction)}+. They get ${inr(rules.friendReward)} cashback + ${rules.friendDataGB}GB data (first-time users only).`],
+                ["friend", "What does my friend need to do?", `Open your invitation, sign in to the Airtel app and complete a first recharge or bill payment of ${inr(rules.minTransaction)}+. They get ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data (first-time users only).`],
                 ["when", "When will I receive my reward?", `After your friend's transaction is validated, which can take up to ${rules.rewardValidationDays} days. Use your cashback within ${rules.cashbackValidityDays} days on a recharge or bill payment.`],
-                ["limit", "Is there a monthly invitation limit?", `Yes. Up to ${rules.referralCapMonth} rewarded referrals a month and ${rules.referralCapYear} a year.`],
-                ["pending", "Why is my reward still pending?", "Your friend may not have completed the eligible action yet, or the transaction is still being validated. You'll be notified when it's credited."],
-                ["ineligible", "Why was my referral not eligible?", "Common reasons: your friend was already an Airtel user, joined through someone else's link first, or didn't complete the eligible action in time."],
-                ["expired", "What happens if an invitation expires?", `Links last ${rules.linkValidityHours} hours. You can resend from My Referrals to create a fresh link; the earlier invite stays in your history.`],
+                ["limit", "Is there a limit on rewards?", `Yes. Up to ${rules.referralCapMonth} rewarded referrals a month and ${rules.referralCapYear} a year.`],
+                ["pending", "Why is my reward still pending?", "Your friend may not have made their first recharge or bill payment yet, or the transaction is still being validated. You'll be notified when it's credited."],
+                ["ineligible", "Why was my referral not eligible?", "Common reasons: your friend was already an Airtel user, joined through someone else's link first, or didn't make their first recharge or bill payment in time."],
+                ["expired", "What happens if an invitation expires?", `Links last ${rules.linkValidityHours} hours. To create a fresh link, resend it from My Referrals. The earlier invite stays in your history.`],
               ].map(([id, q, a]) => (
                 <AccordionItem key={id} value={id} className="border-b border-[#E6E9EF]">
                   <AccordionTrigger className="text-[15px] font-bold">{q}</AccordionTrigger>
@@ -216,23 +216,23 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             >
               {[
                 ["rewards", "Rewards", [
-                  `You get ${inr(rules.referrerReward)} cashback for every eligible referred user, usable on your next recharge or bill payment.`,
-                  `Your friend gets ${inr(rules.friendReward)} cashback + ${rules.friendDataGB}GB data on their first recharge or bill payment. First-time users only.`,
-                  "Milestone badges are recognition only and carry no additional cash reward.",
+                  `You get ${inr(rules.referrerReward)} cashback for every eligible referred user, usable on your next recharge or bill payment`,
+                  `Your friend gets ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data on their first recharge or bill payment (first-time users only)`,
+                  "Milestone badges are recognition only and carry no additional cash reward",
                 ]],
                 ["eligibility", "Eligibility", [
-                  `Minimum transaction value of ${inr(rules.minTransaction)}.`,
-                  `Your friend must complete the qualifying transaction within ${rules.firstTxnDeadlineDays} days of joining.`,
-                  "Reversed or refunded transactions are not eligible.",
+                  `Minimum transaction value of ${inr(rules.minTransaction)}`,
+                  `Your friend must complete the qualifying transaction within ${rules.firstTxnDeadlineDays} days of joining`,
+                  "Reversed or refunded transactions are not eligible",
                 ]],
                 ["limits", "Limits & validity", [
-                  `Up to ${rules.referralCapMonth} rewarded referrals a month and ${rules.referralCapYear} a year.`,
-                  `Rewards are credited after validation, which can take up to ${rules.rewardValidationDays} days.`,
-                  `Cashback must be used within ${rules.cashbackValidityDays} days of credit.`,
+                  `Up to ${rules.referralCapMonth} rewarded referrals a month and ${rules.referralCapYear} a year`,
+                  `Rewards are credited after validation, which can take up to ${rules.rewardValidationDays} days`,
+                  `Cashback must be used within ${rules.cashbackValidityDays} days of credit`,
                 ]],
                 ["attribution", "Invitation links", [
-                  `A referral counts for the first valid invitation link your friend opens.`,
-                  `Links are valid for ${rules.linkValidityHours} hours. You can resend an expired invite from My Referrals.`,
+                  `A referral counts for the first valid invitation link your friend opens`,
+                  `Links are valid for ${rules.linkValidityHours} hours and can be resent from My Referrals`,
                 ]],
               ].map(([id, q, items]) => (
                 <AccordionItem key={id as string} value={id as string} className="border-b border-[#E6E9EF]">

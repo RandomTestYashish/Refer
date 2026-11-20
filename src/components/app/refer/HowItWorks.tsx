@@ -12,9 +12,9 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ r
   const track = useRef<HTMLDivElement>(null);
 
   const steps = [
-    { img: "refer-invite.jpg", t: "Share your link", d: "Invite friends on WhatsApp, SMS or any app. Each link works for 24 hours." },
+    { img: "refer-invite.jpg", t: "Share your link", d: `Invite friends on WhatsApp, SMS or any app. Each link works for ${rules.linkValidityHours} hours.` },
     { img: "refer-step2.jpg", t: `They recharge ${inr(rules.minTransaction)}+`, d: `Your friend joins Airtel and makes a first recharge or bill payment within ${rules.firstTxnDeadlineDays} days.` },
-    { img: "refer-step3.jpg", t: "You both earn", d: `${inr(rules.referrerReward)} cashback for you, ${inr(rules.friendReward)} + ${rules.friendDataGB}GB for them, after validation.` },
+    { img: "refer-step3.jpg", t: "You both earn", d: `${inr(rules.referrerReward)} cashback for you, ${inr(rules.friendReward)} + ${rules.friendDataGB} GB for them, after validation.` },
   ];
   const conditions = [
     ["Qualifying action", `First recharge or bill payment of ${inr(rules.minTransaction)}+`],
@@ -39,7 +39,7 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ r
 
   return (
     <div ref={ref as React.Ref<HTMLDivElement>}>
-      <SheetSection id="how-title" title="How it works" subtitle="Three steps from invite to cashback.">
+      <SheetSection id="how-title" title="How it works" subtitle="3 steps from invite to cashback">
         <div
           ref={track}
           onScroll={onScroll}
@@ -67,7 +67,7 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ r
         </div>
 
         <button onClick={() => setOpen((o) => !o)} className="mt-2 flex w-full items-center justify-between py-3 text-[14px] font-medium text-[#075EE8]" aria-expanded={open}>
-          Reward conditions
+          Reward Conditions
           <ChevronDown className={cn("size-5 transition-transform", open && "rotate-180")} />
         </button>
         {open && (

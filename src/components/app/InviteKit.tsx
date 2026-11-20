@@ -40,7 +40,7 @@ export function AvatarStack({ size = 64 }: { size?: number }) {
 /** Copy the personal link, honouring the "Copy fails" developer scenario. Returns success. */
 export async function copyInviteLink(link = PERSONAL_LINK): Promise<boolean> {
   if (useProto.getState().scenario.share === "copy_fail") {
-    toast.error("Couldn't copy the link", { description: "Long-press the link to copy it manually, or share it another way." });
+    toast.error("Couldn't copy the link.", { description: "Long-press the link to copy it manually, or share it another way." });
     return false;
   }
   try {
@@ -48,7 +48,7 @@ export async function copyInviteLink(link = PERSONAL_LINK): Promise<boolean> {
   } catch {
     /* clipboard may be blocked in embedded previews — treat as simulated success */
   }
-  toast.success("Link copied", { description: "Paste it in any chat to invite friends." });
+  toast.success("Link copied.", { description: "Paste it in any chat to invite friends." });
   return true;
 }
 
@@ -70,7 +70,7 @@ export function ReferralLinkField({ link = PERSONAL_LINK, className }: { link?: 
           "flex h-9 min-w-[84px] items-center justify-center gap-1.5 rounded-[10px] px-3 text-[13px] font-medium transition-colors",
           copied ? "bg-[#0F7033] text-white" : "bg-black text-white",
         )}
-        aria-label={copied ? "Link copied" : "Copy link"}
+        aria-label={copied ? "Link copied." : "Copy link"}
       >
         <AnimatePresence mode="wait" initial={false}>
           {copied ? (

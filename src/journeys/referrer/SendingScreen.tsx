@@ -152,10 +152,10 @@ export function SendingScreen({ params }: { params?: Record<string, string> }) {
             </div>
             <div className="space-y-2 px-5 pb-[34px]">
               <Button size="lg" block onClick={() => useProto.getState().resetTo("a_dashboard")}>
-                Track in My Referrals
+                Track In My Referrals
               </Button>
               <Button size="lg" block variant="outline" onClick={() => useProto.getState().resetTo("a_landing")}>
-                Invite more friends
+                Invite More Friends
               </Button>
             </div>
           </motion.div>
@@ -169,14 +169,14 @@ export function SendingScreen({ params }: { params?: Record<string, string> }) {
               title="Invitation pending"
               body={`Your connection is slow, so we've queued your invite to ${nameList}. It'll go out automatically as soon as you're back online.`}
               primary={{
-                label: "Check again",
+                label: "Check Again",
                 onClick: () => {
                   useProto.getState().markDelivered(createdRef.current);
                   if (nonce) useProto.getState().recordSend(nonce, "success", createdRef.current);
                   setPhase("success");
                 },
               }}
-              secondary={{ label: "Go to My Referrals", onClick: () => useProto.getState().resetTo("a_dashboard") }}
+              secondary={{ label: "Go To My Referrals", onClick: () => useProto.getState().resetTo("a_dashboard") }}
             />
           </motion.div>
         )}
@@ -193,7 +193,7 @@ export function SendingScreen({ params }: { params?: Record<string, string> }) {
               }
               primary={{ label: "Retry", onClick: () => setAttempt((a) => a + 1) }}
               secondary={{
-                label: failKind === "network" ? "Edit invitation" : "Share another way",
+                label: failKind === "network" ? "Edit Invitation" : "Share Another Way",
                 onClick: () => useProto.getState().back(),
               }}
             />

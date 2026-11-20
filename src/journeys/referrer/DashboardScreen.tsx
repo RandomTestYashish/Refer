@@ -33,7 +33,7 @@ export function rewardLine(r: Referral, amt: number) {
     case "delayed":
       return { text: `${inr(amt)} delayed`, cls: "text-[#A56A12]", locked: true };
     case "failed":
-      return { text: "Reward failed", cls: "text-airtel-error", locked: false };
+      return { text: "Reward unsuccessful", cls: "text-airtel-error", locked: false };
     case "reversed":
       return { text: "Reward reversed", cls: "text-airtel-error", locked: false };
     case "expired":
@@ -64,7 +64,7 @@ export function DashboardScreen() {
   const remind = useProto((s) => s.remind);
   const remindAll = () => {
     remindable.forEach((r) => remind(r.id));
-    toast.success(remindable.length === 1 ? `Reminder sent to ${remindable[0].name.split(" ")[0]}` : `Reminders sent to ${remindable.length} friends`);
+    toast.success(remindable.length === 1 ? `Reminder sent to ${remindable[0].name.split(" ")[0]}.` : `Reminders sent to ${remindable.length} friends.`);
   };
 
   return (
@@ -87,7 +87,7 @@ export function DashboardScreen() {
               <ReferralLinkField />
             </div>
             <Button size="lg" block className="mt-3" onClick={invite}>
-              <Send /> Invite from contacts
+              <Send /> Invite From Contacts
             </Button>
           </div>
         ) : (
@@ -150,7 +150,7 @@ export function DashboardScreen() {
 
             {/* Milestone */}
             <div className="mx-4 mt-8">
-              <SectionTitle action={<LinkButton onClick={() => navigate("a_milestones")}>View all</LinkButton>}>milestones</SectionTitle>
+              <SectionTitle action={<LinkButton onClick={() => navigate("a_milestones")}>View All</LinkButton>}>milestones</SectionTitle>
             </div>
             <button onClick={() => navigate("a_milestones")} className={`mx-4 mt-4 block w-[calc(100%-32px)] rounded-[16px] p-4 pt-5 text-left ${CARD}`}>
               <MilestoneTrack milestones={rules.milestones} count={stats.milestoneCount} />
@@ -220,7 +220,7 @@ export function DashboardScreen() {
                     );
                   })}
                 </AnimatePresence>
-                {list.length === 0 && <p className="py-10 text-center text-[13px] text-airtel-sub">Nothing here yet.</p>}
+                {list.length === 0 && <p className="py-10 text-center text-[13px] text-airtel-sub">Nothing here yet</p>}
               </div>
             </div>
           </>
@@ -229,7 +229,7 @@ export function DashboardScreen() {
       {referrals.length > 0 && (
         <ScreenFooter>
           <Button size="lg" block onClick={invite}>
-            <Send /> Invite more friends
+            <Send /> Invite More Friends
           </Button>
         </ScreenFooter>
       )}

@@ -27,7 +27,7 @@ export function InvitedScreen() {
           {REFERRER.first} invited you to Airtel
         </motion.h1>
         <motion.p initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.18 }} className="mt-2 text-[15px] leading-[22px] text-airtel-sub">
-          You're signed in. Get {inr(rules.friendReward)} cashback + {rules.friendDataGB}GB data on your first recharge or bill payment of{" "}
+          You're signed in. Get {inr(rules.friendReward)} cashback + {rules.friendDataGB} GB data on your first recharge or bill payment of{" "}
           {inr(rules.minTransaction)}+.
         </motion.p>
         {r && (

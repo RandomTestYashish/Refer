@@ -35,8 +35,7 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
           title="Contacts access denied"
           body={
             <>
-              Airtel can't see your contacts, so we can't show them here. You can turn access on in Settings, or share your invite link
-              manually instead.
+              To see your contacts here, turn on access in Settings. Or share your invite link manually.
             </>
           }
           primary={{
@@ -51,8 +50,8 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
               }, 900);
             },
           }}
-          secondary={{ label: "Share link manually", onClick: () => navigate("a_preview", { mode: "manual" }) }}
-          tertiary={{ label: "Not now", onClick: () => useProto.getState().back() }}
+          secondary={{ label: "Share Link Manually", onClick: () => navigate("a_preview", { mode: "manual" }) }}
+          tertiary={{ label: "Not Now", onClick: () => useProto.getState().back() }}
         >
           <SimNote>“Open Settings” simulates the user enabling access</SimNote>
         </ErrorState>
@@ -80,7 +79,7 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
           </motion.div>
           <h2 className="text-title">Find friends faster</h2>
           <p className="mt-2 text-[14px] leading-[21px] text-airtel-sub">
-            Allow access to your contacts so you can pick who to invite. You choose exactly who receives an invitation.
+            To pick who to invite, allow access to your contacts. You choose exactly who receives an invitation.
           </p>
         </div>
         <ul className="mt-7 space-y-4">
@@ -103,10 +102,10 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
       </ScreenBody>
       <ScreenFooter className="space-y-2">
         <Button size="lg" block onClick={() => setDialog(true)}>
-          Allow contacts
+          Allow Contacts
         </Button>
         <Button size="lg" block variant="outline" onClick={() => navigate("a_preview", { mode: "manual" })}>
-          <Link2 /> Continue without contacts
+          <Link2 /> Continue Without Contacts
         </Button>
       </ScreenFooter>
 

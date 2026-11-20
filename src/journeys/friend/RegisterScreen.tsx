@@ -57,7 +57,7 @@ export function RegisterScreen() {
           tone="warning"
           title="Registration incomplete"
           body="Your number is verified, but your account setup didn't finish. Add your name to complete registration — your invite is still saved."
-          primary={{ label: "Complete registration", onClick: () => setStage("profile") }}
+          primary={{ label: "Complete Registration", onClick: () => setStage("profile") }}
           secondary={{ label: "Back", onClick: () => setStage("otp") }}
         />
       </Screen>
@@ -78,7 +78,7 @@ export function RegisterScreen() {
               </Label>
               <Input id="phone" value={phone} readOnly className="mt-2 text-[17px] font-semibold tabular" />
               <label className="mt-5 flex items-start gap-2.5 text-[12.5px] leading-[18px] text-airtel-sub">
-                <Checkbox checked={agree} onCheckedChange={(v) => setAgree(!!v)} className="mt-0.5" />I agree to Airtel's Terms of Use and Privacy Policy.
+                <Checkbox checked={agree} onCheckedChange={(v) => setAgree(!!v)} className="mt-0.5" />I agree to Airtel's Terms of Use and Privacy Policy
               </label>
             </motion.div>
           )}
@@ -120,12 +120,12 @@ export function RegisterScreen() {
         )}
         {stage === "otp" && (
           <Button size="lg" block disabled={otp.length < 6} loading={loading} onClick={verify}>
-            Verify & continue
+            Verify & Continue
           </Button>
         )}
         {stage === "profile" && (
           <Button size="lg" block loading={loading} onClick={() => { setLoading(true); setTimeout(() => { setLoading(false); finish(); }, 700); }}>
-            Finish registration
+            Finish Registration
           </Button>
         )}
         <SimNote className="mt-2">OTP is simulated — no SMS is sent</SimNote>

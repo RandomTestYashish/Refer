@@ -11,7 +11,7 @@ export function ReferralTimeline({ r }: { r: Referral }) {
   const resendAt = [...r.events].reverse().find((e) => e.kind === "resent")?.at ?? 0;
   const done = TIMELINE.map((s) => {
     const e = lastAt(s);
-    return e && e.at >= resendAt ? e : s === "invited" && resendAt ? { kind: "invited", at: resendAt, note: "Re-sent with new link" } : e;
+    return e && e.at >= resendAt ? e : s === "invited" && resendAt ? { kind: "invited", at: resendAt, note: "Resent with a new link" } : e;
   });
   const lastDone = done.reduce((acc, e, i) => (e ? i : acc), -1);
   const terminal = ["expired", "not_eligible", "failed"].includes(r.status) ? lastAt(r.status) : undefined;

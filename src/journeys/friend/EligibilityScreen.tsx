@@ -25,7 +25,7 @@ export function EligibilityScreen() {
     return () => t.forEach(clearTimeout);
   }, []);
 
-  const checks = ["Invitation link is valid", "Checking your Airtel account", "Checking previous recharges"];
+  const checks = ["Checking invitation link", "Checking your Airtel account", "Checking previous recharges"];
 
   let view: { icon: JSX.Element; title: string; body: string; tone: "ok" | "info" | "no"; segment: string } | null = null;
   if (result) {
@@ -36,7 +36,7 @@ export function EligibilityScreen() {
         tone: "info",
         segment: seg,
         title: "You're linked to another invite",
-        body: `You opened another friend's invite first, so your referral is attributed to them. You can still claim your ${inr(rules.friendReward)} welcome reward.`,
+        body: `You opened another friend's invite first, so your referral counts for them. You can still claim your ${inr(rules.friendReward)} welcome reward.`,
       };
     else if (result.eligible)
       view =
@@ -46,14 +46,14 @@ export function EligibilityScreen() {
               tone: "ok",
               segment: seg,
               title: "You're eligible!",
-              body: `Complete your first recharge of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days and you and ${REFERRER.first} both get ${inr(rules.friendReward)}.`,
+              body: `To get ${inr(rules.friendReward)} each for you and ${REFERRER.first}, complete your first recharge of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days.`,
             }
           : {
               icon: <UserCheck />,
               tone: "ok",
               segment: seg,
               title: "Welcome back — you're eligible",
-              body: `You haven't made a qualifying transaction yet, so ${REFERRER.first}'s invite counts. Recharge ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days to unlock ${inr(rules.friendReward)} each.`,
+              body: `You haven't made a qualifying transaction yet, so ${REFERRER.first}'s invite counts. To unlock ${inr(rules.friendReward)} each, recharge ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days.`,
             };
     else
       view =
@@ -70,7 +70,7 @@ export function EligibilityScreen() {
               tone: "no",
               segment: seg,
               title: "Not eligible for this offer",
-              body: "Your number already has an Airtel account. Under the current (provisional) rules, existing accounts aren't eligible for referral rewards.",
+              body: "Your number already has an Airtel account. Under the current rules, existing accounts aren't eligible for referral rewards.",
             };
   }
 
@@ -119,7 +119,7 @@ export function EligibilityScreen() {
       </div>
       <div className="px-5 pb-[34px]">
         <Button size="lg" block disabled={!view} onClick={() => navigate("b_home")}>
-          {view?.tone === "no" ? "Continue to Airtel" : "Start exploring"}
+          {view?.tone === "no" ? "Continue To Airtel" : "Start Exploring"}
         </Button>
         <SimNote className="mt-3">Segment & rule are set in the panel (User type, Existing-user eligibility)</SimNote>
       </div>

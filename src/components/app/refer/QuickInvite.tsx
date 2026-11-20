@@ -55,7 +55,7 @@ export const QuickInvite = forwardRef<HTMLDivElement, { rules: BusinessRules; on
               Who will you invite?
             </h2>
             <p className="mt-0.5 text-[13px] text-[#5C5F66]">
-              You get {inr(rules.referrerReward)}. They get {inr(rules.friendReward)} + {rules.friendDataGB}GB.
+              You get {inr(rules.referrerReward)}. They get {inr(rules.friendReward)} + {rules.friendDataGB} GB.
             </p>
           </div>
         </div>
@@ -119,7 +119,7 @@ export const QuickInvite = forwardRef<HTMLDivElement, { rules: BusinessRules; on
             <UserPlus />
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span key={n} initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -12, opacity: 0 }} transition={{ duration: 0.18 }}>
-                {n === 0 ? "Invite Friends" : `Invite ${n} ${n === 1 ? "friend" : "friends"} · earn ${inr(n * rules.referrerReward)}`}
+                {n === 0 ? "Invite Friends" : `Invite ${n} ${n === 1 ? "Friend" : "Friends"} · Earn ${inr(n * rules.referrerReward)}`}
               </motion.span>
             </AnimatePresence>
           </Button>

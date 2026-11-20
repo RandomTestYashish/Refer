@@ -102,7 +102,7 @@ export function DetailScreen({ params }: { params?: Record<string, string> }) {
       {!canResend(r) && !canRemind(r) && (
         <ScreenFooter>
           <Button size="lg" block variant="outline" onClick={() => navigate(rewardScreen, { id: r.id })}>
-            View reward status
+            View Reward Status
           </Button>
         </ScreenFooter>
       )}

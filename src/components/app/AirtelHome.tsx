@@ -215,7 +215,7 @@ export function AirtelHome({
           <div className="mt-[14px] flex gap-2">
             <button onClick={() => outOfScope("My services")} className={cn("relative h-[72px] w-[170px] shrink-0 overflow-hidden rounded-full text-left", CARD_SURFACE)}>
               <img src={home("svc-airtel.png")} alt="" className="absolute left-[9px] top-[9px] size-[52px] rounded-full object-cover" />
-              <p className="absolute left-[68px] right-3 top-4 text-[13px] font-bold leading-[18px] text-black">5 Services</p>
+              <p className="absolute left-[68px] right-3 top-4 text-[13px] font-bold leading-[18px] text-black">5 services</p>
               <span className="absolute left-[70px] top-[34px] h-[26px] w-[82px] overflow-hidden">
                 <span className="mt-1 inline-flex animate-marquee whitespace-nowrap text-[12px] leading-[18px] text-[#DA9802]">
                   {Array.from({ length: 4 }, (_, i) => (
@@ -247,7 +247,7 @@ export function AirtelHome({
           <HeroCard className="mt-4">
             <button onClick={refer} className="flex w-full items-center gap-3 text-left" aria-label="Refer & Earn">
               <span className="min-w-0 flex-1">
-                <span className="block text-[16px] font-bold leading-5 text-[#292C31]">Invite a Friend</span>
+                <span className="block text-[16px] font-bold leading-5 text-[#292C31]">Invite a friend</span>
                 <span className="mt-1 block text-[12px] leading-[18px] text-[#3E4146]">
                   Earn up to ₹{(rules.referrerReward * rules.referralCapYear).toLocaleString("en-IN")} a year. ₹{rules.referrerReward} cashback for every successful referral.
                 </span>
@@ -259,7 +259,7 @@ export function AirtelHome({
                 My Referrals
               </button>
               <button onClick={refer} className="flex h-10 flex-1 items-center justify-center rounded-[12px] bg-black text-[14px] font-medium text-white active:bg-[#3E4146]">
-                Invite now
+                Invite Now
               </button>
             </div>
           </HeroCard>
@@ -270,8 +270,8 @@ export function AirtelHome({
         <div className="mt-8 flex flex-col gap-4 px-4">
           <SectionTitle
             action={
-              <button onClick={() => outOfScope("View all")} className="-mt-1 flex h-5 items-center text-[14px] font-medium leading-4 text-[#075EE8]">
-                View all
+              <button onClick={() => outOfScope("View All")} className="-mt-1 flex h-5 items-center text-[14px] font-medium leading-4 text-[#075EE8]">
+                View All
               </button>
             }
           >
@@ -290,7 +290,7 @@ export function AirtelHome({
             ],
             [
               { l: "IPTV", i: "buy-iptv.png" },
-              { l: "Bundle your services", i: "buy-bundle.png" },
+              { l: "Combine your services", i: "buy-bundle.png" },
               { l: "New Prepaid", i: "buy-prepaid.png" },
             ],
           ].map((row, r) => (
@@ -314,7 +314,7 @@ export function AirtelHome({
             ],
             [
               { l: "My Wi-Fi", i: "ms-wifi.svg" },
-              { l: "Upgrade to Postpaid", i: "ms-upgrade.svg" },
+              { l: "Upgrade To Postpaid", i: "ms-upgrade.svg" },
               { l: "Manage Family", i: "ms-family.svg" },
               { l: "More", i: undefined },
             ],
@@ -398,7 +398,7 @@ export function AirtelHome({
             RECHARGE FOR OTHERS
           </SectionTitle>
           <button onClick={() => outOfScope("Recharge for others")} className="ml-1 mt-[6px] block active:opacity-90">
-            <img src={home("rfo.jpg")} alt="Box Office Pack ₹200 · 3GB/day for 3 days ₹39" className="h-[185px] w-[371px] object-cover" />
+            <img src={home("rfo.jpg")} alt="Box Office Pack ₹200 · 3 GB/day for 3 days ₹39" className="h-[185px] w-[371px] object-cover" />
           </button>
         </div>
 
@@ -433,8 +433,8 @@ export function AirtelHome({
           <p className="absolute left-[25px] top-[117px] text-[12px] font-bold uppercase leading-normal tracking-[4px] text-white">YOUR benefits</p>
           <div className="no-scrollbar absolute bottom-6 left-0 right-0 flex gap-3 overflow-x-auto px-4">
             {[
-              { logo: "show-adobe.png", t: "Adobe Express", d: ["12 months for FREE worth ₹4000"], cta: "CLAIM NOW" },
-              { logo: "show-netflix.png", t: "Netflix", d: ["1 month FREE", "worth ₹999"], cta: "CLAIM NOW" },
+              { logo: "show-adobe.png", t: "Adobe Express", d: ["12 months free, worth ₹4,000"], cta: "Claim Now" },
+              { logo: "show-netflix.png", t: "Netflix", d: ["1 month free", "worth ₹999"], cta: "Claim Now" },
               { logo: "show-third.png", t: "Lorem ipsum", d: ["Lorem ipsum dolor sit amet consectetur."], cta: "BUTTON" },
             ].map((c) => (
               <button
@@ -515,7 +515,7 @@ export function PackStatusTop({ onRecharge }: { onRecharge?: () => void }) {
               </div>
               <div className="flex w-full flex-col gap-1 pb-2 pt-1 text-center text-[14px]">
                 <p className="font-bold leading-4 text-[#292C31]">Your ₹399 pack is expiring today</p>
-                <p className="font-medium leading-5 text-[#3E4146]">Recharge now to avoid service interruption and continue enjoying your benefits.</p>
+                <p className="font-medium leading-5 text-[#3E4146]">To avoid service interruption and keep your benefits, recharge now.</p>
               </div>
             </div>
             <div className="flex w-full items-center justify-center gap-4">

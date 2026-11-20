@@ -30,7 +30,7 @@ export function FriendHomeScreen() {
   const isNew = bRun.eligibility?.segment === "new";
   const deadlinePassed = scenario.deadline === "expired" || (r?.status === "expired" && r.reason === "deadline_expired");
   const daysLeft = deadlinePassed ? 0 : rules.firstTxnDeadlineDays;
-  const reward = `${inr(rules.friendReward)} cashback + ${rules.friendDataGB}GB`;
+  const reward = `${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB`;
   const recharge = () => navigate("b_plans");
 
   useEffect(() => {
@@ -100,7 +100,7 @@ export function FriendHomeScreen() {
           onClick={() => (eligible ? setSheet(true) : recharge())}
           className="flex h-10 w-[163.5px] items-center justify-center rounded-[12px] border border-[#E6E9EF] bg-white px-3 text-[14px] font-medium leading-4 text-[#485B76] active:bg-[#F0F4F9]"
         >
-          {eligible ? "View details" : "Explore Packs"}
+          {eligible ? "View Details" : "Explore Packs"}
         </button>
         <button
           onClick={recharge}
@@ -139,7 +139,7 @@ export function FriendHomeScreen() {
               <div className="rounded-[16px] bg-airtel-red-soft p-3.5">
                 <p className="text-[12px] font-medium text-airtel-red">You get</p>
                 <p className="text-[22px] font-extrabold tracking-[-0.03em]">{inr(rules.friendReward)}</p>
-                <p className="text-[11px] text-airtel-sub">cashback + {rules.friendDataGB}GB data</p>
+                <p className="text-[11px] text-airtel-sub">cashback + {rules.friendDataGB} GB data</p>
               </div>
               <div className="rounded-[16px] bg-airtel-surface p-3.5">
                 <p className="text-[12px] font-medium text-airtel-sub">{REFERRER.first} gets</p>
@@ -171,10 +171,10 @@ export function FriendHomeScreen() {
                 recharge();
               }}
             >
-              {deadlinePassed ? "Recharge anyway" : "Recharge now"}
+              {deadlinePassed ? "Recharge Anyway" : "Recharge Now"}
             </Button>
             <Button block variant="ghost" className="mt-1" onClick={() => setSheet(false)}>
-              Explore the app first
+              Explore The App First
             </Button>
           </div>
         </SheetContent>

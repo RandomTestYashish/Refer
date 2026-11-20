@@ -39,7 +39,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
 
   const first = r.name.split(" ")[0];
   const header = <AppBar title="Your reward" />;
-  const toDashboard = { label: "Back to My Referrals", onClick: () => resetTo("a_dashboard") };
+  const toDashboard = { label: "Back To My Referrals", onClick: () => resetTo("a_dashboard") };
   const reason = r.reason ? REASON_COPY[r.reason] : undefined;
 
   // ---- Terminal / error reward states ----
@@ -51,7 +51,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           icon={<CalendarX2 />}
           tone="neutral"
           title="Invitation link expired"
-          body={`${first} didn't open your invite within ${rules.linkValidityHours} hours. Resend to create a fresh link — the earlier invite stays in your history.`}
+          body={`${first} didn't open your invite within ${rules.linkValidityHours} hours. To create a fresh link, resend it. The earlier invite stays in your history.`}
           status={<StatusBadge status={r.status} />}
           tertiary={toDashboard}
         >
@@ -70,7 +70,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           title={reason.title}
           body={reason.body}
           status={<StatusBadge status={r.status} />}
-          primary={{ label: "Invite someone else", onClick: () => navigate("a_contacts") }}
+          primary={{ label: "Invite Someone Else", onClick: () => navigate("a_contacts") }}
           secondary={toDashboard}
         />
       </Screen>
@@ -83,10 +83,10 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
         <ErrorState
           icon={<Ban />}
           title="Reward couldn't be credited"
-          body={`${first}'s recharge qualified, but crediting your ${inr(rules.referrerReward)} failed. You don't need to do anything — retry now or we'll retry automatically.`}
+          body={`${first}'s recharge qualified, but we couldn't credit your ${inr(rules.referrerReward)}. Retry now, or we'll retry automatically.`}
           status={<RewardBadge state="failed" />}
           primary={{
-            label: "Retry credit",
+            label: "Retry Credit",
             loading: retrying,
             onClick: () => {
               setRetrying(true);
@@ -98,7 +98,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
               }, 1100);
             },
           }}
-          secondary={{ label: "Contact support", onClick: () => toast("Support ticket created", { description: "Prototype — no ticket was actually raised." }) }}
+          secondary={{ label: "Contact Support", onClick: () => toast("Support ticket created", { description: "Prototype — no ticket was actually raised." }) }}
           tertiary={toDashboard}
         />
       </Screen>
@@ -113,7 +113,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           title="Reward reversed"
           body={`${first}'s qualifying recharge was reversed or refunded, so the ${inr(rules.referrerReward)} reward linked to it has been withdrawn.`}
           status={<RewardBadge state="reversed" />}
-          primary={{ label: "Invite another friend", onClick: () => navigate("a_contacts") }}
+          primary={{ label: "Invite Another Friend", onClick: () => navigate("a_contacts") }}
           secondary={toDashboard}
         />
       </Screen>
@@ -129,7 +129,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           title={reason?.title ?? "Reward expired"}
           body={reason?.body ?? "This reward has expired."}
           status={<RewardBadge state="expired" />}
-          primary={{ label: "Invite another friend", onClick: () => navigate("a_contacts") }}
+          primary={{ label: "Invite Another Friend", onClick: () => navigate("a_contacts") }}
           secondary={toDashboard}
         />
       </Screen>
@@ -156,7 +156,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
               <h2 className="mt-6 text-title">Your reward is waiting!</h2>
               <p className="mt-2 text-[14px] leading-[21px] text-airtel-sub">
                 {["invited", "link_opened"].includes(r.status)
-                  ? `${first} hasn't joined Airtel yet. Give them a nudge — you'll both get ${inr(rules.referrerReward)} once they complete their first eligible recharge.`
+                  ? `${first} hasn't joined Airtel yet. Give them a nudge — you'll each get ${inr(rules.referrerReward)} once they complete their first eligible recharge.`
                   : `${first} hasn't completed their first eligible recharge yet. A recharge of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days unlocks ${inr(rules.referrerReward)} for each of you.`}
               </p>
             </>
@@ -164,7 +164,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
             <>
               <h2 className="mt-6 text-title">Reward validation pending</h2>
               <p className="mt-2 text-[14px] leading-[21px] text-airtel-sub">
-                {first} completed a qualifying recharge 🎉 We're validating the transaction — this can take up to {rules.rewardValidationDays} days. Nothing
+                {first} completed a qualifying recharge. We're validating the transaction, which can take up to {rules.rewardValidationDays} days. Nothing
                 for you to do.
               </p>
             </>
@@ -204,7 +204,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
         </div>
         {r.rewardA === "delayed" && (
           <Button variant="link" className="mx-auto mt-3 flex" onClick={() => toast("We'll keep you posted", { description: "Prototype — notification preferences are simulated." })}>
-            Notify me when credited
+            Notify Me When Credited
           </Button>
         )}
         <SimNote className="mt-4">Use “Simulate friend's recharge” in the panel to unlock live</SimNote>
@@ -214,7 +214,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           <ReferralAction r={r} size="lg" block />
         ) : (
           <Button size="lg" block variant="outline" onClick={() => resetTo("a_dashboard")}>
-            <RotateCcw /> Back to My Referrals
+            <RotateCcw /> Back To My Referrals
           </Button>
         )}
       </ScreenFooter>

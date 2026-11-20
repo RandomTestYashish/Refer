@@ -125,15 +125,15 @@ export function HamburgerMenu({
   const showNotices = () => {
     if (notices.length === 0) toast("You're all caught up", { description: "No new notifications." });
     else {
-      toast(notices[0].text, { description: unread > 1 ? `+${unread - 1} more referral update(s)` : "Referral update" });
+      toast(notices[0].text, { description: unread > 1 ? `+${unread - 1} more referral ${unread - 1 === 1 ? "update" : "updates"}` : "Referral update" });
       markRead();
     }
   };
 
   const ROWS: { id: string; title: string; subtitle: string; body?: React.ReactNode }[] = [
-    { id: "new", title: "New Connections", subtitle: "Buy new postpaid, Prepaid, Wi-Fi & more" },
+    { id: "new", title: "New Connections", subtitle: "Buy new Postpaid, Prepaid, Wi-Fi & more" },
     { id: "recharge", title: "Recharge & Pay Bills", subtitle: "Pay for mobile, electricity, FASTag & more" },
-    { id: "bank", title: "Bank and UPI", subtitle: "Manage your Banking and UPI services" },
+    { id: "bank", title: "Bank and UPI", subtitle: "Manage your banking and UPI services" },
     {
       id: "rewards",
       title: "Rewards & OTTs",
@@ -152,14 +152,14 @@ export function HamburgerMenu({
         </div>
       ) : undefined,
     },
-    { id: "safety", title: "Safety Report", subtitle: "Check number of prevented fraud attempts" },
+    { id: "safety", title: "Safety Report", subtitle: "Check the number of fraud attempts prevented" },
     { id: "subs", title: "Subscriptions", subtitle: "Manage OTT, books, music subscriptions" },
-    { id: "orders", title: "Order & Requests", subtitle: "Track your order & view status of requests" },
+    { id: "orders", title: "Orders & Requests", subtitle: "Track orders and view request status" },
     { id: "hellotunes", title: "Set Hellotunes", subtitle: "Set your favourite tunes for your callers" },
     { id: "txn", title: "Transaction History", subtitle: "View past payments & UPI transfers" },
     { id: "settings", title: "Settings", subtitle: "Accounts, payment & bank, privacy & security" },
     { id: "about", title: "About Airtel", subtitle: "Set your favourite tunes for your callers" },
-    { id: "notifications", title: "Notification", subtitle: unread > 0 ? `${unread} new referral update${unread > 1 ? "s" : ""}` : "Lorem ip sum" },
+    { id: "notifications", title: "Notifications", subtitle: unread > 0 ? `${unread} new referral update${unread > 1 ? "s" : ""}` : "Lorem ip sum" },
   ];
 
   return (
@@ -233,10 +233,10 @@ export function HamburgerMenu({
 
           {/* Footer — 81409:12684 + Version */}
           <button onClick={showNotices} className="ml-4 mt-6 flex items-center gap-2">
-            <span className="text-[16px] font-bold leading-[18px] text-[#1A1A1A]">Notification</span>
+            <span className="text-[16px] font-bold leading-[18px] text-[#1A1A1A]">Notifications</span>
             <Icon name="hm-chevron.svg" className="-rotate-90" />
           </button>
-          <p className="mt-6 text-center text-[12px] leading-[18px] text-[#3E4146]">Version4.81.0</p>
+          <p className="mt-6 text-center text-[12px] leading-[18px] text-[#3E4146]">Version 4.81.0</p>
         </div>
       </SheetContent>
     </Sheet>

@@ -13,7 +13,7 @@ import { cn, inr } from "@/lib/utils";
 const METHODS = [
   { id: "upi", label: "UPI", sub: "Google Pay, PhonePe, Paytm & more", icon: () => <span className="text-[11px] font-black italic text-[#097939]">UPI</span> },
   { id: "apb", label: "Airtel Payments Bank", sub: "Balance ₹1,240", icon: () => <Landmark className="size-5 text-airtel-red" /> },
-  { id: "card", label: "Credit / Debit card", sub: "Visa •••• 4821", icon: () => <CreditCard className="size-5 text-[#1F5FCC]" /> },
+  { id: "card", label: "Credit/Debit card", sub: "Visa •••• 4821", icon: () => <CreditCard className="size-5 text-[#1F5FCC]" /> },
 ];
 
 type Phase = "form" | "processing" | "failure" | "cancelled" | "network" | "checking";
@@ -57,10 +57,10 @@ export function PaymentScreen({ params }: { params?: Record<string, string> }) {
         <AppBar title="Payment" onBack={() => setPhase("form")} />
         <ErrorState
           icon={<XCircle />}
-          title="Payment failed"
-          body={`Your bank declined the payment of ${inr(plan.price)}. No money was debited. Try again or use a different payment method.`}
-          primary={{ label: "Retry payment", onClick: pay }}
-          secondary={{ label: "Change payment method", onClick: () => setPhase("form") }}
+          title="Payment unsuccessful"
+          body={`Your bank declined the payment of ${inr(plan.price)}. No money was debited. Try Again or use a different payment method.`}
+          primary={{ label: "Retry Payment", onClick: pay }}
+          secondary={{ label: "Change Payment Method", onClick: () => setPhase("form") }}
         />
       </Screen>
     );
@@ -73,8 +73,8 @@ export function PaymentScreen({ params }: { params?: Record<string, string> }) {
           tone="neutral"
           title="Payment cancelled"
           body="You cancelled the payment, so your recharge wasn't completed. Your referral reward is still waiting — finish your recharge whenever you're ready."
-          primary={{ label: "Try again", onClick: () => setPhase("form") }}
-          secondary={{ label: "Back to plans", onClick: back }}
+          primary={{ label: "Try Again", onClick: () => setPhase("form") }}
+          secondary={{ label: "Back To Plans", onClick: back }}
         />
       </Screen>
     );
@@ -86,16 +86,16 @@ export function PaymentScreen({ params }: { params?: Record<string, string> }) {
           icon={<WifiOff />}
           tone="warning"
           title="Connection interrupted"
-          body={`We lost connection while confirming your payment of ${inr(plan.price)}. Please don't pay again — we're checking the status with your bank.`}
+          body={`We lost connection while confirming your payment of ${inr(plan.price)}. Don't pay again — we're checking the status with your bank.`}
           primary={{
-            label: "Check payment status",
+            label: "Check Payment Status",
             loading: phase === "checking",
             onClick: () => {
               setPhase("checking");
               timer.current = setTimeout(succeed, 1600);
             },
           }}
-          secondary={{ label: "Back to payment", onClick: () => setPhase("form") }}
+          secondary={{ label: "Back To Payment", onClick: () => setPhase("form") }}
         >
           <SimNote>Status check resolves to “payment successful”</SimNote>
         </ErrorState>
@@ -170,9 +170,9 @@ export function PaymentScreen({ params }: { params?: Record<string, string> }) {
               <span className="absolute inset-0 flex items-center justify-center text-[17px] font-bold">{inr(plan.price)}</span>
             </div>
             <p className="mt-6 text-heading">Processing payment…</p>
-            <p className="mt-1 text-[13px] text-airtel-sub">Please don't close the app or press back.</p>
+            <p className="mt-1 text-[13px] text-airtel-sub">Don't close the app or press back.</p>
             <Button variant="ghost" className="mt-8" onClick={cancelDuringProcessing}>
-              Cancel payment
+              Cancel Payment
             </Button>
           </motion.div>
         )}

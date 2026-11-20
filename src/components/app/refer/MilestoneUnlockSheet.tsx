@@ -57,7 +57,7 @@ export function MilestoneUnlockSheet({
             <UserPlus /> Invite Friends
           </Button>
           <Button block variant="ghost" className="mt-1" onClick={() => onOpenChange(false)}>
-            Not now
+            Not Now
           </Button>
         </div>
       </SheetContent>

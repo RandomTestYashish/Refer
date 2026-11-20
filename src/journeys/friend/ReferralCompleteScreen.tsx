@@ -40,7 +40,7 @@ export function ReferralCompleteScreen() {
         </div>
         <div className="px-5 pb-[34px]">
           <Button size="lg" block onClick={() => resetTo("b_home")}>
-            Back to Home
+            Back To Home
           </Button>
         </div>
       </Screen>
@@ -52,7 +52,7 @@ export function ReferralCompleteScreen() {
     credited: {
       icon: <CheckCircle2 className="size-5 text-airtel-success" />,
       title: "Referral completed!",
-      body: `You and ${REFERRER.first} have both earned ${inr(rules.friendReward)}. Thanks for joining Airtel.`,
+      body: `You and ${REFERRER.first} have each earned ${inr(rules.friendReward)}. Thanks for joining Airtel.`,
     },
     validating: {
       icon: <Clock3 className="size-5 text-airtel-warning" />,
@@ -79,7 +79,7 @@ export function ReferralCompleteScreen() {
     expired: {
       icon: <Hourglass className="size-5 text-airtel-sub" />,
       title: "Reward expired",
-      body: "The reward couldn't be validated within the validation window and has expired.",
+      body: "The reward couldn't be validated in time, so it has expired.",
     },
   };
   const c = copy[state] ?? copy.validating;
@@ -136,7 +136,7 @@ export function ReferralCompleteScreen() {
       </ScreenBody>
       <div className="space-y-2 px-5 pb-[34px]">
         <Button size="lg" block onClick={() => resetTo("b_home")}>
-          Back to Home
+          Back To Home
         </Button>
         <Button size="lg" block variant="outline" onClick={() => setJourney("A")}>
           See {REFERRER.first}'s view (User A)

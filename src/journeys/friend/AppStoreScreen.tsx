@@ -61,7 +61,7 @@ export function AppStoreScreen() {
   return (
     <div className="flex h-full flex-col bg-white pt-[44px]">
       <div className="flex shrink-0 items-center justify-between px-2 py-1 text-[#0A7AFF]">
-        <button onClick={back} className="flex items-center text-[17px]" aria-label="Back to Messages">
+        <button onClick={back} className="flex items-center text-[17px]" aria-label="Back To Messages">
           <ChevronLeft className="size-7" /> Messages
         </button>
         <div className="flex gap-4 pr-2">
@@ -132,7 +132,7 @@ export function AppStoreScreen() {
               <div className={`flex gap-3 rounded-[14px] p-3.5 ${phase === "failed" ? "bg-airtel-error-soft" : "bg-[#F2F2F7]"}`}>
                 {phase === "failed" ? <AlertTriangle className="size-5 shrink-0 text-airtel-error" /> : <XCircle className="size-5 shrink-0 text-[#8E8E93]" />}
                 <div className="flex-1">
-                  <p className="text-[14px] font-semibold">{phase === "failed" ? "Installation failed" : "Installation cancelled"}</p>
+                  <p className="text-[14px] font-semibold">{phase === "failed" ? "Installation unsuccessful" : "Installation cancelled"}</p>
                   <p className="mt-0.5 text-[12.5px] leading-[17px] text-[#6C6C70]">
                     {phase === "failed"
                       ? "Airtel couldn't be installed — the download was interrupted. Check your connection and storage, then try again. Your invite will be waiting."
@@ -140,10 +140,10 @@ export function AppStoreScreen() {
                   </p>
                   <div className="mt-2.5 flex gap-2">
                     <button onClick={install} className="rounded-full bg-[#0A7AFF] px-3.5 py-1.5 text-[13px] font-semibold text-white">
-                      {phase === "failed" ? "Try again" : "Install"}
+                      {phase === "failed" ? "Try Again" : "Install"}
                     </button>
                     <button onClick={back} className="rounded-full bg-white px-3.5 py-1.5 text-[13px] font-semibold text-[#0A7AFF]">
-                      Back to Messages
+                      Back To Messages
                     </button>
                   </div>
                 </div>

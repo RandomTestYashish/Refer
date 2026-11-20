@@ -52,7 +52,7 @@ export function ContactsScreen() {
   const onContinue = () => {
     if (selected.length === 0) {
       shake.start({ x: [0, -8, 8, -6, 6, 0], transition: { duration: 0.4 } });
-      toast.error("Select at least one friend", { description: "Tap a contact to add them to your invite." });
+      toast.error("Select at least one friend.", { description: "Tap a contact to add them to your invite." });
       return;
     }
     navigate("a_preview", { mode: "contacts" });
@@ -67,9 +67,9 @@ export function ContactsScreen() {
         <ErrorState
           icon={<CloudOff />}
           title="Contacts unavailable"
-          body="We couldn't load your contacts right now. This can happen if your phone is still syncing. Try again, or share your link manually."
+          body="We couldn't load your contacts right now. This can happen if your phone is still syncing. Try Again, or share your link manually."
           primary={{
-            label: "Try again",
+            label: "Try Again",
             loading: retrying,
             onClick: () => {
               setRetrying(true);
@@ -80,7 +80,7 @@ export function ContactsScreen() {
               }, 900);
             },
           }}
-          secondary={{ label: "Share link manually", onClick: () => navigate("a_preview", { mode: "manual" }) }}
+          secondary={{ label: "Share Link Manually", onClick: () => navigate("a_preview", { mode: "manual" }) }}
         />
       </Screen>
     );
@@ -93,8 +93,8 @@ export function ContactsScreen() {
           icon={<Users />}
           tone="neutral"
           title="No contacts found"
-          body="Your phone's address book is empty. You can still invite friends by sharing your personal link on any app."
-          primary={{ label: "Share link instead", onClick: () => navigate("a_preview", { mode: "manual" }) }}
+          body="Your phone's address book is empty. To invite friends, share your personal link on any app."
+          primary={{ label: "Share Link Instead", onClick: () => navigate("a_preview", { mode: "manual" }) }}
           secondary={{ label: "Back", onClick: () => useProto.getState().back() }}
         />
       </Screen>
@@ -108,7 +108,7 @@ export function ContactsScreen() {
           <Search className="absolute left-3.5 top-1/2 size-[18px] -translate-y-1/2 text-airtel-sub" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or number" className="pl-10 pr-9" aria-label="Search contacts" />
           {q && (
-            <button aria-label="Clear search" onClick={() => setQ("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-airtel-sub">
+            <button aria-label="Clear Search" onClick={() => setQ("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-1 text-airtel-sub">
               <X className="size-4" />
             </button>
           )}
@@ -165,10 +165,10 @@ export function ContactsScreen() {
             <p className="mt-1 text-[13px] text-airtel-sub">Nothing matches “{q}”. Check the spelling, or invite by sharing your link.</p>
             <div className="mt-5 flex gap-2">
               <Button variant="outline" size="sm" onClick={() => setQ("")}>
-                Clear search
+                Clear Search
               </Button>
               <Button variant="soft" size="sm" onClick={() => navigate("a_preview", { mode: "manual" })}>
-                <Link2 /> Share link
+                <Link2 /> Share Link
               </Button>
             </div>
           </div>
@@ -214,7 +214,7 @@ export function ContactsScreen() {
       <ScreenFooter>
         <motion.div animate={shake}>
           <Button size="lg" block onClick={onContinue} className={cn(selected.length === 0 && "bg-[#E5E5E5] text-[#9A9A9A] !shadow-none hover:bg-[#E5E5E5]")}>
-            {selected.length === 0 ? "Select friends to invite" : `Continue with ${selected.length} ${selected.length === 1 ? "friend" : "friends"}`}
+            {selected.length === 0 ? "Select Friends To Invite" : `Continue With ${selected.length} ${selected.length === 1 ? "Friend" : "Friends"}`}
           </Button>
         </motion.div>
       </ScreenFooter>
@@ -234,12 +234,12 @@ export function ContactsScreen() {
               onClick={() => {
                 if (dup) {
                   remind(dup.id);
-                  toast.success(`Reminder sent to ${dup.name.split(" ")[0]}`);
+                  toast.success(`Reminder sent to ${dup.name.split(" ")[0]}.`);
                 }
                 setDup(null);
               }}
             >
-              Send a reminder
+              Send Reminder
             </Button>
             <Button block variant="ghost" onClick={() => setDup(null)}>
               Cancel

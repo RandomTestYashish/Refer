@@ -93,7 +93,7 @@ export function PlansScreen() {
                 tone="warning"
                 title={`Below the ${inr(rules.minTransaction)} minimum`}
                 className="mb-3"
-                action={{ label: "Switch to ₹199", onClick: () => setPlan("p199") }}
+                action={{ label: "Switch To ₹199", onClick: () => setPlan("p199") }}
               >
                 {inr(sel.price)} won't unlock your referral reward.
               </Callout>
@@ -101,7 +101,7 @@ export function PlansScreen() {
           )}
         </AnimatePresence>
         <Button size="lg" block onClick={() => navigate("b_payment", { plan })}>
-          {below && rewardActive ? `Continue with ${inr(sel.price)} anyway` : `Select ${inr(sel.price)} plan`}
+          {below && rewardActive ? `Continue With ${inr(sel.price)} Anyway` : `Select ${inr(sel.price)} Plan`}
         </Button>
       </ScreenFooter>
     </Screen>

@@ -68,7 +68,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
             <motion.div key="d" initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mt-6">
               <h1 className="text-display">{inr(rules.referrerReward)} unlocked!</h1>
               <p className="mt-2 text-[15px] leading-[22px] text-airtel-sub">
-                {first} completed their first eligible recharge. You and {first} both earn {inr(rules.referrerReward)}.
+                {first} completed their first eligible recharge. You and {first} each earn {inr(rules.referrerReward)}.
               </p>
             </motion.div>
           )}
@@ -109,7 +109,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
           View My Referrals
         </Button>
         <Button size="lg" block variant="outline" onClick={() => navigate("a_contacts")}>
-          Invite more friends
+          Invite More Friends
         </Button>
       </div>
     </Screen>

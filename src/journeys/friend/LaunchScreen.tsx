@@ -45,10 +45,10 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
           tone="warning"
           title="We couldn't find your invite"
           body="Airtel opened, but your invitation details didn't come through after installing. Tap the invite link in your SMS again — it now opens straight in the app."
-          primary={{ label: "Try again", onClick: () => setAttempt((a) => a + 1) }}
-          secondary={{ label: "Open invite link from SMS", onClick: () => resetTo("b_sms") }}
+          primary={{ label: "Try Again", onClick: () => setAttempt((a) => a + 1) }}
+          secondary={{ label: "Open Invite Link From SMS", onClick: () => resetTo("b_sms") }}
         >
-          <SimNote>Set “Context restore” to Success in the panel to recover via Try again</SimNote>
+          <SimNote>Set “Context restore” to Success in the panel to recover via Try Again</SimNote>
         </ErrorState>
       </Screen>
     );

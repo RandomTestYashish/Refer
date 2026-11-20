@@ -72,10 +72,10 @@ export const ReferralProgress = forwardRef<
 
           <div className="mt-3 flex gap-2">
             <button onClick={onInvite} className="h-11 flex-1 rounded-[12px] bg-[linear-gradient(180deg,#FFD873,#F2B330)] text-[14px] font-bold text-[#2A1A00] active:brightness-95">
-              Invite to level up
+              Invite To Level Up
             </button>
             <button onClick={onViewAll} className="flex h-11 items-center gap-0.5 rounded-[12px] px-3 text-[14px] font-semibold text-white ring-1 ring-white/25 active:bg-white/10">
-              All badges <ChevronRight className="size-4" />
+              All Badges <ChevronRight className="size-4" />
             </button>
           </div>
         </div>

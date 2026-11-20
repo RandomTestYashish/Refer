@@ -45,7 +45,7 @@ function InviteCard({ rules }: { rules: { referrerReward: number; friendReward: 
       <div className="px-4 pb-4 pt-3">
         <p className="text-[11px] font-bold uppercase tracking-[1.5px] text-[#696B6F]">You get</p>
         <p className="text-[24px] font-bold leading-7 text-[#292C31]">
-          {inr(rules.friendReward)} <span className="text-[16px] font-semibold text-[#3E4146]">+ {rules.friendDataGB}GB</span>
+          {inr(rules.friendReward)} <span className="text-[16px] font-semibold text-[#3E4146]">+ {rules.friendDataGB} GB</span>
         </p>
         <p className="mt-0.5 text-[11px] leading-[14px] text-[#696B6F]">On your first recharge or bill payment</p>
       </div>
@@ -92,7 +92,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
 
   const send = (channel: "sms" | "whatsapp" | "link") => {
     if (!manual && recipients.length === 0) {
-      toast.error("No friends selected", { description: "Go back and pick at least one contact." });
+      toast.error("No friends selected.", { description: "Go back and pick at least one contact." });
       return;
     }
     if (channel === "whatsapp" && scenario.share === "whatsapp_missing") {
@@ -115,7 +115,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
     } catch {
       /* clipboard can be blocked in iframes — still a successful simulated copy */
     }
-    toast.success("Link copied", { description: "Paste it in any chat to invite friends." });
+    toast.success("Link copied.", { description: "Paste it in any chat to invite friends." });
   };
 
   const inEnvelope = phase >= 2;
@@ -256,7 +256,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
             <RotateCcw />
           </Button>
           <Button size="lg" className="flex-1" onClick={() => setSheet(true)} disabled={phase < 4}>
-            <Share2 /> Share invite
+            <Share2 /> Share Invite
           </Button>
         </div>
         <SimNote className="mt-2">No real messages are sent</SimNote>
@@ -274,7 +274,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
               </span>
               <div className="min-w-0 text-left">
                 <p className="truncate text-[13px] font-bold text-[#292C31]">
-                  Here's {inr(rules.friendReward)} cashback + {rules.friendDataGB}GB on Airtel
+                  Here's {inr(rules.friendReward)} cashback + {rules.friendDataGB} GB on Airtel
                 </p>
                 <p className="truncate text-[12px] text-[#696B6F]">{link}</p>
               </div>
@@ -288,7 +288,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
           <div className="flex justify-between px-5 pb-[34px] pt-5">
             <IconAction label="WhatsApp" icon={<MessageCircle />} tint="#1DA851" onClick={() => send("whatsapp")} />
             <IconAction label="SMS" icon={<MessageSquareText />} tint="#075EE8" onClick={() => send("sms")} />
-            <IconAction label="Copy link" icon={<Copy />} onClick={() => void copy()} />
+            <IconAction label="Copy Link" icon={<Copy />} onClick={() => void copy()} />
             <IconAction
               label="More"
               icon={<Share2 />}
@@ -319,7 +319,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
                 navigate("a_sending", { ids, channel: "sms", n: String(Date.now()) });
               }}
             >
-              Send via SMS
+              Send Via SMS
             </Button>
             <Button
               block
@@ -329,7 +329,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
                 void copy();
               }}
             >
-              Copy link
+              Copy Link
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -352,11 +352,11 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
                 if (useProto.getState().scenario.share === "copy_fail") toast.error("Copy failed again", { description: "Set Share outcome to OK in the panel to recover." });
                 else {
                   setCopyFail(false);
-                  toast.success("Link copied");
+                  toast.success("Link copied.");
                 }
               }}
             >
-              Try again
+              Try Again
             </Button>
             <Button
               block
@@ -366,7 +366,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
                 setMore(true);
               }}
             >
-              <Share2 /> Share another way
+              <Share2 /> Share Another Way
             </Button>
           </DialogFooter>
         </DialogContent>

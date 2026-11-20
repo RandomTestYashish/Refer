@@ -67,8 +67,8 @@ export function RechargeSuccessScreen({ params }: { params?: Record<string, stri
         )}
         {eligible && !qualifying && below && !deadlinePassed && (
           <Callout tone="warning" title={`Below ${inr(rules.minTransaction)} — reward not unlocked`} className="mt-4">
-            This {inr(plan.price)} recharge doesn't qualify. Recharge {inr(rules.minTransaction)}+ within {rules.firstTxnDeadlineDays} days to unlock rewards for
-            you and {REFERRER.first}.
+            This {inr(plan.price)} recharge doesn't qualify. To unlock rewards for you and {REFERRER.first}, recharge {inr(rules.minTransaction)}+
+            within {rules.firstTxnDeadlineDays} days.
           </Callout>
         )}
         {deadlinePassed && (
@@ -80,15 +80,15 @@ export function RechargeSuccessScreen({ params }: { params?: Record<string, stri
       <div className="space-y-2 px-5 pb-[34px]">
         {(eligible && qualifying) || bRun.attributedOther ? (
           <Button size="lg" block onClick={() => navigate("b_complete")}>
-            See reward status
+            See Reward Status
           </Button>
         ) : eligible && below && !deadlinePassed ? (
           <Button size="lg" block onClick={() => resetTo("b_plans")}>
-            Recharge {inr(rules.minTransaction)}+ to unlock
+            Recharge {inr(rules.minTransaction)}+ To Unlock
           </Button>
         ) : null}
         <Button size="lg" block variant="outline" onClick={() => resetTo("b_home")}>
-          Back to Home
+          Back To Home
         </Button>
       </div>
     </Screen>

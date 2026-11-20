@@ -21,10 +21,10 @@ export function FriendErrorScreen({ params }: { params?: Record<string, string> 
           title="This invite has expired"
           body={`Invitation links are valid for ${rules.linkValidityHours} hours. Ask ${REFERRER.first} to send you a new one — you'll still get the same rewards.`}
           primary={{
-            label: `Ask ${REFERRER.first} for a new link`,
-            onClick: () => toast.success("Request sent", { description: `${REFERRER.first} will be notified to resend your invite (simulated).` }),
+            label: `Ask ${REFERRER.first} For A New Link`,
+            onClick: () => toast.success("Request sent.", { description: `${REFERRER.first} will be notified to resend your invite (simulated).` }),
           }}
-          secondary={{ label: "Back to Messages", onClick: () => resetTo("b_sms") }}
+          secondary={{ label: "Back To Messages", onClick: () => resetTo("b_sms") }}
         >
           <SimNote>Resend from User A (dashboard) or the panel — a new SMS arrives</SimNote>
         </ErrorState>
@@ -40,7 +40,7 @@ export function FriendErrorScreen({ params }: { params?: Record<string, string> 
           tone="neutral"
           title="No invitation found"
           body="There's no referral invitation on this phone yet."
-          primary={{ label: "Back to Messages", onClick: () => resetTo("b_sms") }}
+          primary={{ label: "Back To Messages", onClick: () => resetTo("b_sms") }}
         />
       </Screen>
     );
@@ -53,10 +53,10 @@ export function FriendErrorScreen({ params }: { params?: Record<string, string> 
         title="This link isn't valid"
         body="The invite link looks broken or incomplete — it may have been cut off when copied. Ask your friend to share it again."
         primary={{
-          label: "Ask friend to resend",
-          onClick: () => toast.success("Request sent", { description: "Your friend will be asked to share a fresh link (simulated)." }),
+          label: "Ask Friend To Resend",
+          onClick: () => toast.success("Request sent.", { description: "Your friend will be asked to share a fresh link (simulated)." }),
         }}
-        secondary={{ label: "Back to Messages", onClick: () => resetTo("b_sms") }}
+        secondary={{ label: "Back To Messages", onClick: () => resetTo("b_sms") }}
       >
         <SimNote>Set “Link” to Valid in the panel to recover</SimNote>
       </ErrorState>
