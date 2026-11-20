@@ -3,13 +3,12 @@ import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-mo
 import { toast } from "sonner";
 import { Search } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
-import { PremiumHero, HERO_HEIGHT } from "@/components/app/refer/PremiumHero";
 import { home } from "@/assets/home";
 import { currentMilestone } from "@/components/app/refer/ReferralProgress";
 import { ReferralActivity } from "@/components/app/refer/ReferralActivity";
 import { MilestoneUnlockSheet } from "@/components/app/refer/MilestoneUnlockSheet";
 import { SheetSection } from "@/components/app/refer/SheetUI";
-import { HowItWorksGrid, InviteActions, MilestoneStrip, RewardSplit, StatsBlock } from "@/components/app/refer/LandingBlocks";
+import { HowItWorksGrid, IMAGE_HERO_HEIGHT, ImageHero, InviteActions, MilestoneStrip, RewardSplit, StatsBlock } from "@/components/app/refer/LandingBlocks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { referralStats, useProto } from "@/store/useProto";
@@ -64,9 +63,13 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   // Scroll: banner fades/settles as the sheet covers it; header turns solid at the top.
   // Header background fades in over the last 60px before the sheet reaches it.
   const scrollY = useMotionValue(0);
-  const heroEnd = HERO_HEIGHT - NAV_H;
+  const heroEnd = IMAGE_HERO_HEIGHT - NAV_H;
   const navBg = useTransform(scrollY, [heroEnd - 80, heroEnd], [0, 1]);
-  const onScroll = (e: React.UIEvent<HTMLDivElement>) => scrollY.set(e.currentTarget.scrollTop);
+  const [navOn, setNavOn] = useState(false);
+  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    scrollY.set(e.currentTarget.scrollTop);
+    setNavOn(e.currentTarget.scrollTop > heroEnd - 40);
+  };
 
   // Sticky CTA only once the in-sheet CTA has scrolled away.
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -124,15 +127,18 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
     <Screen className="bg-white pt-0">
       {/* Header floats over the banner; solid once the sheet reaches the top */}
       <div className="absolute inset-x-0 top-0 z-30 pt-[44px]">
-        <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white" style={{ opacity: navBg }} aria-hidden />
-        <AppBar title="Refer & Earn" transparent />
+        <AppBar title="Refer & Earn" transparent className="[&_button]:!text-white [&_div]:!text-white" />
+        {/* solid header fades in once the hero scrolls away */}
+        <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white pt-[44px]" style={{ opacity: navBg, pointerEvents: navOn ? "auto" : "none" }}>
+          <AppBar title="Refer & Earn" transparent />
+        </motion.div>
       </div>
 
       <ScreenBody className="overscroll-contain" onScroll={onScroll}>
         {/* Hero */}
-        <PremiumHero rules={rules} />
+        <ImageHero yearly={rules.referrerReward * rules.referralCapYear} />
 
-        <div className="relative bg-[linear-gradient(180deg,#FFF3EF_0px,#FFFFFF_220px)] pb-2">
+        <div className="relative bg-white pb-2">
           {/* Reward split, overlapping the hero */}
           <div className="relative z-10 -mt-7 px-4">
             <RewardSplit rules={rules} />

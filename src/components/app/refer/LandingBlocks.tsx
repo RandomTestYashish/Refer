@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, ChevronRight, Copy, FileText, Gift, Link2, MessageCircle, Search, Smartphone, Trophy, Wallet } from "lucide-react";
-import { CoinBadge, type BadgeState } from "@/components/app/Milestones";
+import { Check, ChevronRight, Copy, Lock, FileText, Gift, Link2, MessageCircle, Search, Smartphone, Trophy, Wallet } from "lucide-react";
+import type { BadgeState } from "@/components/app/Milestones";
 import { copyInviteLink } from "@/components/app/InviteKit";
 import type { BusinessRules } from "@/config/businessRules";
 import { PERSONAL_CODE } from "@/domain/data";
+import { home } from "@/assets/home";
 import { cn, inr } from "@/lib/utils";
 
 /**
@@ -36,36 +37,95 @@ export function RewardSplit({ rules }: { rules: BusinessRules }) {
   );
 }
 
-/** Milestone badges in one row, joined by a progress line. Tap to see all badges. */
+export const IMAGE_HERO_HEIGHT = 440;
+
+/** Header image: rich 3D gift scene, slow drift, white headline with a gold glint on the amount. */
+export function ImageHero({ yearly }: { yearly: number }) {
+  const reduce = useReducedMotion();
+  return (
+    <section aria-labelledby="hero-amount" className="relative overflow-hidden bg-[#5A0606]" style={{ height: IMAGE_HERO_HEIGHT }}>
+      <motion.img
+        src={home("refer-hero2.jpg")}
+        alt=""
+        draggable={false}
+        className="absolute inset-0 size-full select-none object-cover object-top"
+        initial={reduce ? false : { scale: 1.08, opacity: 0 }}
+        animate={reduce ? undefined : { scale: [1.08, 1, 1.03], opacity: 1 }}
+        transition={{ duration: 9, times: [0, 0.25, 1], ease: "easeOut", repeat: Infinity, repeatType: "reverse" }}
+      />
+      {/* keep the header and headline readable */}
+      <div className="absolute inset-x-0 top-0 h-[110px] bg-[linear-gradient(180deg,rgba(40,0,0,0.55),transparent)]" aria-hidden />
+      <div className="absolute inset-x-0 bottom-0 h-[200px] bg-[linear-gradient(180deg,transparent,rgba(60,0,0,0.85))]" aria-hidden />
+      <motion.h1
+        id="hero-amount"
+        className="absolute inset-x-0 bottom-[56px] mx-auto max-w-[320px] text-center text-[30px] font-extrabold leading-[36px] tracking-[-0.6px] text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.35)]"
+        initial={reduce ? false : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      >
+        Refer a friend,
+        <br />
+        earn up to <span className="amount-shine-light -mr-1 inline-block px-1 italic tabular-nums [text-shadow:none]">{inr(yearly)}</span>
+      </motion.h1>
+    </section>
+  );
+}
+
+const GEM_TINT: Record<string, string> = {
+  first: "linear-gradient(180deg,#5B2328,#3A1518)",
+  bronze: "linear-gradient(180deg,#6B4636,#3F2A21)",
+  silver: "linear-gradient(180deg,#5F6368,#393B3F)",
+  gold: "linear-gradient(180deg,#80704A,#4A412B)",
+};
+
+/** Milestone levels as gem tiles (bronze, silver, gold… each in its own tint). Tap to see all badges. */
 export function MilestoneStrip({ rules, count, onOpen }: { rules: BusinessRules; count: number; onOpen: () => void }) {
+  const reduce = useReducedMotion();
   const ms = rules.milestones;
   const nextIdx = ms.findIndex((m) => count < m.target);
-  const reached = ms.filter((m) => count >= m.target).length;
-  const pct = ms.length > 1 ? (Math.max(0, reached - 1) / (ms.length - 1)) * 100 : 0;
   return (
-    <button onClick={onOpen} className="relative block w-full text-left" aria-label="See all milestone badges">
-      <div className="absolute h-[2px] bg-[#ECE6DA]" style={{ left: `${50 / ms.length}%`, right: `${50 / ms.length}%`, top: 21 }} aria-hidden>
-        <motion.div
-          className="h-full bg-[linear-gradient(90deg,#F5C64F,#D79A1E)]"
-          initial={{ width: 0 }}
-          whileInView={{ width: `${pct}%` }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-        />
-      </div>
-      <div className="relative grid" style={{ gridTemplateColumns: `repeat(${ms.length}, minmax(0, 1fr))` }}>
+    <button onClick={onOpen} className="block w-full text-left" aria-label="See all milestone badges">
+      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${ms.length}, minmax(0, 1fr))` }}>
         {ms.map((m, i) => {
           const state: BadgeState = count >= m.target ? "unlocked" : i === nextIdx ? "next" : "locked";
           return (
-            <div key={m.id} className="flex flex-col items-center">
-              <CoinBadge m={m} state={state} size={44} />
-              <span className={cn("mt-2.5 text-[12px] font-bold leading-[14px]", state === "locked" ? "text-[#8D9096]" : "text-[#292C31]")}>
-                {m.label === "First referral" ? "First" : m.label}
-              </span>
-              <span className="mt-0.5 text-[11px] leading-[14px] text-[#8D9096]">
-                {m.target} {m.target === 1 ? "referral" : "referrals"}
-              </span>
-            </div>
+            <motion.div
+              key={m.id}
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.07, duration: 0.4 }}
+              className={cn("relative overflow-hidden rounded-[16px]", state === "next" && "ring-2 ring-[#E32121] ring-offset-2")}
+              style={{ background: GEM_TINT[m.id] ?? GEM_TINT.silver }}
+            >
+              <div className="relative aspect-square overflow-hidden">
+                <motion.img
+                  src={home(`gem-${m.id}.jpg`)}
+                  alt=""
+                  draggable={false}
+                  className={cn("size-full select-none object-cover", state === "locked" && "opacity-60 grayscale")}
+                  animate={state !== "locked" && !reduce ? { y: [0, -3, 0] } : undefined}
+                  transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
+                />
+                {state === "unlocked" && (
+                  <span className="absolute right-1.5 top-1.5 flex size-[18px] items-center justify-center rounded-full bg-[#0F7033] ring-2 ring-white/80">
+                    <Check className="size-2.5 text-white" strokeWidth={4} />
+                  </span>
+                )}
+                {state === "locked" && (
+                  <span className="absolute right-1.5 top-1.5 flex size-[18px] items-center justify-center rounded-full bg-black/55">
+                    <Lock className="size-2.5 text-white" strokeWidth={3} />
+                  </span>
+                )}
+                {state === "next" && <span className="absolute left-1.5 top-1.5 rounded-full bg-[#E32121] px-1.5 text-[9px] font-bold leading-[16px] text-white">Next</span>}
+              </div>
+              <div className="px-2 pb-2.5 pt-1.5">
+                <p className="text-[13px] font-bold leading-4 text-white">{m.label === "First referral" ? "First" : m.label}</p>
+                <p className="mt-0.5 text-[10.5px] leading-[13px] text-white/70">
+                  {m.target} {m.target === 1 ? "referral" : "referrals"}
+                </p>
+              </div>
+            </motion.div>
           );
         })}
       </div>

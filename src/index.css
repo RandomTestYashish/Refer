@@ -68,3 +68,17 @@
 @media (prefers-reduced-motion: reduce) {
   .amount-shine { animation: none; background-position: 100% 0; }
 }
+
+/* Light variant for dark/red backgrounds (enhancement-2 image hero). */
+.amount-shine-light {
+  background-image: linear-gradient(100deg, #FFFFFF 0%, #FFFFFF 42%, #FFD873 49%, #FFF8E1 50%, #FFD873 51%, #FFFFFF 58%, #FFFFFF 100%);
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: amount-shine 3.6s ease-in-out 0.9s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .amount-shine-light { animation: none; background-position: 100% 0; }
+}
