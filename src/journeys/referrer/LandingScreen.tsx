@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-motion";
 import { toast } from "sonner";
-import { UserPlus } from "lucide-react";
+import { Search } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
-import { ReferralLinkField, ShareRow } from "@/components/app/InviteKit";
 import { PremiumHero, HERO_HEIGHT } from "@/components/app/refer/PremiumHero";
 import { home } from "@/assets/home";
-import { HowItWorks } from "@/components/app/refer/HowItWorks";
-import { ReferralProgress, currentMilestone } from "@/components/app/refer/ReferralProgress";
+import { currentMilestone } from "@/components/app/refer/ReferralProgress";
 import { ReferralActivity } from "@/components/app/refer/ReferralActivity";
 import { MilestoneUnlockSheet } from "@/components/app/refer/MilestoneUnlockSheet";
 import { SheetSection } from "@/components/app/refer/SheetUI";
-import { QuickInvite } from "@/components/app/refer/QuickInvite";
+import { HowItWorksGrid, InviteActions, MilestoneStrip, RewardSplit, StatsBlock } from "@/components/app/refer/LandingBlocks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { referralStats, useProto } from "@/store/useProto";
@@ -19,7 +17,6 @@ import { track, trackWhenVisible } from "@/lib/analytics";
 import { inr } from "@/lib/utils";
 
 const BADGE_KEY = "refer:lastSeenBadge";
-const SHEET_OVERLAP = 28;
 const NAV_H = 44 + 56;
 
 function readSeenBadge() {
@@ -67,8 +64,8 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   // Scroll: banner fades/settles as the sheet covers it; header turns solid at the top.
   // Header background fades in over the last 60px before the sheet reaches it.
   const scrollY = useMotionValue(0);
-  const sheetTop = HERO_HEIGHT - SHEET_OVERLAP - NAV_H;
-  const navBg = useTransform(scrollY, [sheetTop - 60, sheetTop], [0, 1]);
+  const heroEnd = HERO_HEIGHT - NAV_H;
+  const navBg = useTransform(scrollY, [heroEnd - 80, heroEnd], [0, 1]);
   const onScroll = (e: React.UIEvent<HTMLDivElement>) => scrollY.set(e.currentTarget.scrollTop);
 
   // Sticky CTA only once the in-sheet CTA has scrolled away.
@@ -108,6 +105,15 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
     return () => clearTimeout(t);
   }, [badge, successful]);
 
+  // "Terms & conditions" tile scrolls to the terms and opens the first section.
+  const termsRef = useRef<HTMLDivElement>(null);
+  const [termsOpen, setTermsOpen] = useState<string>("");
+  const openTerms = () => {
+    track("terms_viewed", { section: "tile" });
+    setTermsOpen("rewards");
+    termsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const offline = network === "failure";
   const retry = () => {
     if (useProto.getState().scenario.network === "failure") toast.error("Still offline.", { description: "Your referral data is saved. Try again when you're connected." });
@@ -115,7 +121,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   };
 
   return (
-    <Screen className="bg-[#FFE9E4] pt-0">
+    <Screen className="bg-white pt-0">
       {/* Header floats over the banner; solid once the sheet reaches the top */}
       <div className="absolute inset-x-0 top-0 z-30 pt-[44px]">
         <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white" style={{ opacity: navBg }} aria-hidden />
@@ -123,43 +129,55 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
       </div>
 
       <ScreenBody className="overscroll-contain" onScroll={onScroll}>
-        {/* Banner (stays put) */}
-        <div className="sticky top-0 z-0">
-          <PremiumHero rules={rules} />
-        </div>
+        {/* Hero */}
+        <PremiumHero rules={rules} />
 
-        {/* Overlay bottom sheet */}
-        <div className="relative z-10 rounded-t-[24px] bg-white shadow-[0_-10px_30px_rgba(120,40,20,0.10)]" style={{ marginTop: -SHEET_OVERLAP }}>
-          <div className="flex justify-center pt-4" aria-hidden>
-            <span className="h-[5px] w-9 rounded-full bg-[#D4D5D6]" />
+        <div className="relative bg-[linear-gradient(180deg,#FFF3EF_0px,#FFFFFF_220px)] pb-2">
+          {/* Reward split, overlapping the hero */}
+          <div className="relative z-10 -mt-7 px-4">
+            <RewardSplit rules={rules} />
           </div>
 
-          {/* Invite — the primary action, given the biggest visual on the sheet */}
-          <section aria-labelledby="invite-title" className="px-4 pt-5">
-            <QuickInvite ref={ctaRef} rules={rules} onInvite={invite} onMore={() => invite("quick_more")} />
+          {/* Milestones up top, as a strip */}
+          <section ref={progressRef} aria-label="Referral milestones" className="px-4 pt-7">
+            <MilestoneStrip rules={rules} count={successful} onOpen={() => navigate("a_milestones")} />
+          </section>
 
-            {/* Secondary: share the link yourself */}
-            <p className="mt-5 text-[13px] font-semibold text-[#3E4146]">Or share your link</p>
-            <ReferralLinkField className="mt-2" />
-            <div className="mt-4">
-              <ShareRow
-                onShare={(channel) => {
-                  track("invite_friends_clicked", { source: `share_${channel}` });
-                  navigate("a_preview", { mode: "manual" });
-                }}
-              />
-            </div>
+          {/* Status + stats */}
+          <section aria-label="Your referrals" className="px-4 pt-8">
+            <StatsBlock
+              rules={rules}
+              successful={successful}
+              earned={stats.earned}
+              onOpen={(k) => {
+                track("referral_activity_opened", { id: k });
+                navigate("a_dashboard");
+              }}
+            />
+          </section>
+
+          {/* Invite */}
+          <section aria-label="Invite friends" className="px-4 pt-8">
+            <InviteActions
+              ctaRef={ctaRef}
+              onSearch={() => invite("search_cta")}
+              onWhatsApp={() => {
+                track("invite_friends_clicked", { source: "share_whatsapp" });
+                navigate("a_preview", { mode: "manual" });
+              }}
+            />
             <p className="mt-3 text-center text-[11px] leading-[15px] text-[#696B6F]">Each invite gets its own link, valid for {rules.linkValidityHours} hours.</p>
           </section>
 
-          <ReferralProgress
-            ref={progressRef}
-            rules={rules}
-            successful={successful}
-            earned={stats.earned}
-            onViewAll={() => navigate("a_milestones")}
-            onInvite={() => invite("progress")}
-          />
+          {/* How it works */}
+          <section ref={howRef} aria-labelledby="how-title" className="px-4 pt-9">
+            <h2 id="how-title" className="text-[20px] font-extrabold leading-6 text-[#292C31]">
+              How it works
+            </h2>
+            <div className="mt-4">
+              <HowItWorksGrid rules={rules} onTerms={openTerms} />
+            </div>
+          </section>
 
           <ReferralActivity
             referrals={referrals}
@@ -176,8 +194,6 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             }}
             onInvite={() => invite("activity_empty")}
           />
-
-          <HowItWorks ref={howRef} rules={rules} />
 
           {/* FAQs — grouped card */}
           <SheetSection id="faq-title" title="Frequently asked questions">
@@ -207,12 +223,17 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
           </SheetSection>
 
           {/* Terms — same grouped accordion as the FAQs */}
+          <div ref={termsRef} className="scroll-mt-[100px]">
           <SheetSection id="terms-title" title="Terms & conditions">
             <Accordion
               type="single"
               collapsible
+              value={termsOpen}
               className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F7F7F7)] px-4 [&>div:last-child]:border-0"
-              onValueChange={(v) => v && track("terms_viewed", { section: v })}
+              onValueChange={(v) => {
+                setTermsOpen(v);
+                if (v) track("terms_viewed", { section: v });
+              }}
             >
               {[
                 ["rewards", "Rewards", [
@@ -248,6 +269,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
               ))}
             </Accordion>
           </SheetSection>
+          </div>
 
           {/* Page footer */}
           <footer className="mt-12 px-5 pb-32">
@@ -278,8 +300,8 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             transition={{ type: "spring", stiffness: 380, damping: 34 }}
             className="absolute inset-x-0 bottom-0 z-20 border-t border-[#E6E9EF] bg-white px-5 pb-[30px] pt-3"
           >
-            <Button size="lg" block onClick={() => invite("sticky")}>
-              <UserPlus /> Invite Friends
+            <Button size="lg" block className="rounded-full bg-[#E32121] hover:bg-[#E32121]" onClick={() => invite("sticky")}>
+              <Search /> Search & Invite Friends
             </Button>
           </motion.div>
         )}
