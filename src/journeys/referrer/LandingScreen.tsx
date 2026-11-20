@@ -63,15 +63,11 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   };
 
   // Scroll: banner fades/settles as the sheet covers it; header turns solid at the top.
+  // Header background fades in over the last 60px before the sheet reaches it.
   const scrollY = useMotionValue(0);
-  const bannerOpacity = useTransform(scrollY, [0, HERO_HEIGHT - NAV_H], [1, 0.25]);
-  const bannerScale = useTransform(scrollY, [0, HERO_HEIGHT], [1, 0.94]);
-  const [solidNav, setSolidNav] = useState(false);
-  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const y = e.currentTarget.scrollTop;
-    scrollY.set(y);
-    setSolidNav(y > HERO_HEIGHT - SHEET_OVERLAP - NAV_H);
-  };
+  const sheetTop = HERO_HEIGHT - SHEET_OVERLAP - NAV_H;
+  const navBg = useTransform(scrollY, [sheetTop - 60, sheetTop], [0, 1]);
+  const onScroll = (e: React.UIEvent<HTMLDivElement>) => scrollY.set(e.currentTarget.scrollTop);
 
   // Sticky CTA only once the in-sheet CTA has scrolled away.
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -120,15 +116,16 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   return (
     <Screen className="bg-[#F9E9E3] pt-0">
       {/* Header floats over the banner; solid once the sheet reaches the top */}
-      <div className={cn("absolute inset-x-0 top-0 z-30 pt-[44px] transition-colors duration-200", solidNav ? "border-b border-[#E6E9EF] bg-white" : "bg-transparent")}>
+      <div className="absolute inset-x-0 top-0 z-30 pt-[44px]">
+        <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white" style={{ opacity: navBg }} aria-hidden />
         <AppBar title="Refer & Earn" transparent />
       </div>
 
-      <ScreenBody className="pb-28" onScroll={onScroll}>
+      <ScreenBody className="overscroll-contain pb-28" onScroll={onScroll}>
         {/* Banner (stays put) */}
-        <motion.div className="sticky top-0 z-0 origin-top" style={{ opacity: bannerOpacity, scale: bannerScale }}>
+        <div className="sticky top-0 z-0">
           <PremiumHero rules={rules} />
-        </motion.div>
+        </div>
 
         {/* Overlay bottom sheet */}
         <div className="relative z-10 rounded-t-[24px] bg-white shadow-[0_-10px_30px_rgba(120,40,20,0.10)]" style={{ marginTop: -SHEET_OVERLAP }}>

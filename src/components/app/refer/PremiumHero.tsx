@@ -1,123 +1,114 @@
-import { useEffect } from "react";
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { BusinessRules } from "@/config/businessRules";
-import { CoinStack, FallingCoins, Sparkle } from "@/components/app/refer/CoinArt";
+import { Sparkle } from "@/components/app/refer/CoinArt";
+import { home } from "@/assets/home";
 import { inr } from "@/lib/utils";
 
 /**
- * Refer & Earn banner (built from the "Premium ₹5,000 Rewards" reference):
- * blush arch pattern, a gold ₹ coin stack that drops in and bounces, coins falling through,
- * "EARN UP TO" → ₹5,000 counting up with a light sweep → "A YEAR" → three key numbers.
- * It sits behind the page's bottom sheet, like the Airtel Points / My Rewards banners.
+ * Refer & Earn banner, in the Airtel Points banner style:
+ * Airtel gold coin in the centre with tilted coins scattered around (they drop in, bounce, then float),
+ * and the amount set like the points balance — Inter Extra Bold Italic — with a light sweep and a soft zoom.
  */
 
-export const HERO_HEIGHT = 492;
+export const HERO_HEIGHT = 440;
 
-function ArchPattern() {
-  // Repeating ogee arches, faded towards the bottom.
-  const arch = "M0 60 C0 30 14 12 30 0 C46 12 60 30 60 60";
+// Scattered tilted coins (positions follow the Airtel Points banner).
+const SCATTER = [
+  { x: 14, y: 132, w: 52, rot: -18, blur: 0.8, delay: 0.25 },
+  { x: 312, y: 118, w: 42, rot: 16, blur: 0.8, delay: 0.35 },
+  { x: 82, y: 214, w: 30, rot: -8, blur: 1.2, delay: 0.45 },
+  { x: 284, y: 208, w: 44, rot: 10, blur: 0.4, delay: 0.55 },
+  { x: 334, y: 262, w: 32, rot: -12, blur: 1.4, delay: 0.65 },
+];
+
+function Rings() {
   return (
-    <svg className="absolute inset-0 h-full w-full [mask-image:linear-gradient(180deg,black_0%,black_45%,transparent_85%)]" aria-hidden>
-      <defs>
-        <pattern id="arches" width="60" height="64" patternUnits="userSpaceOnUse">
-          <path d={arch} fill="none" stroke="#E9C9BE" strokeWidth="1.2" opacity="0.55" />
-          <path d={arch} transform="translate(30 32)" fill="none" stroke="#E9C9BE" strokeWidth="1.2" opacity="0.35" />
-          <path d={arch} transform="translate(-30 32)" fill="none" stroke="#E9C9BE" strokeWidth="1.2" opacity="0.35" />
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#arches)" />
-    </svg>
-  );
-}
-
-function CountUp({ to }: { to: number }) {
-  const reduce = useReducedMotion();
-  const mv = useMotionValue(reduce ? to : 0);
-  const text = useTransform(mv, (v) => inr(Math.round(v)));
-  useEffect(() => {
-    if (reduce) return;
-    const c = animate(mv, to, { duration: 1.6, delay: 1.25, ease: [0.16, 1, 0.3, 1] });
-    return () => c.stop();
-  }, [to, mv, reduce]);
-  return <motion.span>{text}</motion.span>;
-}
-
-function Diamond() {
-  return <span className="block size-[7px] rotate-45 bg-[#B4532A]" />;
-}
-
-function StatDivider() {
-  return (
-    <span className="flex h-14 w-px flex-col items-center justify-center bg-[linear-gradient(180deg,transparent,#D8A98F,transparent)]">
-      <Diamond />
-    </span>
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      {[560, 440, 320].map((s) => (
+        <span
+          key={s}
+          className="absolute left-1/2 rounded-full border border-white/60"
+          style={{ width: s, height: s, top: 196 - s / 2, marginLeft: -s / 2 }}
+        />
+      ))}
+    </div>
   );
 }
 
 export function PremiumHero({ rules }: { rules: BusinessRules }) {
   const reduce = useReducedMotion();
   const yearly = rules.referrerReward * rules.referralCapYear;
-  const fade = (delay: number) => (reduce ? {} : { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.5 } });
+  const drop = (delay: number, from = -160) =>
+    reduce
+      ? {}
+      : {
+          initial: { y: from, opacity: 0 },
+          animate: { y: 0, opacity: 1 },
+          transition: { delay, type: "spring" as const, stiffness: 240, damping: 12 },
+        };
+  const float = (delay: number, amp = 6, dur = 3.4) =>
+    reduce ? {} : { animate: { y: [0, -amp, 0] }, transition: { duration: dur, repeat: Infinity, ease: "easeInOut" as const, delay } };
 
   return (
     <section
       aria-labelledby="hero-amount"
-      className="relative overflow-hidden bg-[linear-gradient(180deg,#F9E9E3_0%,#FCF3EF_55%,#FBEDE8_100%)]"
+      className="relative overflow-hidden bg-[linear-gradient(180deg,#F8E4DD_0%,#FCEFEA_45%,#FBE7E1_100%)]"
       style={{ height: HERO_HEIGHT }}
     >
-      <ArchPattern />
-      <FallingCoins height={HERO_HEIGHT} />
-      <div className="relative flex h-full flex-col items-center pt-[104px]">
+      <Rings />
+
+      {/* scattered tilted coins */}
+      {SCATTER.map((c, i) => (
+        <motion.div key={i} className="absolute" style={{ left: c.x, top: c.y }} {...drop(c.delay, -220)}>
+          <motion.img
+            src={home("coin-tilted.png")}
+            alt=""
+            className="block"
+            style={{ width: c.w, rotate: c.rot, filter: `blur(${c.blur}px)` }}
+            {...float(1 + i * 0.4, 5, 3 + (i % 3) * 0.6)}
+          />
+        </motion.div>
+      ))}
+
+      <div className="relative flex h-full flex-col items-center pt-[108px]">
+        {/* hero coin */}
         <div className="relative">
-          <Sparkle className="-left-6 top-6" size={12} />
-          <Sparkle className="-right-4 top-0" size={9} delay={0.8} />
-          <Sparkle className="-right-8 top-[86px]" size={11} delay={1.5} color="#E0A33A" />
-          <CoinStack />
+          <Sparkle className="-left-5 top-3" size={12} />
+          <Sparkle className="-right-4 top-14" size={10} delay={0.9} color="#E0A33A" />
+          <span className="absolute left-1/2 top-[70%] h-6 w-24 -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse,rgba(115,77,13,0.28),transparent_70%)]" />
+          <motion.div {...drop(0.1, -260)}>
+            <motion.img src={home("coin-gold.png")} alt="" className="relative block size-[96px] drop-shadow-[0_10px_18px_rgba(115,77,13,0.28)]" {...float(1.2, 6, 3.6)} />
+          </motion.div>
         </div>
 
-        <motion.p {...fade(1.0)} className="mt-4 flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.34em] text-[#6B3A1F]">
-          <span className="text-[#B4532A]">✦</span>Earn up to<span className="text-[#B4532A]">✦</span>
+        {/* amount, points-balance style */}
+        <motion.p
+          className="mt-4 text-[13px] font-medium text-[#3E4146]"
+          initial={reduce ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          Earn up to
         </motion.p>
-
         <motion.h1
           id="hero-amount"
-          className="amount-shine mt-1 font-['Playfair_Display',Georgia,serif] text-[60px] font-extrabold leading-[66px] tracking-[-0.01em] tabular-nums"
-          initial={reduce ? false : { scale: 0.9, opacity: 0 }}
-          animate={reduce ? {} : { scale: [0.9, 1, 1.06, 1], opacity: 1 }}
-          transition={{ delay: 1.1, duration: 2.1, times: [0, 0.35, 0.85, 1] }}
+          className="amount-shine pr-1 text-[48px] font-extrabold italic leading-[60px] tracking-[-1.92px] tabular-nums"
+          initial={reduce ? false : { opacity: 0, scale: 0.94 }}
+          animate={reduce ? { opacity: 1 } : { opacity: 1, scale: [0.94, 1, 1, 1.05, 1] }}
+          transition={reduce ? {} : { opacity: { delay: 0.55, duration: 0.3 }, scale: { delay: 0.55, duration: 4.2, times: [0, 0.12, 0.62, 0.8, 1], repeat: Infinity, repeatDelay: 0.6 } }}
         >
-          <CountUp to={yearly} />
+          {inr(yearly)}
         </motion.h1>
+        <p className="text-[14px] font-medium text-[#3E4146]">every year, by referring friends</p>
 
-        <motion.div {...fade(2.3)} className="mt-1 flex w-full items-center justify-center gap-3 px-8">
-          <span className="h-px flex-1 bg-[linear-gradient(90deg,transparent,#D8A98F)]" />
-          <span className="rounded-full border border-[#D8A98F] bg-[#FFF7EE] px-5 py-1 text-[12px] font-bold uppercase tracking-[0.32em] text-[#6B3A1F] shadow-[inset_0_1px_0_#FFFFFF]">
-            A year
+        {/* key numbers */}
+        <div className="mt-5 flex items-center gap-2.5 text-[12px] font-semibold text-[#3E4146]">
+          <span className="rounded-full bg-white/80 px-3 py-1.5">{inr(rules.referrerReward)} for you</span>
+          <span className="rounded-full bg-white/80 px-3 py-1.5">
+            {inr(rules.friendReward)} + {rules.friendDataGB}GB for friend
           </span>
-          <span className="h-px flex-1 bg-[linear-gradient(90deg,#D8A98F,transparent)]" />
-        </motion.div>
-
-        <motion.dl {...fade(2.6)} className="mt-4 grid w-full grid-cols-[1fr_auto_1fr_auto_1fr] items-center px-4 text-center">
-          <div>
-            <dt className="font-['Playfair_Display',Georgia,serif] text-[22px] font-extrabold leading-7 text-[#A3121B]">{inr(rules.referrerReward)}</dt>
-            <dd className="text-[11.5px] leading-[15px] text-[#4A2C1E]">for you per friend</dd>
-          </div>
-          <StatDivider />
-          <div>
-            <dt className="font-['Playfair_Display',Georgia,serif] text-[22px] font-extrabold leading-7 text-[#A3121B]">
-              {inr(rules.friendReward)} + {rules.friendDataGB}GB
-            </dt>
-            <dd className="text-[11.5px] leading-[15px] text-[#4A2C1E]">for your friend</dd>
-          </div>
-          <StatDivider />
-          <div>
-            <dt className="font-['Playfair_Display',Georgia,serif] text-[22px] font-extrabold leading-7 text-[#A3121B]">
-              <span className="text-[14px]">Up to </span>
-              {rules.referralCapYear}
-            </dt>
-            <dd className="text-[11.5px] leading-[15px] text-[#4A2C1E]">friends a year</dd>
-          </div>
-        </motion.dl>
+          <span className="rounded-full bg-white/80 px-3 py-1.5">Up to {rules.referralCapYear}</span>
+        </div>
       </div>
     </section>
   );

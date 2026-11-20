@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useId, useMemo } from "react";
+import { useId } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -69,10 +69,10 @@ export function CoinFace({
       {/* emboss */}
       {glyph && (
         <>
-          <text x="50" y="53" textAnchor="middle" dominantBaseline="middle" fontFamily="'Playfair Display', Georgia, serif" fontWeight="800" fontSize="46" fill={m.hi} opacity="0.6">
+          <text x="50" y="53" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, system-ui, sans-serif" fontWeight="800" fontSize="46" fill={m.hi} opacity="0.6">
             {glyph}
           </text>
-          <text x="50" y="51.5" textAnchor="middle" dominantBaseline="middle" fontFamily="'Playfair Display', Georgia, serif" fontWeight="800" fontSize="46" fill={`url(#glyph${id})`}>
+          <text x="50" y="51.5" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, system-ui, sans-serif" fontWeight="800" fontSize="46" fill={`url(#glyph${id})`}>
             {glyph}
           </text>
         </>
@@ -88,121 +88,6 @@ export function CoinFace({
         </g>
       )}
     </svg>
-  );
-}
-
-/** A coin lying flat (seen at an angle): face ellipse + edge thickness. */
-export function CoinFlat({ width = 90, metal = "gold", className }: { width?: number; metal?: Metal; className?: string }) {
-  const id = useId().replace(/:/g, "");
-  const m = METAL[metal];
-  const h = width * 0.42;
-  return (
-    <svg viewBox="0 0 100 42" width={width} height={h} className={cn("block overflow-visible", className)} aria-hidden>
-      <defs>
-        <linearGradient id={`edge${id}`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor={m.lo} />
-          <stop offset="0.35" stopColor={m.mid} />
-          <stop offset="0.7" stopColor={m.rim} />
-          <stop offset="1" stopColor={m.lo} />
-        </linearGradient>
-        <radialGradient id={`top${id}`} cx="0.4" cy="0.35" r="0.8">
-          <stop offset="0" stopColor={m.hi} />
-          <stop offset="1" stopColor={m.mid} />
-        </radialGradient>
-      </defs>
-      <path d="M2 16 v10 a48 15 0 0 0 96 0 v-10 z" fill={`url(#edge${id})`} />
-      <ellipse cx="50" cy="16" rx="48" ry="15" fill={`url(#top${id})`} stroke={m.rim} strokeWidth="1" />
-      <ellipse cx="50" cy="16" rx="38" ry="11" fill="none" stroke={m.lo} strokeOpacity="0.35" strokeWidth="1" />
-    </svg>
-  );
-}
-
-/** Hero coin stack: three flat coins, two leaning coins and a big front ₹ coin that drop in and bounce. */
-export function CoinStack({ className }: { className?: string }) {
-  const reduce = useReducedMotion();
-  const drop = (delay: number, from = -220) =>
-    reduce
-      ? {}
-      : {
-          initial: { y: from, opacity: 0 },
-          animate: { y: 0, opacity: 1 },
-          transition: { delay, type: "spring" as const, stiffness: 260, damping: 13, mass: 0.9 },
-        };
-  return (
-    <div className={cn("relative h-[132px] w-[236px]", className)} aria-hidden>
-      {/* floor glow */}
-      <div className="absolute bottom-[-6px] left-1/2 h-6 w-[220px] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse,rgba(186,112,30,0.28),transparent_70%)]" />
-      {/* base stack */}
-      <motion.div className="absolute bottom-0 left-1/2 -translate-x-1/2" {...drop(0.15, -120)}>
-        <CoinFlat width={120} />
-      </motion.div>
-      <motion.div className="absolute bottom-[9px] left-1/2 ml-[-58px]" {...drop(0.3, -140)}>
-        <CoinFlat width={110} />
-      </motion.div>
-      {/* leaning side coins */}
-      <motion.div className="absolute bottom-[6px] left-0" style={{ rotate: -14 }} {...drop(0.45)}>
-        <div style={{ transform: "scaleX(0.82) skewY(6deg)" }}>
-          <CoinFace size={78} glyph={null} shine={false} />
-        </div>
-      </motion.div>
-      <motion.div className="absolute bottom-[6px] right-0" style={{ rotate: 14 }} {...drop(0.55)}>
-        <div style={{ transform: "scaleX(0.82) skewY(-6deg)" }}>
-          <CoinFace size={78} glyph={null} shine={false} />
-        </div>
-      </motion.div>
-      {/* hero coin */}
-      <motion.div
-        className="absolute bottom-[10px] left-1/2 -ml-[56px]"
-        {...(reduce
-          ? {}
-          : {
-              initial: { y: -260, rotateY: 540, opacity: 0 },
-              animate: { y: 0, rotateY: 0, opacity: 1 },
-              transition: { delay: 0.7, type: "spring" as const, stiffness: 200, damping: 12 },
-            })}
-        style={{ transformPerspective: 600 }}
-      >
-        <motion.div animate={reduce ? {} : { y: [0, -4, 0] }} transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 2 }}>
-          <CoinFace size={112} glyph="₹" glyphColor="red" />
-        </motion.div>
-      </motion.div>
-    </div>
-  );
-}
-
-/** Gentle shower of small coins falling through the banner (skipped for reduced motion). */
-export function FallingCoins({ count = 7, height = 460 }: { count?: number; height?: number }) {
-  const reduce = useReducedMotion();
-  const coins = useMemo(
-    () =>
-      Array.from({ length: count }, (_, i) => ({
-        left: 6 + ((i * 97) % 88),
-        size: 14 + ((i * 7) % 12),
-        delay: 1.6 + i * 0.9,
-        dur: 4.2 + ((i * 3) % 5) * 0.5,
-        flat: i % 3 === 0,
-        drift: (i % 2 ? 1 : -1) * (10 + (i % 4) * 6),
-      })),
-    [count],
-  );
-  if (reduce) return null;
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      {coins.map((c, i) => (
-        <motion.div
-          key={i}
-          className="absolute top-0"
-          style={{ left: `${c.left}%` }}
-          initial={{ y: -40, opacity: 0, rotate: 0 }}
-          animate={{ y: [-40, height], x: [0, c.drift], opacity: [0, 0.9, 0.9, 0], rotate: [0, 160 * (i % 2 ? 1 : -1)] }}
-          transition={{ duration: c.dur, delay: c.delay, repeat: Infinity, repeatDelay: 2.5 + (i % 3), ease: "easeIn", times: [0, 1] }}
-        >
-          <div style={{ transform: c.flat ? "scaleY(0.45)" : undefined }}>
-            <CoinFace size={c.size} glyph="₹" shine={false} />
-          </div>
-        </motion.div>
-      ))}
-    </div>
   );
 }
 

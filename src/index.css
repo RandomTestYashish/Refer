@@ -51,20 +51,20 @@
 }
 
 
-/* Refer hero: red serif amount with a light sweep passing through it. */
+/* Refer hero: points-style amount (Inter Extra Bold Italic) with a gold light sweep. */
 .amount-shine {
-  background-image: linear-gradient(105deg, #C81E28 0%, #9E1119 38%, #FFD9B0 48%, #9E1119 58%, #6E0A10 100%);
-  background-size: 260% 100%;
+  background-image: linear-gradient(100deg, #121212 0%, #121212 42%, #E9C77B 49%, #FFF4D6 50%, #E9C77B 51%, #121212 58%, #121212 100%);
+  background-size: 250% 100%;
   background-position: 100% 0;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: amount-shine 3.8s ease-in-out 2.4s infinite;
+  animation: amount-shine 3.6s ease-in-out 0.9s infinite;
 }
 @keyframes amount-shine {
   0% { background-position: 100% 0; }
-  45%, 100% { background-position: 0% 0; }
+  40%, 100% { background-position: 0% 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .amount-shine { animation: none; background-position: 70% 0; }
+  .amount-shine { animation: none; background-position: 100% 0; }
 }
