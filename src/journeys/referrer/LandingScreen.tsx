@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
 import { ReferralLinkField, ShareRow } from "@/components/app/InviteKit";
-import { PremiumHero, HERO_HEIGHT } from "@/components/app/refer/PremiumHero";
+import { GoldHero, HERO_HEIGHT } from "@/components/app/refer/GoldHero";
 import { home } from "@/assets/home";
 import { HowItWorks } from "@/components/app/refer/HowItWorks";
 import { ReferralProgress, currentMilestone } from "@/components/app/refer/ReferralProgress";
@@ -115,17 +115,17 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   };
 
   return (
-    <Screen className="bg-[#FFE9E4] pt-0">
+    <Screen className="bg-white pt-0">
       {/* Header floats over the banner; solid once the sheet reaches the top */}
       <div className="absolute inset-x-0 top-0 z-30 pt-[44px]">
         <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white" style={{ opacity: navBg }} aria-hidden />
-        <AppBar title="Refer & Earn" transparent />
+        <AppBar title="Refer a friend" transparent />
       </div>
 
       <ScreenBody className="overscroll-contain" onScroll={onScroll}>
         {/* Banner (stays put) */}
         <div className="sticky top-0 z-0">
-          <PremiumHero rules={rules} />
+          <GoldHero rules={rules} />
         </div>
 
         {/* Overlay bottom sheet */}
