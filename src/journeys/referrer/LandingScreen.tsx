@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useTransform } from "framer-motion";
 import { toast } from "sonner";
-import { ChevronDown, Headphones, UserPlus } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
 import { ReferralLinkField, ShareRow } from "@/components/app/InviteKit";
 import { PremiumHero, HERO_HEIGHT } from "@/components/app/refer/PremiumHero";
@@ -10,12 +10,12 @@ import { HowItWorks } from "@/components/app/refer/HowItWorks";
 import { ReferralProgress, currentMilestone } from "@/components/app/refer/ReferralProgress";
 import { ReferralActivity } from "@/components/app/refer/ReferralActivity";
 import { MilestoneUnlockSheet } from "@/components/app/refer/MilestoneUnlockSheet";
-import { ListRow, SheetSection } from "@/components/app/refer/SheetUI";
+import { SheetSection } from "@/components/app/refer/SheetUI";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { referralStats, useProto } from "@/store/useProto";
 import { track, trackWhenVisible } from "@/lib/analytics";
-import { cn, inr } from "@/lib/utils";
+import { inr } from "@/lib/utils";
 
 const BADGE_KEY = "refer:lastSeenBadge";
 const SHEET_OVERLAP = 28;
@@ -108,7 +108,6 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
     return () => clearTimeout(t);
   }, [badge, successful]);
 
-  const [termsOpen, setTermsOpen] = useState(false);
   const offline = network === "failure";
   const retry = () => {
     if (useProto.getState().scenario.network === "failure") toast.error("Still offline", { description: "Your referral data is saved. Try again when you're connected." });
@@ -123,7 +122,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
         <AppBar title="Refer & Earn" transparent />
       </div>
 
-      <ScreenBody className="overscroll-contain pb-28" onScroll={onScroll}>
+      <ScreenBody className="overscroll-contain" onScroll={onScroll}>
         {/* Banner (stays put) */}
         <div className="sticky top-0 z-0">
           <PremiumHero rules={rules} />
@@ -239,47 +238,67 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
               ))}
             </Accordion>
 
-            {/* Terms */}
-            <button
-              onClick={() => {
-                setTermsOpen((o) => !o);
-                if (!termsOpen) track("terms_viewed");
-              }}
-              className="mt-4 flex items-center gap-1 text-[14px] font-medium text-[#075EE8]"
-              aria-expanded={termsOpen}
-            >
-              Terms & conditions <ChevronDown className={cn("size-4 transition-transform", termsOpen && "rotate-180")} />
-            </button>
-            {termsOpen && (
-              <ul className="mt-3 list-disc space-y-1.5 pl-4 text-[12.5px] leading-[18px] text-[#3E4146]">
-                <li>Referrer benefit: {inr(rules.referrerReward)} cashback for every eligible referred user, usable on the next recharge or bill payment.</li>
-                <li>Referee benefit: {inr(rules.friendReward)} cashback + {rules.friendDataGB}GB data on completing the first bill payment or recharge. First-time users only.</li>
-                <li>Minimum transaction value of {inr(rules.minTransaction)} for reward eligibility.</li>
-                <li>Cap on referrals per user: {rules.referralCapMonth} per month, {rules.referralCapYear} per year.</li>
-                <li>Cashback must be consumed within {rules.cashbackValidityDays} days from allocation.</li>
-                <li>The referred friend must complete the qualifying transaction within {rules.firstTxnDeadlineDays} days of joining.</li>
-                <li>Rewards are credited after validation, which can take up to {rules.rewardValidationDays} days.</li>
-                <li>The referral is attributed to the first valid invitation link the friend opens. Links are valid for {rules.linkValidityHours} hours.</li>
-                <li>Reversed or refunded transactions are not eligible.</li>
-                <li>Milestone badges are recognition only and carry no additional cash reward.</li>
-              </ul>
-            )}
           </SheetSection>
 
-          {/* Support + fine print */}
-          <section className="px-4 pt-6">
-            <ListRow
-              icon={<Headphones />}
-              title="Need help with a referral?"
-              sub="Contact Airtel support"
-              divider={false}
-              onClick={() => {
-                track("support_clicked");
-                toast("Connecting you to Airtel support", { description: "Prototype: no ticket is actually raised." });
-              }}
-            />
-            <p className="pb-6 pt-4 text-center text-[12px] text-[#696B6F]">Cashback has no cash value. Rewards go to the Airtel number that sent the invite.</p>
-          </section>
+          {/* Terms — same grouped accordion as the FAQs */}
+          <SheetSection id="terms-title" title="Terms & conditions">
+            <Accordion
+              type="single"
+              collapsible
+              className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F7F7F7)] px-4 [&>div:last-child]:border-0"
+              onValueChange={(v) => v && track("terms_viewed", { section: v })}
+            >
+              {[
+                ["rewards", "Rewards", [
+                  `You get ${inr(rules.referrerReward)} cashback for every eligible referred user, usable on your next recharge or bill payment.`,
+                  `Your friend gets ${inr(rules.friendReward)} cashback + ${rules.friendDataGB}GB data on their first recharge or bill payment. First-time users only.`,
+                  "Milestone badges are recognition only and carry no additional cash reward.",
+                ]],
+                ["eligibility", "Eligibility", [
+                  `Minimum transaction value of ${inr(rules.minTransaction)}.`,
+                  `Your friend must complete the qualifying transaction within ${rules.firstTxnDeadlineDays} days of joining.`,
+                  "Reversed or refunded transactions are not eligible.",
+                ]],
+                ["limits", "Limits & validity", [
+                  `Up to ${rules.referralCapMonth} rewarded referrals a month and ${rules.referralCapYear} a year.`,
+                  `Rewards are credited after validation, which can take up to ${rules.rewardValidationDays} days.`,
+                  `Cashback must be used within ${rules.cashbackValidityDays} days of credit.`,
+                ]],
+                ["attribution", "Invitation links", [
+                  `A referral counts for the first valid invitation link your friend opens.`,
+                  `Links are valid for ${rules.linkValidityHours} hours. You can resend an expired invite from My Referrals.`,
+                ]],
+              ].map(([id, q, items]) => (
+                <AccordionItem key={id as string} value={id as string} className="border-b border-[#E6E9EF]">
+                  <AccordionTrigger className="text-[15px] font-bold">{q as string}</AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="list-disc space-y-1.5 pl-4 text-[13px] leading-[18px] text-[#3E4146]">
+                      {(items as string[]).map((t) => (
+                        <li key={t}>{t}</li>
+                      ))}
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </SheetSection>
+
+          {/* Page footer */}
+          <footer className="mt-12 px-5 pb-32">
+            <p className="text-[44px] font-extrabold italic leading-[46px] tracking-[-1.6px] text-[#E4E6EB]">
+              Refer more.
+              <br />
+              Earn more.
+            </p>
+            <div className="mt-5 flex items-center gap-2">
+              <div className="flex -space-x-2">
+                {(["first", "bronze", "silver", "gold"] as const).map((b) => (
+                  <img key={b} src={home(`badge-${b}.png`)} alt="" className="size-6 rounded-full ring-2 ring-white" />
+                ))}
+              </div>
+              <p className="text-[12px] font-medium text-[#8D9096]">Made with care for Airtel friends</p>
+            </div>
+          </footer>
         </div>
       </ScreenBody>
 

@@ -1,48 +1,51 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, Lock } from "lucide-react";
+import { home } from "@/assets/home";
 import type { Milestone } from "@/config/businessRules";
-import { CoinFace, type Metal } from "@/components/app/refer/CoinArt";
+export type Metal = "gold" | "silver" | "bronze" | "ruby";
 import { cn } from "@/lib/utils";
 
 /** Each level is minted in its own metal; locked levels are unminted grey coins. */
 export const LEVEL_METAL: Record<Milestone["id"], Metal> = { first: "ruby", bronze: "bronze", silver: "silver", gold: "gold" };
 
-const STAR = "M50 30 l5.6 11.4 12.6 1.8 -9.1 8.9 2.1 12.5 L50 58.7 38.8 64.6 40.9 52.1 31.8 43.2 44.4 41.4 z";
-const LOCK = (
-  <g fill="none" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="37" y="47" width="26" height="19" rx="3.5" />
-    <path d="M42 47 v-5 a8 8 0 0 1 16 0 v5" />
-  </g>
-);
-
 export type BadgeState = "unlocked" | "next" | "locked";
 
-/** Coin badge for a milestone level. */
+/** Coin badge for a milestone level: the 3D medal art, greyed out until it is reached. */
 export function CoinBadge({ m, state, size = 44, pulse = true }: { m: Milestone; state: BadgeState; size?: number; pulse?: boolean }) {
   const reduce = useReducedMotion();
-  const metal: Metal = state === "unlocked" ? LEVEL_METAL[m.id] : "locked";
-  const emboss = state === "unlocked" ? undefined : "#8E939B";
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }} aria-label={`${m.label} ${state}`}>
-      {state === "next" && pulse && !reduce && (
-        <motion.span
-          className="absolute inset-[-5px] rounded-full border-2 border-[#E32121]"
-          animate={{ opacity: [0.9, 0.2, 0.9], scale: [1, 1.08, 1] }}
-          transition={{ duration: 1.8, repeat: Infinity }}
-        />
+      {state === "next" &&
+        (pulse && !reduce ? (
+          <motion.span
+            className="absolute inset-[-4px] rounded-full border-2 border-[#E32121]"
+            animate={{ opacity: [0.9, 0.25, 0.9], scale: [1, 1.08, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity }}
+          />
+        ) : (
+          <span className="absolute inset-[-4px] rounded-full border-2 border-[#E32121]" />
+        ))}
+      <img
+        src={home(`badge-${m.id}.png`)}
+        alt=""
+        draggable={false}
+        className={cn("block size-full select-none drop-shadow-[0_2px_3px_rgba(0,0,0,0.22)]", state === "next" && "opacity-70 grayscale", state === "locked" && "opacity-40 grayscale")}
+      />
+      {state === "next" && (
+        <span
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-[#E32121] px-1.5 font-bold leading-[14px] text-white ring-2 ring-white"
+          style={{ fontSize: Math.max(9, size * 0.24) }}
+        >
+          {m.target}
+        </span>
       )}
-      {state === "next" && (pulse && !reduce ? null : <span className="absolute inset-[-4px] rounded-full border-2 border-[#E32121]" />)}
-      <CoinFace size={size} metal={metal} glyph={state === "unlocked" && m.id === "first" ? "₹" : null} shine={state === "unlocked"}>
-        {state === "unlocked" && m.id !== "first" && <path d={STAR} fill={metal === "silver" ? "#7B8592" : metal === "bronze" ? "#7E4019" : "#A86A08"} />}
-        {state === "next" && (
-          <text x="50" y="52" textAnchor="middle" dominantBaseline="middle" fontFamily="Inter, sans-serif" fontWeight="800" fontSize={m.target >= 10 ? 30 : 36} fill="#E32121">
-            {m.target}
-          </text>
-        )}
-        {state === "locked" && <g stroke={emboss}>{LOCK}</g>}
-      </CoinFace>
+      {state === "locked" && (
+        <span className="absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full bg-[#5B6170] ring-2 ring-white" style={{ width: size * 0.38, height: size * 0.38 }}>
+          <Lock className="text-white" style={{ width: size * 0.2, height: size * 0.2 }} strokeWidth={3} />
+        </span>
+      )}
       {state === "unlocked" && (
-        <span className="absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full border-2 border-white bg-[#0F7033]" style={{ width: size * 0.38, height: size * 0.38 }}>
+        <span className="absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full bg-[#0F7033] ring-2 ring-white" style={{ width: size * 0.38, height: size * 0.38 }}>
           <Check className="text-white" style={{ width: size * 0.22, height: size * 0.22 }} strokeWidth={4} />
         </span>
       )}

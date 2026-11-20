@@ -101,10 +101,10 @@ export const ReferralActivity = forwardRef<
             </button>
           </div>
         ) : (
-          <div>
+          <div className="overflow-hidden rounded-[20px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F7F7F7)] px-4 shadow-[0_4px_14px_rgba(41,44,49,0.05)]">
             {latest.map((r) => {
               const s = referralStatusCopy(r, reward);
-              const amount = s.tone === "success" ? `+${inr(reward)}` : s.tone === "warning" ? inr(reward) : "—";
+              const amount = s.tone === "success" ? `+${inr(reward)}` : s.tone === "warning" ? inr(reward) : "";
               return (
                 <ListRow
                   key={r.id}
@@ -126,6 +126,9 @@ export const ReferralActivity = forwardRef<
                 />
               );
             })}
+            <button onClick={onViewAll} className="-mx-4 flex w-[calc(100%+2rem)] items-center justify-center gap-1 py-3 text-[14px] font-semibold text-[#075EE8] active:bg-[#F0F4F9]">
+              View all referrals <ChevronRight className="size-4" />
+            </button>
           </div>
         )}
       </SheetSection>
