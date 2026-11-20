@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
 import { ReferralLinkField, ShareRow } from "@/components/app/InviteKit";
-import { GoldHero, HERO_HEIGHT } from "@/components/app/refer/GoldHero";
+import { GoldHero, HERO_HEIGHT, OfferCard } from "@/components/app/refer/GoldHero";
 import { home } from "@/assets/home";
 import { HowItWorks } from "@/components/app/refer/HowItWorks";
 import { ReferralProgress, currentMilestone } from "@/components/app/refer/ReferralProgress";
@@ -134,8 +134,24 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             <span className="h-[5px] w-9 rounded-full bg-[#D4D5D6]" />
           </div>
 
-          {/* Invite — the primary action, given the biggest visual on the sheet */}
-          <section aria-labelledby="invite-title" className="px-4 pt-5">
+          {/* Offer — what each side gets */}
+          <section aria-label="Rewards" className="px-4 pt-5">
+            <OfferCard rules={rules} />
+          </section>
+
+          {/* Milestones up top */}
+          <ReferralProgress
+            className="pt-5"
+            ref={progressRef}
+            rules={rules}
+            successful={successful}
+            earned={stats.earned}
+            onViewAll={() => navigate("a_milestones")}
+            onInvite={() => invite("progress")}
+          />
+
+          {/* Invite — the primary action */}
+          <section aria-labelledby="invite-title" className="px-4 pt-8">
             <QuickInvite ref={ctaRef} rules={rules} onInvite={invite} onMore={() => invite("quick_more")} />
 
             {/* Secondary: share the link yourself */}
@@ -151,15 +167,6 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             </div>
             <p className="mt-3 text-center text-[11px] leading-[15px] text-[#696B6F]">Each invite gets its own link, valid for {rules.linkValidityHours} hours.</p>
           </section>
-
-          <ReferralProgress
-            ref={progressRef}
-            rules={rules}
-            successful={successful}
-            earned={stats.earned}
-            onViewAll={() => navigate("a_milestones")}
-            onInvite={() => invite("progress")}
-          />
 
           <ReferralActivity
             referrals={referrals}

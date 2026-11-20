@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { MilestoneTrack } from "@/components/app/Milestones";
 import type { BusinessRules, Milestone } from "@/config/businessRules";
 import { home } from "@/assets/home";
-import { inr } from "@/lib/utils";
+import { cn, inr } from "@/lib/utils";
 
 /** The highest milestone reached for a given count of successful referrals. */
 export function currentMilestone(milestones: Milestone[], count: number) {
@@ -20,8 +20,8 @@ export const MILESTONE_BG = "#161034";
  */
 export const ReferralProgress = forwardRef<
   HTMLElement,
-  { rules: BusinessRules; successful: number; earned: number; onViewAll: () => void; onInvite: () => void }
->(({ rules, successful, earned, onViewAll, onInvite }, ref) => {
+  { rules: BusinessRules; successful: number; earned: number; onViewAll: () => void; onInvite: () => void; className?: string }
+>(({ rules, successful, earned, onViewAll, onInvite, className }, ref) => {
   const reduce = useReducedMotion();
   const ms = rules.milestones;
   const current = currentMilestone(ms, successful);
@@ -30,7 +30,7 @@ export const ReferralProgress = forwardRef<
   const title = current ? `${current.label === "First referral" ? "First" : current.label} badge unlocked` : "Win your first badge";
 
   return (
-    <section ref={ref} aria-labelledby="progress-title" className="px-4 pt-8">
+    <section ref={ref} aria-labelledby="progress-title" className={cn("px-4 pt-8", className)}>
       <div className="relative overflow-hidden rounded-[20px] text-white shadow-[0_12px_28px_rgba(22,16,52,0.28)]" style={{ background: MILESTONE_BG }}>
         {/* banner art */}
         <div className="relative h-[150px]">
