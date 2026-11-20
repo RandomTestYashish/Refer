@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-mo
 import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
+import { useStatusTone } from "@/components/device/statusTone";
 import { ReferralLinkField, ShareRow } from "@/components/app/InviteKit";
 import { GoldHero, HERO_HEIGHT, OfferCard } from "@/components/app/refer/GoldHero";
 import { home } from "@/assets/home";
@@ -69,7 +70,13 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   const scrollY = useMotionValue(0);
   const sheetTop = HERO_HEIGHT - SHEET_OVERLAP - NAV_H;
   const navBg = useTransform(scrollY, [sheetTop - 60, sheetTop], [0, 1]);
-  const onScroll = (e: React.UIEvent<HTMLDivElement>) => scrollY.set(e.currentTarget.scrollTop);
+  const [navOn, setNavOn] = useState(false);
+  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    scrollY.set(e.currentTarget.scrollTop);
+    setNavOn(e.currentTarget.scrollTop > sheetTop - 30);
+  };
+  // White status bar over the dark ember hero.
+  useStatusTone("light", !navOn);
 
   // Sticky CTA only once the in-sheet CTA has scrolled away.
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -115,11 +122,14 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   };
 
   return (
-    <Screen className="bg-white pt-0">
+    <Screen className="bg-[#1C0803] pt-0">
       {/* Header floats over the banner; solid once the sheet reaches the top */}
       <div className="absolute inset-x-0 top-0 z-30 pt-[44px]">
-        <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white" style={{ opacity: navBg }} aria-hidden />
-        <AppBar title="Refer a friend" transparent />
+        <AppBar title="Refer a friend" transparent className="[&_button]:!text-white [&_div]:!text-white" />
+        {/* solid header fades in once the sheet reaches the top */}
+        <motion.div className="absolute inset-0 border-b border-[#E6E9EF] bg-white pt-[44px]" style={{ opacity: navBg, pointerEvents: navOn ? "auto" : "none" }}>
+          <AppBar title="Refer a friend" transparent />
+        </motion.div>
       </div>
 
       <ScreenBody className="overscroll-contain" onScroll={onScroll}>
@@ -129,7 +139,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
         </div>
 
         {/* Overlay bottom sheet */}
-        <div className="relative z-10 rounded-t-[24px] bg-white shadow-[0_-10px_30px_rgba(120,40,20,0.10)]" style={{ marginTop: -SHEET_OVERLAP }}>
+        <div className="relative z-10 rounded-t-[24px] bg-white shadow-[0_-10px_30px_rgba(60,10,0,0.35)]" style={{ marginTop: -SHEET_OVERLAP }}>
           <div className="flex justify-center pt-4" aria-hidden>
             <span className="h-[5px] w-9 rounded-full bg-[#D4D5D6]" />
           </div>
@@ -284,7 +294,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             transition={{ type: "spring", stiffness: 380, damping: 34 }}
             className="absolute inset-x-0 bottom-0 z-20 border-t border-[#E6E9EF] bg-white px-5 pb-[30px] pt-3"
           >
-            <Button size="lg" block onClick={() => invite("sticky")}>
+            <Button size="lg" block className="border-0 bg-[linear-gradient(180deg,#FF7A2F,#E2471B)] hover:bg-[#E2471B]" onClick={() => invite("sticky")}>
               <UserPlus /> Invite Friends
             </Button>
           </motion.div>
