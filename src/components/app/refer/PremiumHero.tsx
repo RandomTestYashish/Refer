@@ -14,7 +14,7 @@ import { inr } from "@/lib/utils";
  */
 
 export const HERO_BG = "#FFE3E3";
-export const HERO_HEIGHT = 478;
+export const HERO_HEIGHT = 420;
 
 const STEP_MS = [2600, 2400, 2600, 3600];
 
@@ -243,27 +243,18 @@ export function PremiumHero({ rules }: { rules: BusinessRules }) {
           </AnimatePresence>
         </div>
 
-        {/* caption */}
-        <div className="relative mt-1 h-[46px] text-center" aria-live="polite">
-          <AnimatePresence mode="wait">
-            <motion.div key={step} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
-              <p className="text-[16px] font-extrabold text-[#292C31]">
-                <span className="mr-1.5 text-[#E32121]">{step + 1}.</span>
-                {captions[step].t}
-              </p>
-              <p className="mt-0.5 text-[12.5px] text-[#6B3A33]">{captions[step].d}</p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        {/* step caption for screen readers only — the visible copy is the one headline below */}
+        <p className="sr-only" aria-live="polite">
+          Step {step + 1}: {captions[step].t}. {captions[step].d}
+        </p>
 
-        {/* promise */}
-        <div className="mt-3 text-center">
-          <p className="text-[13px] font-semibold text-[#6B3A33]">Earn up to</p>
-          <h1 id="hero-amount" className="amount-shine -mr-2 inline-block px-2 text-[44px] font-extrabold italic leading-[50px] tracking-[-1.8px] tabular-nums">
-            {inr(yearly)}
-          </h1>
-          <p className="text-[13px] font-semibold text-[#6B3A33]">a year in Airtel cashback</p>
-        </div>
+        {/* headline */}
+        <h1 id="hero-amount" className="mx-auto mt-2 max-w-[320px] text-center text-[28px] font-extrabold leading-[34px] tracking-[-0.6px] text-[#292C31]">
+          Refer a friend,
+          <br />
+          earn up to{" "}
+          <span className="amount-shine -mr-1 inline-block px-1 italic tabular-nums">{inr(yearly)}</span>
+        </h1>
       </div>
     </section>
   );
