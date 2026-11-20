@@ -63,7 +63,20 @@ export function MilestoneMedal({ m, unlocked, size = 44 }: { m: Milestone; unloc
  * Coin stepper: four level coins on a gold line (the "streak" pattern from the Airtel rewards page).
  * Reached levels show their metal, the next level pulses, future levels stay grey.
  */
-export function MilestoneTrack({ milestones, count, className, size = 40 }: { milestones: Milestone[]; count: number; className?: string; size?: number }) {
+export function MilestoneTrack({
+  milestones,
+  count,
+  className,
+  size = 40,
+  dark = false,
+}: {
+  milestones: Milestone[];
+  count: number;
+  className?: string;
+  size?: number;
+  /** Light labels for use on the dark milestone banner. */
+  dark?: boolean;
+}) {
   const n = milestones.length;
   let filled = 0;
   for (let i = 1; i < n; i++) {
@@ -79,7 +92,7 @@ export function MilestoneTrack({ milestones, count, className, size = 40 }: { mi
   const nextIdx = milestones.findIndex((m) => count < m.target);
   return (
     <div className={cn("relative", className)}>
-      <div className="absolute h-[3px] rounded-full bg-[#ECE6DA]" style={{ left: `${50 / n}%`, right: `${50 / n}%`, top: size / 2 - 1.5 }}>
+      <div className={cn("absolute h-[3px] rounded-full", dark ? "bg-white/15" : "bg-[#ECE6DA]")} style={{ left: `${50 / n}%`, right: `${50 / n}%`, top: size / 2 - 1.5 }}>
         <motion.div
           className="h-full rounded-full bg-[linear-gradient(90deg,#F5C64F,#D79A1E)]"
           initial={{ width: 0 }}
@@ -94,10 +107,10 @@ export function MilestoneTrack({ milestones, count, className, size = 40 }: { mi
           return (
             <div key={m.id} className="flex flex-col items-center text-center">
               <CoinBadge m={m} state={state} size={size} />
-              <span className={cn("mt-2 text-[12px] font-bold leading-[14px]", state === "locked" ? "text-[#696B6F]" : state === "next" ? "text-[#B25E09]" : "text-[#292C31]")}>
+              <span className={cn("mt-2 text-[12px] font-bold leading-[14px]", state === "locked" ? (dark ? "text-white/55" : "text-[#696B6F]") : state === "next" ? (dark ? "text-[#FFCB5C]" : "text-[#B25E09]") : dark ? "text-white" : "text-[#292C31]")}>
                 {m.label === "First referral" ? "First" : m.label}
               </span>
-              <span className="mt-0.5 text-[11px] leading-[14px] text-[#696B6F]">
+              <span className={cn("mt-0.5 text-[11px] leading-[14px]", dark ? "text-white/55" : "text-[#696B6F]")}>
                 {m.target} {m.target === 1 ? "referral" : "referrals"}
               </span>
             </div>
