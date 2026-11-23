@@ -3,7 +3,6 @@ import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-mo
 import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
-import { ReferralLinkField, ShareRow } from "@/components/app/InviteKit";
 import { GoldHero, HERO_HEIGHT, OfferCard } from "@/components/app/refer/GoldHero";
 import { home } from "@/assets/home";
 import { HowItWorks } from "@/components/app/refer/HowItWorks";
@@ -148,21 +147,15 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
           />
 
           {/* Invite — the primary action */}
-          <section aria-labelledby="invite-title" className="px-4 pt-5">
-            <QuickInvite ref={ctaRef} rules={rules} onInvite={invite} onMore={() => invite("quick_more")} />
-
-            {/* Secondary: share the link yourself */}
-            <p className="mt-5 text-[13px] font-semibold text-[#3E4146]">Or share your link</p>
-            <ReferralLinkField className="mt-2" />
-            <div className="mt-4">
-              <ShareRow
-                onShare={(channel) => {
-                  track("invite_friends_clicked", { source: `share_${channel}` });
-                  navigate("a_preview", { mode: "manual" });
-                }}
-              />
-            </div>
-            <p className="mt-3 text-center text-[11px] leading-[15px] text-[#696B6F]">Each invite gets its own link, valid for {rules.linkValidityHours} hours.</p>
+          <section aria-label="Invite friends" className="px-4 pt-6">
+            <QuickInvite
+              ref={ctaRef}
+              onInvite={invite}
+              onShare={(channel) => {
+                track("invite_friends_clicked", { source: `share_${channel}` });
+                navigate("a_preview", { mode: "manual" });
+              }}
+            />
           </section>
 
           <ReferralActivity
