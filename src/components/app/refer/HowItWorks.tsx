@@ -47,14 +47,14 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ r
           role="list"
         >
           {steps.map((s, i) => (
-            <article key={s.t} role="listitem" className="w-[78%] shrink-0 snap-start overflow-hidden rounded-[20px] bg-[#FEF4EA] ring-1 ring-[#F6E2D2]">
+            <article key={s.t} role="listitem" className="w-[78%] shrink-0 snap-start overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)]">
               <div className="relative">
                 <img src={home(s.img)} alt="" className="block h-[150px] w-full object-cover" draggable={false} />
-                <span className="absolute left-3 top-3 rounded-full bg-[#292C31] px-2.5 py-1 text-[11px] font-bold text-white">Step {i + 1}</span>
+                <span className="absolute left-3 top-3 rounded-[8px] border border-[#E6E9EF] bg-white px-2 py-1 text-[11px] font-bold leading-[14px] text-[#292C31]">Step {i + 1}</span>
               </div>
-              <div className="px-4 pb-4 pt-1">
-                <h3 className="text-[16px] font-extrabold leading-5 text-[#292C31]">{s.t}</h3>
-                <p className="mt-1 text-[13px] leading-[18px] text-[#5C5F66]">{s.d}</p>
+              <div className="p-4">
+                <h3 className="text-[16px] font-bold leading-[18px] text-[#292C31]">{s.t}</h3>
+                <p className="mt-1 text-[14px] leading-5 text-[#696B6F]">{s.d}</p>
               </div>
             </article>
           ))}
@@ -66,16 +66,16 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ r
           ))}
         </div>
 
-        <button onClick={() => setOpen((o) => !o)} className="mt-2 flex w-full items-center justify-between py-3 text-[14px] font-medium text-[#075EE8]" aria-expanded={open}>
+        <button onClick={() => setOpen((o) => !o)} className="mt-2 flex w-full items-center justify-between py-3 text-[14px] font-medium leading-4 text-[#075EE8]" aria-expanded={open}>
           Reward Conditions
           <ChevronDown className={cn("size-5 transition-transform", open && "rotate-180")} />
         </button>
         {open && (
-          <dl className="rounded-[16px] border border-[#E6E9EF] text-[12.5px]">
+          <dl className="rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] text-[12px] leading-[18px]">
             {conditions.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3 border-b border-[#E6E9EF] px-4 py-2.5 last:border-0">
                 <dt className="text-[#696B6F]">{k}</dt>
-                <dd className="text-right font-semibold text-[#292C31]">{v}</dd>
+                <dd className="text-right font-bold text-[#292C31]">{v}</dd>
               </div>
             ))}
           </dl>

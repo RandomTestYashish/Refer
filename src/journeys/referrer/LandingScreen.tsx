@@ -19,6 +19,8 @@ import { inr } from "@/lib/utils";
 const BADGE_KEY = "refer:lastSeenBadge";
 const SHEET_OVERLAP = 28;
 const NAV_H = 44 + 56;
+/** Gen4 Terms & Conditions header: Bold 14/16 uppercase with a 20px chevron. */
+const DROPDOWN_TITLE = "p-4 text-[14px] font-bold uppercase leading-4 tracking-[-0.005em] text-[#292C31] [&>svg]:size-5 [&>svg]:text-[#292C31]";
 
 function readSeenBadge() {
   try {
@@ -181,15 +183,15 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             <Accordion
               type="single"
               collapsible
-              className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F7F7F7)] px-4 [&>div:last-child]:border-0"
+              className="space-y-3"
               onValueChange={(v) => {
                 if (v === "faq") track("faq_opened", { question: "all" });
                 if (v === "terms") track("terms_viewed", { section: "all" });
               }}
             >
-              <AccordionItem value="faq" className="border-b border-[#E6E9EF]">
-                <AccordionTrigger className="text-[15px] font-bold">FAQs</AccordionTrigger>
-                <AccordionContent>
+              <AccordionItem value="faq" className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)]">
+                <AccordionTrigger className={DROPDOWN_TITLE}>FAQs</AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
                   <div className="space-y-3">
                     {([
                 ["earn", "How can I earn rewards?", `Share your link. You earn ${inr(rules.referrerReward)} cashback for every friend who joins Airtel and completes an eligible recharge or bill payment, up to ${inr(rules.referrerReward * rules.referralCapYear)} a year.`],
@@ -202,17 +204,17 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
                 ["expired", "What happens if an invitation expires?", `Links last ${rules.linkValidityHours} hours. To create a fresh link, resend it from My Referrals. The earlier invite stays in your history.`],
               ] as string[][]).map(([id, q, a]) => (
                       <div key={id}>
-                        <p className="text-[13px] font-bold leading-[18px] text-[#292C31]">{q}</p>
-                        <p className="mt-0.5 text-[13px] leading-[18px] text-[#3E4146]">{a}</p>
+                        <p className="text-[14px] font-bold leading-5 text-[#292C31]">{q}</p>
+                        <p className="mt-0.5 text-[14px] leading-5 text-[#696B6F]">{a}</p>
                       </div>
                     ))}
                   </div>
                 </AccordionContent>
               </AccordionItem>
-              <AccordionItem value="terms" className="border-b border-[#E6E9EF]">
-                <AccordionTrigger className="text-[15px] font-bold">Terms &amp; conditions</AccordionTrigger>
-                <AccordionContent>
-                  <ul className="list-disc space-y-1.5 pl-4 text-[13px] leading-[18px] text-[#3E4146]">
+              <AccordionItem value="terms" className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)]">
+                <AccordionTrigger className={DROPDOWN_TITLE}>Terms &amp; conditions</AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <ul className="list-disc space-y-2 pl-4 text-[14px] leading-5 text-[#696B6F]">
                     {([
                 ["rewards", "Rewards", [
                   `You get ${inr(rules.referrerReward)} cashback for every eligible referred user, usable on your next recharge or bill payment`,
@@ -269,9 +271,9 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             animate={{ y: 0 }}
             exit={{ y: 90 }}
             transition={{ type: "spring", stiffness: 380, damping: 34 }}
-            className="absolute inset-x-0 bottom-0 z-20 border-t border-[#E6E9EF] bg-white px-5 pb-[30px] pt-3"
+            className="absolute inset-x-0 bottom-0 z-20 border-t border-[#E6E9EF] bg-white px-5 pb-7 pt-4"
           >
-            <Button size="lg" block onClick={() => invite("sticky")}>
+            <Button size="sm" block onClick={() => invite("sticky")}>
               <UserPlus /> Invite Friends
             </Button>
           </motion.div>

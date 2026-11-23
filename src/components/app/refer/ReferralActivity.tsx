@@ -77,7 +77,7 @@ export const ReferralActivity = forwardRef<
         }
       >
         {offline ? (
-          <div className="flex items-center gap-3 rounded-[16px] border border-[#E6E9EF] p-4" role="status">
+          <div className="flex items-center gap-3 rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-4" role="status">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F0F4F9]">
               <WifiOff className="size-5 text-[#696B6F]" />
             </span>
@@ -90,18 +90,18 @@ export const ReferralActivity = forwardRef<
             </button>
           </div>
         ) : latest.length === 0 ? (
-          <div className="rounded-[16px] border border-dashed border-[#D8DCE3] p-5 text-center">
+          <div className="rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-4 text-center">
             <span className="mx-auto flex size-11 items-center justify-center rounded-full bg-[#F0F4F9]">
               <Users className="size-5 text-[#696B6F]" />
             </span>
-            <p className="mt-2 text-[14px] font-bold text-[#292C31]">No invitations yet</p>
-            <p className="mt-0.5 text-[12px] text-[#696B6F]">Invite a friend and every step shows up here.</p>
-            <button onClick={onInvite} className="mt-3 text-[14px] font-medium text-[#075EE8]">
+            <p className="mt-2 text-[16px] font-bold leading-[18px] text-[#292C31]">No invitations yet</p>
+            <p className="mt-1 text-[12px] leading-[18px] text-[#696B6F]">Invite a friend and every step shows up here.</p>
+            <button onClick={onInvite} className="mt-3 text-[14px] font-medium leading-4 text-[#075EE8]">
               Invite A Friend
             </button>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-[20px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F7F7F7)] px-4 shadow-[0_4px_14px_rgba(41,44,49,0.05)]">
+          <div className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] px-4">
             {latest.map((r) => {
               const s = referralStatusCopy(r, reward);
               const amount = s.tone === "success" ? `+${inr(reward)}` : s.tone === "warning" ? inr(reward) : "";

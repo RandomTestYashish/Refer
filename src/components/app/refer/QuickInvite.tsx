@@ -31,11 +31,11 @@ export const QuickInvite = forwardRef<HTMLDivElement, { onInvite: (source: strin
           </Button>
         </div>
         <div className="mt-3 flex items-center gap-1.5">
-          <div className="flex h-10 min-w-0 flex-1 items-center rounded-full bg-[#F4F5F7] pl-3.5 pr-1">
-            <span className="min-w-0 flex-1 select-all truncate text-[13px] font-semibold text-[#292C31]">{PERSONAL_LINK}</span>
+          <div className="flex h-10 min-w-0 flex-1 items-center rounded-[12px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] pl-3 pr-1">
+            <span className="min-w-0 flex-1 select-all truncate text-[13px] font-medium text-[#292C31]">{PERSONAL_LINK}</span>
             <button
               onClick={async () => setCopied(await copyInviteLink(PERSONAL_LINK))}
-              className="flex size-8 shrink-0 items-center justify-center rounded-full text-[#5C5F66] active:bg-black/5"
+              className="flex size-8 shrink-0 items-center justify-center rounded-[8px] text-[#696B6F] active:bg-black/5"
               aria-label={copied ? "Link copied." : "Copy link"}
             >
               {copied ? <Check className="size-4 text-[#0F7033]" strokeWidth={3} /> : <Copy className="size-4" />}
@@ -46,7 +46,7 @@ export const QuickInvite = forwardRef<HTMLDivElement, { onInvite: (source: strin
               key={id}
               onClick={() => onShare(id)}
               aria-label={label}
-              className="relative flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F4F5F7] after:absolute after:-inset-0.5 active:bg-[#E9EAED]"
+              className="relative flex size-10 shrink-0 items-center justify-center rounded-[12px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] after:absolute after:-inset-0.5 active:brightness-95"
               style={{ color }}
             >
               <Icon className="size-[21px]" />

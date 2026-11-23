@@ -79,30 +79,25 @@ function HeroBackdrop({ reduce }: { reduce: boolean }) {
   );
 }
 
-/** What each side gets — sits at the top of the sheet. */
+/** What each side gets: Gen4 Value Prop values on the standard card surface. */
 export function OfferCard({ rules }: { rules: BusinessRules }) {
   return (
-    <div className="relative grid grid-cols-[1fr_auto_1fr] items-stretch overflow-hidden rounded-[20px] border border-[#F3DDA3] bg-[linear-gradient(180deg,#FFFBF0,#FFFFFF)] shadow-[0_6px_18px_rgba(148,101,3,0.10)]">
-      <div className="flex items-center gap-2.5 py-4 pl-4">
-        <img src={home("coin-gold.png")} alt="" className="size-9 shrink-0" />
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[1px] text-[#946503]">You get</p>
-          <p className="text-[20px] font-extrabold leading-6 text-[#292C31] tabular-nums">{inr(rules.referrerReward)}</p>
+    <div className="grid grid-cols-[1fr_auto_1fr] items-center rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-4">
+      <div className="flex min-w-0 items-center gap-2">
+        <img src={home("coin-gold.png")} alt="" className="size-10 shrink-0" />
+        <div className="min-w-0">
+          <p className="text-[11px] leading-[14px] text-[#696B6F]">You get</p>
+          <p className="text-[24px] font-bold leading-8 text-[#292C31] tabular-nums">{inr(rules.referrerReward)}</p>
           <p className="text-[11px] leading-[14px] text-[#696B6F]">per referral</p>
         </div>
       </div>
-      <div className="relative flex w-8 items-center justify-center" aria-hidden>
-        <span className="absolute inset-y-3 left-1/2 border-l border-dashed border-[#EBCF8A]" />
-        <span className="relative flex size-6 items-center justify-center rounded-full bg-[#FDF1D2] text-[14px] font-bold text-[#946503]">+</span>
-      </div>
-      <div className="flex items-center justify-end gap-2.5 py-4 pr-4 text-right">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[1px] text-[#946503]">Friend gets</p>
-          <p className="text-[20px] font-extrabold leading-6 text-[#292C31] tabular-nums">
-            {inr(rules.friendReward)} <span className="text-[15px]">+ {rules.friendDataGB} GB</span>
-          </p>
-          <p className="text-[11px] leading-[14px] text-[#696B6F]">on first recharge</p>
-        </div>
+      <span className="mx-2 h-12 w-px bg-[#E6E9EF]" aria-hidden />
+      <div className="min-w-0 pl-2">
+        <p className="text-[11px] leading-[14px] text-[#696B6F]">Friend gets</p>
+        <p className="whitespace-nowrap text-[24px] font-bold leading-8 text-[#292C31] tabular-nums">
+          {inr(rules.friendReward)} <span className="text-[11px] font-normal leading-[14px] text-[#696B6F]">+ {rules.friendDataGB} GB</span>
+        </p>
+        <p className="text-[11px] leading-[14px] text-[#696B6F]">on first recharge</p>
       </div>
     </div>
   );

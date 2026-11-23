@@ -83,7 +83,7 @@ function Tile({ position, successful, reward }: { position: number; successful: 
       ) : (
         <LockedSeal />
       )}
-      <span className={cn("text-[13px] font-bold leading-4 tabular-nums", isGift || done ? "text-[#946503]" : "text-[#696B6F]")}>{inr(amount)}</span>
+      <span className={cn("text-[12px] font-bold leading-[14px] tabular-nums", isGift || done ? "text-[#946503]" : "text-[#696B6F]")}>{inr(amount)}</span>
     </li>
   );
 }
@@ -173,15 +173,15 @@ export const ReferralProgress = forwardRef<
       </div>
 
       <div className="px-4 pt-4">
-        <p className="rounded-t-[12px] bg-[linear-gradient(180deg,#FDF1D2,#FFFBF0)] px-3 py-2 text-center text-[13px] font-semibold leading-[18px] text-[#6F4B02]">{status}</p>
-        <div className="grid grid-cols-2 gap-2">
+        <p className="flex h-10 items-center justify-center rounded-[8px] border border-[#F3DDA3] bg-[linear-gradient(180deg,#FFFFFF,#FFF8E6)] p-2 text-center text-[12px] font-bold leading-[14px] text-[#292C31]">{status}</p>
+        <div className="mt-2 grid grid-cols-2 gap-2">
           {[
             { value: String(successful), label: "Successful referrals" },
             { value: inr(earned), label: "Cashback earned" },
           ].map((s) => (
-            <button key={s.label} onClick={onViewAll} className="rounded-[14px] border border-[#F3DDA3] bg-white px-2 py-2.5 text-center active:bg-[#FFFBF0]">
-              <span className="block text-[18px] font-extrabold leading-6 text-[#292C31] tabular-nums">{s.value}</span>
-              <span className="mt-0.5 flex items-center justify-center gap-0.5 text-[12px] font-medium leading-4 text-[#696B6F]">
+            <button key={s.label} onClick={onViewAll} className="rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-3 text-center active:brightness-[0.98]">
+              <span className="block text-[16px] font-bold leading-[18px] text-[#292C31] tabular-nums">{s.value}</span>
+              <span className="mt-1 flex items-center justify-center gap-0.5 text-[12px] leading-[18px] text-[#696B6F]">
                 {s.label} <ChevronRight className="size-3.5" />
               </span>
             </button>

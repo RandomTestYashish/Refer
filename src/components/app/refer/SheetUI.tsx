@@ -25,12 +25,12 @@ export function SheetSection({
   return (
     <section aria-labelledby={id} className={cn("px-4 pt-8", className)}>
       <div className="flex items-center gap-2">
-        <h2 id={id} className="flex-1 text-[16px] font-bold leading-5 text-[#292C31]">
+        <h2 id={id} className="flex-1 text-[16px] font-bold leading-[18px] tracking-[-0.2px] text-[#292C31]">
           {title}
         </h2>
         {action}
       </div>
-      {subtitle && <p className="mt-1 text-[12px] leading-4 text-[#696B6F]">{subtitle}</p>}
+      {subtitle && <p className="mt-1 text-[12px] leading-[18px] text-[#696B6F]">{subtitle}</p>}
       <div className="mt-4">{children}</div>
     </section>
   );
