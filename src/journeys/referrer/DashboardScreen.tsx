@@ -1,20 +1,18 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, BellRing, Lock, Send, Users } from "lucide-react";
+import { Bell, BellRing, Send, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Callout } from "@/components/ui/callout";
 import { AvatarStack, ReferralLinkField } from "@/components/app/InviteKit";
 import { canRemind } from "@/components/app/ReferralActions";
-import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
+import { AppBar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
 import { BAND, CARD, HeroCard, LinkButton, SectionTitle } from "@/components/app/gen4";
 import { MilestoneTrack } from "@/components/app/Milestones";
-import { StatusBadge } from "@/components/app/status";
-import { ReferralAction } from "@/components/app/ReferralActions";
+import { ReferralCard } from "@/components/app/refer/ReferralCard";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { CONTACTS } from "@/domain/data";
-import { activeLink, referralStats, useProto } from "@/store/useProto";
-import { cn, formatDate, inr, timeLeft } from "@/lib/utils";
+import { referralStats, useProto } from "@/store/useProto";
+import { inr } from "@/lib/utils";
 import type { Referral } from "@/domain/types";
 
 const FILTERS = {
@@ -23,27 +21,6 @@ const FILTERS = {
   successful: (r: Referral) => r.status === "reward_credited",
   closed: (r: Referral) => ["expired", "not_eligible", "failed"].includes(r.status),
 };
-
-export function rewardLine(r: Referral, amt: number) {
-  switch (r.rewardA) {
-    case "credited":
-      return { text: `${inr(amt)} credited`, cls: "text-airtel-success", locked: false };
-    case "validating":
-      return { text: `${inr(amt)} validating`, cls: "text-[#A56A12]", locked: true };
-    case "delayed":
-      return { text: `${inr(amt)} delayed`, cls: "text-[#A56A12]", locked: true };
-    case "failed":
-      return { text: "Reward unsuccessful", cls: "text-airtel-error", locked: false };
-    case "reversed":
-      return { text: "Reward reversed", cls: "text-airtel-error", locked: false };
-    case "expired":
-      return { text: "Reward expired", cls: "text-airtel-sub", locked: false };
-    case "not_eligible":
-      return { text: "Not eligible", cls: "text-airtel-sub", locked: false };
-    default:
-      return { text: `${inr(amt)} pending`, cls: "text-airtel-sub", locked: true };
-  }
-}
 
 export function DashboardScreen() {
   const referrals = useProto((s) => s.referrals);
@@ -169,56 +146,9 @@ export function DashboardScreen() {
               </Tabs>
               <div className="mt-3 space-y-2.5">
                 <AnimatePresence initial={false}>
-                  {list.map((r) => {
-                    const c = CONTACTS.find((x) => x.id === r.contactId);
-                    const link = activeLink(r);
-                    const rw = rewardLine(r, rules.referrerReward);
-                    return (
-                      <motion.div
-                        layout
-                        key={r.id}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => navigate("a_detail", { id: r.id })}
-                        onKeyDown={(e) => e.key === "Enter" && navigate("a_detail", { id: r.id })}
-                        className={`cursor-pointer rounded-[16px] p-3.5 active:scale-[0.99] ${CARD}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <ContactAvatar name={r.name} hue={c?.hue ?? 200} size={42} />
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="truncate text-[15px] font-semibold">{r.name}</p>
-                              <StatusBadge status={r.status} />
-                            </div>
-                            <p className="mt-0.5 text-[12px] text-airtel-sub">
-                              Invited {formatDate(r.createdAt)}
-                              {r.delivery === "pending" && <span className="font-semibold text-[#A56A12]"> · Sending…</span>}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="mt-3 flex items-center gap-2 border-t border-[#E6E9EF] pt-3">
-                          <span className={cn("flex items-center gap-1 text-[12px] font-semibold", rw.cls)}>
-                            {rw.locked && <Lock className="size-3" />}
-                            {rw.text}
-                          </span>
-                          <span className="text-[12px] text-airtel-sub">
-                            ·{" "}
-                            {link.state === "active"
-                              ? `Link ${timeLeft(link.expiresAt - Date.now())}`
-                              : link.state === "expired"
-                                ? "Link expired"
-                                : "Link replaced"}
-                          </span>
-                          <span className="ml-auto">
-                            <ReferralAction r={r} />
-                          </span>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                  {list.map((r) => (
+                    <ReferralCard key={r.id} r={r} reward={rules.referrerReward} onOpen={() => navigate("a_detail", { id: r.id })} />
+                  ))}
                 </AnimatePresence>
                 {list.length === 0 && <p className="py-10 text-center text-[13px] text-airtel-sub">Nothing here yet</p>}
               </div>
