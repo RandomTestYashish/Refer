@@ -1,13 +1,11 @@
 import { forwardRef, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
 import { SheetSection } from "@/components/app/refer/SheetUI";
 import type { BusinessRules } from "@/config/businessRules";
 import { home } from "@/assets/home";
 import { cn, inr } from "@/lib/utils";
 
-/** How it works — three illustrated step cards in a swipeable carousel, conditions one tap away. */
+/** How it works — three illustrated step cards in a swipeable carousel. */
 export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ rules }, ref) => {
-  const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const track = useRef<HTMLDivElement>(null);
 
@@ -16,14 +14,6 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ r
     { img: "refer-step2.jpg", t: `They recharge ${inr(rules.minTransaction)}+`, d: `Your friend joins Airtel and makes a first recharge or bill payment within ${rules.firstTxnDeadlineDays} days.` },
     { img: "refer-step3.jpg", t: "You both earn", d: `${inr(rules.referrerReward)} cashback for you, ${inr(rules.friendReward)} + ${rules.friendDataGB} GB for them, after validation.` },
   ];
-  const conditions = [
-    ["Qualifying action", `First recharge or bill payment of ${inr(rules.minTransaction)}+`],
-    ["Friend must complete it within", `${rules.firstTxnDeadlineDays} days`],
-    ["Reward validation", `Up to ${rules.rewardValidationDays} days`],
-    ["Use cashback within", `${rules.cashbackValidityDays} days of credit`],
-    ["Referral limit", `${rules.referralCapMonth} a month · ${rules.referralCapYear} a year`],
-  ];
-
   const onScroll = () => {
     const el = track.current;
     if (!el) return;
@@ -66,20 +56,6 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules }>(({ r
           ))}
         </div>
 
-        <button onClick={() => setOpen((o) => !o)} className="mt-2 flex w-full items-center justify-between py-3 text-[14px] font-medium leading-4 text-[#075EE8]" aria-expanded={open}>
-          Reward Conditions
-          <ChevronDown className={cn("size-5 transition-transform", open && "rotate-180")} />
-        </button>
-        {open && (
-          <dl className="rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] text-[12px] leading-[18px]">
-            {conditions.map(([k, v]) => (
-              <div key={k} className="flex justify-between gap-3 border-b border-[#E6E9EF] px-4 py-2.5 last:border-0">
-                <dt className="text-[#696B6F]">{k}</dt>
-                <dd className="text-right font-bold text-[#292C31]">{v}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
       </SheetSection>
     </div>
   );

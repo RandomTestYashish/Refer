@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { AppBar, Screen, ScreenBody } from "@/components/app/primitives";
 import { GoldHero, HERO_HEIGHT, OfferCard } from "@/components/app/refer/GoldHero";
-import { home } from "@/assets/home";
 import { HowItWorks } from "@/components/app/refer/HowItWorks";
 import { ReferralProgress, currentMilestone } from "@/components/app/refer/ReferralProgress";
 import { ReferralActivity } from "@/components/app/refer/ReferralActivity";
@@ -251,14 +250,6 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
               <br />
               Earn more.
             </p>
-            <div className="mt-5 flex items-center gap-2">
-              <div className="flex -space-x-2">
-                {(["first", "bronze", "silver", "gold"] as const).map((b) => (
-                  <img key={b} src={home(`badge-${b}.png`)} alt="" className="size-6 rounded-full ring-2 ring-white" />
-                ))}
-              </div>
-              <p className="text-[12px] font-medium text-[#8D9096]">Made with care for Airtel friends</p>
-            </div>
           </footer>
         </div>
       </ScreenBody>
