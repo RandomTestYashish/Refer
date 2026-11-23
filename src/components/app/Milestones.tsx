@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Check, Lock } from "lucide-react";
-import { home } from "@/assets/home";
+import { TierBadge } from "@/components/app/refer/CashArt";
 import type { Milestone } from "@/config/businessRules";
 export type Metal = "gold" | "silver" | "bronze" | "ruby";
 import { cn } from "@/lib/utils";
@@ -18,22 +18,17 @@ export function CoinBadge({ m, state, size = 44, pulse = true }: { m: Milestone;
       {state === "next" &&
         (pulse && !reduce ? (
           <motion.span
-            className="absolute inset-[-4px] rounded-full border-2 border-[#E32121]"
+            className="absolute inset-[-4px] rounded-full border-2 border-[#292C31]"
             animate={{ opacity: [0.9, 0.25, 0.9], scale: [1, 1.08, 1] }}
             transition={{ duration: 1.8, repeat: Infinity }}
           />
         ) : (
-          <span className="absolute inset-[-4px] rounded-full border-2 border-[#E32121]" />
+          <span className="absolute inset-[-4px] rounded-full border-2 border-[#292C31]" />
         ))}
-      <img
-        src={home(`badge-${m.id}.png`)}
-        alt=""
-        draggable={false}
-        className={cn("block size-full select-none drop-shadow-[0_2px_3px_rgba(0,0,0,0.22)]", state === "next" && "opacity-70 grayscale", state === "locked" && "opacity-40 grayscale")}
-      />
+      <TierBadge m={m} className={cn("size-full select-none drop-shadow-[0_2px_3px_rgba(0,0,0,0.22)]", state === "next" && "opacity-70 grayscale", state === "locked" && "opacity-40 grayscale")} />
       {state === "next" && (
         <span
-          className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-[#E32121] px-1.5 font-bold leading-[14px] text-white ring-2 ring-white"
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-[#292C31] px-1.5 font-bold leading-[14px] text-white ring-2 ring-white"
           style={{ fontSize: Math.max(9, size * 0.24) }}
         >
           {m.target}
@@ -95,9 +90,9 @@ export function MilestoneTrack({
   const nextIdx = milestones.findIndex((m) => count < m.target);
   return (
     <div className={cn("relative", className)}>
-      <div className={cn("absolute h-[3px] rounded-full", dark ? "bg-white/15" : "bg-[#ECE6DA]")} style={{ left: `${50 / n}%`, right: `${50 / n}%`, top: size / 2 - 1.5 }}>
+      <div className={cn("absolute h-[3px] rounded-full", dark ? "bg-white/15" : "bg-[#E6E9EF]")} style={{ left: `${50 / n}%`, right: `${50 / n}%`, top: size / 2 - 1.5 }}>
         <motion.div
-          className="h-full rounded-full bg-[linear-gradient(90deg,#F5C64F,#D79A1E)]"
+          className="h-full rounded-full bg-[linear-gradient(90deg,#A7AAB0,#3E4146)]"
           initial={{ width: 0 }}
           whileInView={{ width: `${pct}%` }}
           viewport={{ once: true }}
@@ -110,7 +105,7 @@ export function MilestoneTrack({
           return (
             <div key={m.id} className="flex flex-col items-center text-center">
               <CoinBadge m={m} state={state} size={size} />
-              <span className={cn("mt-2 text-[12px] font-bold leading-[14px]", state === "locked" ? (dark ? "text-white/55" : "text-[#696B6F]") : state === "next" ? (dark ? "text-[#FFCB5C]" : "text-[#B25E09]") : dark ? "text-white" : "text-[#292C31]")}>
+              <span className={cn("mt-2 text-[12px] font-bold leading-[14px]", state === "locked" ? (dark ? "text-white/55" : "text-[#696B6F]") : state === "next" ? (dark ? "text-[#FFCB5C]" : "text-[#292C31]") : dark ? "text-white" : "text-[#292C31]")}>
                 {m.label === "First referral" ? "First" : m.label}
               </span>
               <span className={cn("mt-0.5 text-[11px] leading-[14px]", dark ? "text-white/55" : "text-[#696B6F]")}>

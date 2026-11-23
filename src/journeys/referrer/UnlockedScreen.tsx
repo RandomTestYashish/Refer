@@ -36,7 +36,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
       <div className="flex flex-1 flex-col items-center px-7 pt-14 text-center">
         <div className="relative flex h-[170px] items-center justify-center">
           <motion.div
-            className="absolute size-[170px] rounded-full bg-[radial-gradient(circle,rgba(245,179,0,0.35),transparent_65%)]"
+            className="absolute size-[170px] rounded-full bg-[radial-gradient(circle,rgba(134,164,141,0.35),transparent_65%)]"
             initial={{ scale: 0.4, opacity: 0 }}
             animate={phase >= 2 ? { scale: [0.6, 1.25, 1], opacity: 1 } : {}}
             transition={{ duration: 0.8 }}

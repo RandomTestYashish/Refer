@@ -1,3 +1,4 @@
+import { CashBundle } from "@/components/app/refer/CashArt";
 import * as React from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
@@ -132,23 +133,14 @@ export function SimNote({ children, className }: { children: React.ReactNode; cl
 /** Rupee coin used across reward visuals. */
 export function RewardCoin({ amount, size = 72, locked, className }: { amount: number; size?: number; locked?: boolean; className?: string }) {
   return (
-    <motion.div
-      className={cn("relative flex shrink-0 items-center justify-center rounded-full font-extrabold tracking-[-0.03em]", className)}
-      style={{
-        width: size,
-        height: size,
-        fontSize: size * 0.3,
-        background: locked
-          ? "linear-gradient(145deg,#F3F3F3,#DCDCDC)"
-          : "linear-gradient(145deg,#FFD66B 0%,#F5B300 55%,#E39A00 100%)",
-        color: locked ? "#9B9B9B" : "#7A4A00",
-        boxShadow: locked
-          ? "inset 0 -3px 0 rgba(0,0,0,0.06), 0 6px 14px rgba(0,0,0,0.08)"
-          : "inset 0 -4px 0 rgba(122,74,0,0.18), inset 0 3px 0 rgba(255,255,255,0.5), 0 10px 24px rgba(229,154,0,0.35)",
-      }}
-    >
-      <span className="absolute inset-[9%] rounded-full border-2" style={{ borderColor: locked ? "#E6E6E6" : "rgba(255,255,255,0.45)" }} />
-      ₹{amount}
+    <motion.div className={cn("relative flex shrink-0 items-center justify-center", className)} style={{ width: size, height: size }}>
+      <CashBundle className={cn("size-full", locked && "opacity-60 grayscale")} />
+      <span
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[#292C31] px-2 font-bold leading-[1.5] text-white"
+        style={{ fontSize: Math.max(10, size * 0.16) }}
+      >
+        ₹{amount}
+      </span>
     </motion.div>
   );
 }

@@ -35,10 +35,10 @@ export function MilestoneUnlockSheet({
             transition={{ type: "spring", stiffness: 260, damping: 14, delay: 0.1 }}
             className="relative mb-2"
           >
-            <span className="absolute inset-[-14px] rounded-full bg-[radial-gradient(circle,rgba(252,82,82,0.25),transparent_70%)]" />
+            <span className="absolute inset-[-14px] rounded-full bg-[radial-gradient(circle,rgba(85,88,94,0.2),transparent_70%)]" />
             <MilestoneMedal m={badge} unlocked size={84} />
           </motion.div>
-          <p className="text-[11px] font-bold uppercase tracking-[1.76px] text-[#E32121]">Achievement unlocked</p>
+          <p className="text-[11px] font-bold uppercase tracking-[1.76px] text-[#55585E]">Achievement unlocked</p>
           <SheetTitle className="text-center text-[22px]">{badge.label} badge</SheetTitle>
           <SheetDescription className="text-center text-[14px] leading-[20px]">
             {successful} successful {successful === 1 ? "referral" : "referrals"} · {inr(earned)} earned so far.

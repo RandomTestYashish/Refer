@@ -23,10 +23,10 @@ export default {
         card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
         // Gen4 Foundations (Figma) — the legacy `airtel.*` names are kept so every screen picks up the new values.
         airtel: {
-          red: "#CA262B", // brand surface (gen4red/600)
-          "red-dark": "#981C20", // brand selected (gen4red/700)
-          "red-bright": "#FD2F36", // brand hover (gen4red/500)
-          "red-soft": "#FFD5D7", // gen4red/50
+          red: "#292C31", // neutral theme surface
+          "red-dark": "#000000", // neutral theme selected
+          "red-bright": "#3E4146", // neutral theme hover
+          "red-soft": "#ECEDEF", // neutral theme soft
           ink: "#292C31", // black/900 — primary text
           sub: "#696B6F", // black/700 — body / help text
           surface: "#F0F4F9", // blueGrey/50 — matches the Home Figma bands

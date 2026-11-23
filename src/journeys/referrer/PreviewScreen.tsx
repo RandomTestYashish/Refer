@@ -28,8 +28,8 @@ const ENV_H = 168;
 
 function InviteCard({ rules }: { rules: { referrerReward: number; friendReward: number; friendDataGB: number } }) {
   return (
-    <div className="w-[236px] overflow-hidden rounded-[20px] bg-white shadow-[0_18px_40px_rgba(120,20,30,0.22)]">
-      <div className="relative h-[178px] overflow-hidden bg-[linear-gradient(160deg,#FF5A5F_0%,#E32121_55%,#B3001F_100%)] px-4 pt-4 text-white">
+    <div className="w-[236px] overflow-hidden rounded-[20px] bg-white shadow-[0_18px_40px_rgba(31,33,36,0.22)]">
+      <div className="relative h-[178px] overflow-hidden bg-[linear-gradient(160deg,#55585E_0%,#2F3136_55%,#17181B_100%)] px-4 pt-4 text-white">
         <span className="absolute -right-10 -top-10 size-36 rounded-full border-[16px] border-white/10" />
         <div className="relative flex items-center gap-1.5">
           <AirtelMark white className="size-6" />
@@ -185,10 +185,10 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
             <div className="absolute bottom-[34px] left-1/2 -translate-x-1/2" style={{ width: ENV_W, height: ENV_H }}>
               {/* Envelope back + open flap (behind the card) */}
               <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: inEnvelope ? 1 : 0, y: inEnvelope ? 0 : 30 }} transition={{ duration: 0.35 }} className="absolute inset-0">
-                <div className="absolute inset-0 rounded-[10px] bg-[#F4DCD8]" />
+                <div className="absolute inset-0 rounded-[10px] bg-[#E2E3E6]" />
                 {!sealed && (
                   <svg viewBox={`0 0 ${ENV_W} 96`} className="absolute bottom-full left-0 h-[96px] w-full" aria-hidden>
-                    <path d={`M0 96 L${ENV_W / 2} 6 L${ENV_W} 96 Z`} fill="#F1D3CE" />
+                    <path d={`M0 96 L${ENV_W / 2} 6 L${ENV_W} 96 Z`} fill="#D6D8DC" />
                   </svg>
                 )}
               </motion.div>
@@ -215,14 +215,14 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
               {/* Front pocket (over the card) */}
               <motion.svg
                 viewBox={`0 0 ${ENV_W} ${ENV_H}`}
-                className="absolute inset-0 size-full drop-shadow-[0_18px_26px_rgba(120,40,40,0.16)]"
+                className="absolute inset-0 size-full drop-shadow-[0_18px_26px_rgba(31,33,36,0.16)]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: inEnvelope ? 1 : 0, y: inEnvelope ? 0 : 30 }}
                 transition={{ duration: 0.35 }}
                 aria-hidden
               >
-                <path d={`M0 30 L${ENV_W / 2} 104 L${ENV_W} 30 V${ENV_H - 10} Q${ENV_W} ${ENV_H} ${ENV_W - 10} ${ENV_H} H10 Q0 ${ENV_H} 0 ${ENV_H - 10} Z`} fill="#FCEDEA" />
-                <path d={`M0 ${ENV_H - 10} L${ENV_W / 2} 92 L${ENV_W} ${ENV_H - 10}`} fill="none" stroke="#F1D3CE" strokeWidth="1.5" />
+                <path d={`M0 30 L${ENV_W / 2} 104 L${ENV_W} 30 V${ENV_H - 10} Q${ENV_W} ${ENV_H} ${ENV_W - 10} ${ENV_H} H10 Q0 ${ENV_H} 0 ${ENV_H - 10} Z`} fill="#F2F3F4" />
+                <path d={`M0 ${ENV_H - 10} L${ENV_W / 2} 92 L${ENV_W} ${ENV_H - 10}`} fill="none" stroke="#D6D8DC" strokeWidth="1.5" />
               </motion.svg>
 
               {/* Closing flap (over everything) */}
@@ -237,7 +237,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
                     transition={{ duration: 0.45, ease: [0.34, 1.3, 0.64, 1] }}
                     aria-hidden
                   >
-                    <path d={`M0 0 H${ENV_W} L${ENV_W / 2 + 12} 100 Q${ENV_W / 2} 110 ${ENV_W / 2 - 12} 100 Z`} fill="#F8E3DF" />
+                    <path d={`M0 0 H${ENV_W} L${ENV_W / 2 + 12} 100 Q${ENV_W / 2} 110 ${ENV_W / 2 - 12} 100 Z`} fill="#E9EAEC" />
                   </motion.svg>
                 )}
               </AnimatePresence>
@@ -251,7 +251,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
                     animate={{ scale: 1, opacity: 1, rotate: 0 }}
                     transition={{ delay: 0.35, type: "spring", stiffness: 420, damping: 18 }}
                   >
-                    <span className="flex size-[52px] items-center justify-center rounded-full bg-[linear-gradient(180deg,#FC5252,#E32121)] shadow-[0_6px_14px_rgba(227,33,33,0.4)] ring-4 ring-white/70">
+                    <span className="flex size-[52px] items-center justify-center rounded-full bg-[linear-gradient(180deg,#55585E,#292C31)] shadow-[0_6px_14px_rgba(31,33,36,0.35)] ring-4 ring-white/70">
                       <AirtelMark white className="size-7" />
                     </span>
                   </motion.div>
@@ -286,7 +286,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
             <SheetTitle className="sr-only">Share invitation</SheetTitle>
             <SheetDescription className="sr-only">Choose how to send your invite</SheetDescription>
             <div className="flex items-center gap-3 rounded-[14px] bg-[#F0F4F9] p-2.5">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-[10px] bg-[linear-gradient(160deg,#FF5A5F,#E32121)]">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-[10px] bg-[linear-gradient(160deg,#55585E,#292C31)]">
                 <AirtelMark white className="size-6" />
               </span>
               <div className="min-w-0 text-left">

@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { SectionTitle } from "@/components/app/gen4";
 import { Button } from "@/components/ui/button";
 import type { BusinessRules } from "@/config/businessRules";
-import { home } from "@/assets/home";
+import { EarnArt, RechargeArt, ShareArt } from "@/components/app/refer/CashArt";
 import { cn, inr } from "@/lib/utils";
 
 const Em = ({ children }: { children: ReactNode }) => <b className="font-bold italic text-[#292C31]">{children}</b>;
@@ -13,11 +13,10 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules; onInvi
   const [active, setActive] = useState(0);
   const track = useRef<HTMLDivElement>(null);
 
-  const steps: { img: string; title: string; body: ReactNode; imgClass: string }[] = [
+  const steps: { Art: typeof ShareArt; title: string; body: ReactNode }[] = [
     {
-      img: "how-share.png",
+      Art: ShareArt,
       title: "Share link",
-      imgClass: "h-[112px]",
       body: (
         <>
           Invite on WhatsApp, SMS or any app. Valid for <Em>{rules.linkValidityHours} hours</Em>
@@ -25,9 +24,8 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules; onInvi
       ),
     },
     {
-      img: "how-recharge.png",
+      Art: RechargeArt,
       title: `Recharge ${inr(rules.minTransaction)}+`,
-      imgClass: "h-[112px]",
       body: (
         <>
           Your friend joins Airtel and recharges within <Em>{rules.firstTxnDeadlineDays} days</Em>
@@ -35,9 +33,8 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules; onInvi
       ),
     },
     {
-      img: "how-earn.png",
+      Art: EarnArt,
       title: `Earn ${inr(rules.referrerReward)}`,
-      imgClass: "h-[124px]",
       body: (
         <>
           Your friend also gets <Em>{inr(rules.friendReward)} + {rules.friendDataGB} GB</Em> after validation
@@ -73,10 +70,10 @@ export const HowItWorks = forwardRef<HTMLElement, { rules: BusinessRules; onInvi
           <article
             key={s.title}
             role="listitem"
-            className="relative h-[208px] w-[86%] shrink-0 snap-start overflow-hidden rounded-[16px] border border-[#F3DDA3] bg-[linear-gradient(135deg,#FFF0C7_0%,#FFF8E6_48%,#FFFDF7_100%)] p-4"
+            className="relative h-[208px] w-[86%] shrink-0 snap-start overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(135deg,#EDEDEA_0%,#F6F6F4_48%,#FFFFFF_100%)] p-4"
           >
-            <img src={home(s.img)} alt="" draggable={false} className={cn("pointer-events-none absolute bottom-3 right-3 w-auto max-w-[112px] object-contain", s.imgClass)} />
-            <h3 className="w-fit whitespace-nowrap bg-[linear-gradient(90deg,#7A4300,#B87A08)] bg-clip-text pr-1 text-[28px] font-black italic leading-8 text-transparent">{s.title}</h3>
+            <s.Art className="pointer-events-none absolute bottom-3 right-2 h-[106px] w-[116px]" />
+            <h3 className="w-fit whitespace-nowrap bg-[linear-gradient(90deg,#17181B,#55585E)] bg-clip-text pr-1 text-[28px] font-black italic leading-8 text-transparent">{s.title}</h3>
             <p className="mt-0.5 text-[12px] font-medium uppercase italic leading-[18px] text-black">
               Step {i + 1} of {steps.length}
             </p>

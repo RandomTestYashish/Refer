@@ -92,7 +92,7 @@ export function DashboardScreen() {
                   </div>
                   <div>
                     <p className="text-[12px] text-[#696B6F]">Pending</p>
-                    <p className="text-[24px] font-bold leading-8 text-[#DA9802] tabular">{inr(lockedTotal)}</p>
+                    <p className="text-[24px] font-bold leading-8 text-[#55585E] tabular">{inr(lockedTotal)}</p>
                   </div>
                 </div>
                 <div className="mt-4 grid grid-cols-4 rounded-[12px] bg-white py-2.5 text-center ring-1 ring-[#E6E9EF]">

@@ -13,7 +13,7 @@ export function Confetti({ count = 26, originY = "38%" }: { count?: number; orig
           x: Math.cos(angle) * dist,
           y: Math.sin(angle) * dist - 40,
           rot: Math.random() * 360,
-          color: ["#E4002B", "#F5B300", "#16834A", "#FF6B81", "#171717"][i % 5],
+          color: ["#292C31", "#8E9AA9", "#86A48D", "#CDD3DD", "#55585E"][i % 5],
           w: 5 + Math.random() * 4,
           h: 8 + Math.random() * 6,
           delay: Math.random() * 0.12,

@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { BusinessRules } from "@/config/businessRules";
 import { home } from "@/assets/home";
+import { CashBundle, NoteIcon } from "@/components/app/refer/CashArt";
 import { inr } from "@/lib/utils";
 
 /**
@@ -13,19 +14,19 @@ export const HERO_HEIGHT = 336;
 const ART_SCALE = 0.72;
 
 const AMOUNT_GRADIENT =
-  "linear-gradient(74.27deg, #906409 5.69%, #FFBB2C 6.15%, #FCD991 52.17%, #FFBB2C 88.56%, #7D5500 114.71%)";
+  "linear-gradient(74.27deg, #17181B 5%, #3E4146 30%, #6B6E75 54%, #2F3136 86%, #17181B 112%)";
 
 function Sparkle({ left }: { left: number }) {
-  return <img src={home("hero-sparkle.svg")} alt="" aria-hidden className="absolute top-[240px] h-[9.01px] w-[9.008px]" style={{ left }} />;
+  return <img src={home("hero-sparkle.svg")} alt="" aria-hidden className="absolute top-[240px] h-[9.01px] w-[9.008px] grayscale" style={{ left }} />;
 }
 
 const COINS = [
-  { img: "coin-tilted.png", x: 22, y: 128, s: 34, r: -18, blur: 0, d: 0 },
-  { img: "coin-gold.png", x: 312, y: 112, s: 26, r: 14, blur: 0, d: 0.8 },
-  { img: "coin-gold.png", x: 58, y: 206, s: 16, r: 22, blur: 1.2, d: 1.4 },
-  { img: "coin-tilted.png", x: 300, y: 196, s: 20, r: -26, blur: 0.8, d: 0.4 },
-  { img: "coin-gold.png", x: 8, y: 262, s: 22, r: -8, blur: 1.6, d: 1.1 },
-  { img: "coin-tilted.png", x: 340, y: 258, s: 24, r: 20, blur: 1.4, d: 1.8 },
+  { x: 22, y: 128, s: 34, r: -18, blur: 0, d: 0 },
+  { x: 312, y: 112, s: 26, r: 14, blur: 0, d: 0.8 },
+  { x: 58, y: 206, s: 16, r: 22, blur: 1.2, d: 1.4 },
+  { x: 300, y: 196, s: 20, r: -26, blur: 0.8, d: 0.4 },
+  { x: 8, y: 262, s: 22, r: -8, blur: 1.6, d: 1.1 },
+  { x: 340, y: 258, s: 24, r: 20, blur: 1.4, d: 1.8 },
 ];
 const SPARKS = [
   { x: 92, y: 104, s: 10, d: 0 },
@@ -45,31 +46,31 @@ function HeroBackdrop({ reduce }: { reduce: boolean }) {
         style={{
           x: "-50%",
           y: "-50%",
-          background: "repeating-conic-gradient(from 0deg, rgba(255,214,120,0.38) 0deg 7deg, rgba(255,214,120,0) 7deg 18deg)",
+          background: "repeating-conic-gradient(from 0deg, rgba(120,124,130,0.10) 0deg 7deg, rgba(120,124,130,0) 7deg 18deg)",
         }}
         animate={reduce ? undefined : { rotate: 360 }}
         transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
       />
       {/* warm glow */}
-      <div className="absolute left-1/2 top-[110px] h-[160px] w-[260px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,236,186,0.95),rgba(255,236,186,0))]" />
+      <div className="absolute left-1/2 top-[110px] h-[160px] w-[260px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(255,255,255,0.95),rgba(255,255,255,0))]" />
       {COINS.map((c, i) => (
-        <motion.img
+        <motion.div
           key={i}
-          src={home(c.img)}
-          alt=""
-          className="absolute select-none drop-shadow-[0_4px_6px_rgba(143,76,0,0.25)]"
-          style={{ left: c.x, top: c.y, width: c.s, height: c.s, filter: c.blur ? `blur(${c.blur}px)` : undefined, rotate: c.r }}
+          className="absolute select-none drop-shadow-[0_4px_6px_rgba(31,33,36,0.18)]"
+          style={{ left: c.x - c.s * 0.2, top: c.y, width: c.s * 1.5, height: c.s * 0.82, filter: c.blur ? `blur(${c.blur}px)` : undefined, rotate: c.r }}
           initial={reduce ? false : { opacity: 0, y: 10 }}
           animate={reduce ? { opacity: 0.9 } : { opacity: c.blur ? 0.7 : 0.95, y: [0, -6, 0], rotate: [c.r, c.r + 8, c.r] }}
           transition={{ opacity: { duration: 0.6, delay: 0.3 + c.d * 0.2 }, y: { duration: 3.6 + i * 0.3, repeat: Infinity, ease: "easeInOut", delay: c.d }, rotate: { duration: 4.2 + i * 0.3, repeat: Infinity, ease: "easeInOut", delay: c.d } }}
-        />
+        >
+          <NoteIcon className="size-full" />
+        </motion.div>
       ))}
       {SPARKS.map((p, i) => (
         <motion.img
           key={`s${i}`}
           src={home("hero-sparkle.svg")}
           alt=""
-          className="absolute"
+          className="absolute grayscale"
           style={{ left: p.x, top: p.y, width: p.s, height: p.s }}
           animate={reduce ? { opacity: 0.6 } : { opacity: [0, 1, 0], scale: [0.6, 1.1, 0.6] }}
           transition={{ duration: 2.4, repeat: Infinity, delay: p.d, ease: "easeInOut" }}
@@ -84,7 +85,7 @@ export function OfferCard({ rules }: { rules: BusinessRules }) {
   return (
     <div className="grid grid-cols-[1fr_auto_1fr] items-center rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-4">
       <div className="flex min-w-0 items-center gap-2">
-        <img src={home("coin-gold.png")} alt="" className="size-10 shrink-0" />
+        <NoteIcon className="h-7 w-12 shrink-0" />
         <div className="min-w-0">
           <p className="text-[11px] leading-[14px] text-[#696B6F]">You get</p>
           <p className="text-[24px] font-bold leading-8 text-[#292C31] tabular-nums">{inr(rules.referrerReward)}</p>
@@ -109,10 +110,10 @@ export function GoldHero({ rules }: { rules: BusinessRules }) {
   return (
     <section aria-labelledby="hero-amount" className="relative overflow-hidden bg-white" style={{ height: HERO_HEIGHT }}>
       {/* gold wash (Figma "Image": #F8E7B7 → white) */}
-      <div className="absolute inset-x-0 top-0 h-[556px] bg-[linear-gradient(180deg,#F8E7B7_23.5%,#FFFFFF_94.6%)]" aria-hidden />
+      <div className="absolute inset-x-0 top-0 h-[556px] bg-[linear-gradient(180deg,#E8E8E5_23.5%,#FFFFFF_94.6%)]" aria-hidden />
       {/* soft arc behind the copy */}
       <div className="absolute left-[-28px] top-[187px] h-[209px] w-[419px]" aria-hidden>
-        <img src={home("hero-arc.svg")} alt="" className="absolute left-[-0.95%] top-[-1.91%] block h-[103.82%] w-[101.9%] max-w-none" />
+        <img src={home("hero-arc.svg")} alt="" className="absolute left-[-0.95%] top-[-1.91%] block h-[103.82%] w-[101.9%] max-w-none opacity-60 grayscale" />
       </div>
 
       {/* background elements: slow sunburst, drifting coins, twinkling sparkles */}
@@ -129,18 +130,18 @@ export function GoldHero({ rules }: { rules: BusinessRules }) {
         aria-hidden
       >
         <motion.div
-          className="pointer-events-none absolute inset-0 overflow-hidden"
+          className="pointer-events-none absolute inset-0"
           animate={reduce ? undefined : { y: [0, -4, 0] }}
           transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
         >
-          <img src={home("hero-coins.png")} alt="" className="absolute left-[-60.24%] top-[-58.42%] h-[464.36%] w-[222.24%] max-w-none" />
+          <CashBundle className="absolute -left-4 -top-5 h-[132px] w-[202px] max-w-none" />
         </motion.div>
       </motion.div>
 
       <h1 id="hero-amount" className="absolute inset-x-0 top-0">
         {/* EARN UP TO with sparkles */}
         <Sparkle left={115} />
-        <span className="absolute left-[calc(50%-0.5px)] top-[227.46px] h-[34px] w-[102px] -translate-x-1/2 whitespace-nowrap text-center text-[14px] font-medium uppercase leading-[32.3px] tracking-[2px] text-[#946503]">
+        <span className="absolute left-[calc(50%-0.5px)] top-[227.46px] h-[34px] w-[102px] -translate-x-1/2 whitespace-nowrap text-center text-[14px] font-medium uppercase leading-[32.3px] tracking-[2px] text-[#55585E]">
           Earn up to
         </span>
         <Sparkle left={251} />
@@ -153,7 +154,7 @@ export function GoldHero({ rules }: { rules: BusinessRules }) {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.15 }}
         >
-          <span aria-hidden className="absolute left-1/2 top-[9.61px] -translate-x-1/2 whitespace-nowrap text-center text-[76.354px] font-black uppercase italic leading-[normal] text-[#8F4C00]">
+          <span aria-hidden className="absolute left-1/2 top-[9.61px] -translate-x-1/2 whitespace-nowrap text-center text-[76.354px] font-black uppercase italic leading-[normal] text-[#B9BCC2]">
             {yearly}
           </span>
           <span
@@ -167,9 +168,9 @@ export function GoldHero({ rules }: { rules: BusinessRules }) {
         </motion.span>
 
         {/* PER YEAR with fading rules */}
-        <span className="absolute left-1/2 top-[371.32px] h-[2.118px] w-[96px] -translate-x-[calc(50%+100.5px)] bg-[linear-gradient(90deg,rgba(253,231,159,0),#F3C563)]" aria-hidden />
-        <span className="absolute left-1/2 top-[365.52px] h-[18px] w-[81px] -translate-x-1/2 whitespace-nowrap text-center text-[14px] font-medium uppercase leading-[normal] tracking-[2px] text-[#906409]">Per year</span>
-        <span className="absolute left-1/2 top-[371.32px] h-[2.118px] w-[87px] translate-x-[calc(-50%+105px)] bg-[linear-gradient(270deg,rgba(253,231,159,0),#F3C563)]" aria-hidden />
+        <span className="absolute left-1/2 top-[371.32px] h-[2.118px] w-[96px] -translate-x-[calc(50%+100.5px)] bg-[linear-gradient(90deg,rgba(150,152,158,0),#A7AAB0)]" aria-hidden />
+        <span className="absolute left-1/2 top-[365.52px] h-[18px] w-[81px] -translate-x-1/2 whitespace-nowrap text-center text-[14px] font-medium uppercase leading-[normal] tracking-[2px] text-[#55585E]">Per year</span>
+        <span className="absolute left-1/2 top-[371.32px] h-[2.118px] w-[87px] translate-x-[calc(-50%+105px)] bg-[linear-gradient(270deg,rgba(150,152,158,0),#A7AAB0)]" aria-hidden />
       </h1>
       </div>
     </section>

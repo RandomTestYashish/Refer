@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 import { Check, ChevronRight, Lock } from "lucide-react";
 import type { BusinessRules, Milestone } from "@/config/businessRules";
-import { home } from "@/assets/home";
+import { NoteIcon } from "@/components/app/refer/CashArt";
 import { cn, inr } from "@/lib/utils";
 
 /** The highest milestone reached for a given count of successful referrals. */
@@ -23,8 +23,8 @@ function LockedSeal() {
       <svg viewBox="0 0 44 44" className="absolute inset-0" aria-hidden>
         <defs>
           <linearGradient id="seal-gold" x1="0" y1="0" x2="1" y2="1">
-            <stop stopColor="#FBE7B2" />
-            <stop offset="1" stopColor="#E9C46F" />
+            <stop stopColor="#EFF0F1" />
+            <stop offset="1" stopColor="#CDD0D5" />
           </linearGradient>
         </defs>
         <path
@@ -32,7 +32,7 @@ function LockedSeal() {
           d="M22 2l4.6 3.2 5.5-.8 2.6 4.9 5 2.4-.7 5.6L42 22l-3 4.7.7 5.6-5 2.4-2.6 4.9-5.5-.8L22 42l-4.6-3.2-5.5.8-2.6-4.9-5-2.4.7-5.6L2 22l3-4.7-.7-5.6 5-2.4 2.6-4.9 5.5.8z"
         />
       </svg>
-      <Lock className="relative size-4 text-[#946503]" strokeWidth={2.4} />
+      <Lock className="relative size-4 text-[#55585E]" strokeWidth={2.4} />
     </span>
   );
 }
@@ -40,24 +40,24 @@ function LockedSeal() {
 function GoldGift({ done }: { done: boolean }) {
   return (
     <span className="relative flex size-11 items-center justify-center">
-      <svg viewBox="0 0 44 44" className="size-11 drop-shadow-[0_3px_4px_rgba(148,101,3,0.3)]" aria-hidden>
+      <svg viewBox="0 0 44 44" className="size-11 drop-shadow-[0_3px_4px_rgba(31,33,36,0.25)]" aria-hidden>
         <defs>
           <linearGradient id="gift-box" x1="0" y1="0" x2="0" y2="1">
-            <stop stopColor="#FFD873" />
-            <stop offset="1" stopColor="#E8A21F" />
+            <stop stopColor="#5A5D63" />
+            <stop offset="1" stopColor="#2F3136" />
           </linearGradient>
           <linearGradient id="gift-lid" x1="0" y1="0" x2="0" y2="1">
-            <stop stopColor="#FFE9A8" />
-            <stop offset="1" stopColor="#F4BE45" />
+            <stop stopColor="#7A7D84" />
+            <stop offset="1" stopColor="#4A4D53" />
           </linearGradient>
         </defs>
-        <path d="M22 13c-3-7-11-9-12.500-4.500C8.300 12.500 15 14 22 13zm0 0c3-7 11-9 12.500-4.500C35.700 12.500 29 14 22 13z" fill="#FFF3CF" stroke="#B97A0A" strokeWidth="1.8" strokeLinejoin="round" />
+        <path d="M22 13c-3-7-11-9-12.500-4.500C8.300 12.500 15 14 22 13zm0 0c3-7 11-9 12.500-4.500C35.700 12.500 29 14 22 13z" fill="#F4F4F2" stroke="#3E4146" strokeWidth="1.8" strokeLinejoin="round" />
         <rect x="8" y="21" width="28" height="19" rx="3" fill="url(#gift-box)" />
         <rect x="5" y="13" width="34" height="9" rx="2.500" fill="url(#gift-lid)" />
-        <rect x="19" y="13" width="6" height="27" fill="#FFF7DF" />
+        <rect x="19" y="13" width="6" height="27" fill="#E6E9EF" />
       </svg>
       {done && (
-        <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#946503] ring-2 ring-white">
+        <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#3F5A48] ring-2 ring-white">
           <Check className="size-2.5 text-white" strokeWidth={3.5} />
         </span>
       )}
@@ -75,15 +75,15 @@ function Tile({ position, successful, reward }: { position: number; successful: 
         <GoldGift done={done} />
       ) : done ? (
         <span className="relative flex size-11 items-center justify-center">
-          <img src={home("coin-gold.png")} alt="" className="size-10" />
-          <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#946503] ring-2 ring-white">
+          <NoteIcon className="h-7 w-11" />
+          <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#3F5A48] ring-2 ring-white">
             <Check className="size-2.5 text-white" strokeWidth={3.5} />
           </span>
         </span>
       ) : (
         <LockedSeal />
       )}
-      <span className={cn("text-[12px] font-bold leading-[14px] tabular-nums", isGift || done ? "text-[#946503]" : "text-[#696B6F]")}>{inr(amount)}</span>
+      <span className={cn("text-[12px] font-bold leading-[14px] tabular-nums", isGift || done ? "text-[#292C31]" : "text-[#696B6F]")}>{inr(amount)}</span>
     </li>
   );
 }
@@ -175,7 +175,7 @@ export const ReferralProgress = forwardRef<
       </div>
 
       <div className="px-4 pt-4">
-        <p className="flex h-10 items-center justify-center rounded-[8px] border border-[#F3DDA3] bg-[linear-gradient(180deg,#FFFFFF,#FFF8E6)] p-2 text-center text-[12px] font-bold leading-[14px] text-[#292C31]">{status}</p>
+        <p className="flex h-10 items-center justify-center rounded-[8px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-2 text-center text-[12px] font-bold leading-[14px] text-[#292C31]">{status}</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {[
             { value: String(successful), label: "Successful referrals" },
