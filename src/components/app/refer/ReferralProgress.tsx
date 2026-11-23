@@ -1,7 +1,6 @@
-import { forwardRef } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
-import { MilestoneTrack } from "@/components/app/Milestones";
+import { forwardRef, useEffect, useRef } from "react";
+import { useReducedMotion } from "framer-motion";
+import { Check, ChevronRight, Lock } from "lucide-react";
 import type { BusinessRules, Milestone } from "@/config/businessRules";
 import { home } from "@/assets/home";
 import { cn, inr } from "@/lib/utils";
@@ -13,74 +12,182 @@ export function currentMilestone(milestones: Milestone[], count: number) {
 
 export const MILESTONE_BG = "#161034";
 
-/**
- * Referral milestones — its own banner identity (deep indigo + gold medals) so it reads
- * as an achievement track, separate from the blush earn hero.
- * Badges are recognition only: no extra cash is promised for reaching them.
- */
+const GROUP = 3;
+const VISIBLE_GROUPS = 4;
+const DRIFT_PX_PER_SECOND = 14;
+const RESUME_AFTER_MS = 2500;
+
+function LockedSeal() {
+  return (
+    <span className="relative flex size-11 items-center justify-center">
+      <svg viewBox="0 0 44 44" className="absolute inset-0" aria-hidden>
+        <defs>
+          <linearGradient id="seal-gold" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#FBE7B2" />
+            <stop offset="1" stopColor="#E9C46F" />
+          </linearGradient>
+        </defs>
+        <path
+          fill="url(#seal-gold)"
+          d="M22 2l4.6 3.2 5.5-.8 2.6 4.9 5 2.4-.7 5.6L42 22l-3 4.7.7 5.6-5 2.4-2.6 4.9-5.5-.8L22 42l-4.6-3.2-5.5.8-2.6-4.9-5-2.4.7-5.6L2 22l3-4.7-.7-5.6 5-2.4 2.6-4.9 5.5.8z"
+        />
+      </svg>
+      <Lock className="relative size-4 text-[#946503]" strokeWidth={2.4} />
+    </span>
+  );
+}
+
+function GoldGift({ done }: { done: boolean }) {
+  return (
+    <span className="relative flex size-11 items-center justify-center">
+      <svg viewBox="0 0 44 44" className="size-11 drop-shadow-[0_3px_4px_rgba(148,101,3,0.3)]" aria-hidden>
+        <defs>
+          <linearGradient id="gift-box" x1="0" y1="0" x2="0" y2="1">
+            <stop stopColor="#FFD873" />
+            <stop offset="1" stopColor="#E8A21F" />
+          </linearGradient>
+          <linearGradient id="gift-lid" x1="0" y1="0" x2="0" y2="1">
+            <stop stopColor="#FFE9A8" />
+            <stop offset="1" stopColor="#F4BE45" />
+          </linearGradient>
+        </defs>
+        <path d="M22 13c-3-7-11-9-12.500-4.500C8.300 12.500 15 14 22 13zm0 0c3-7 11-9 12.500-4.500C35.700 12.500 29 14 22 13z" fill="#FFF3CF" stroke="#B97A0A" strokeWidth="1.8" strokeLinejoin="round" />
+        <rect x="8" y="21" width="28" height="19" rx="3" fill="url(#gift-box)" />
+        <rect x="5" y="13" width="34" height="9" rx="2.500" fill="url(#gift-lid)" />
+        <rect x="19" y="13" width="6" height="27" fill="#FFF7DF" />
+      </svg>
+      {done && (
+        <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#946503] ring-2 ring-white">
+          <Check className="size-2.5 text-white" strokeWidth={3.5} />
+        </span>
+      )}
+    </span>
+  );
+}
+
+function Tile({ position, successful, reward }: { position: number; successful: number; reward: number }) {
+  const isGift = position % GROUP === 0;
+  const done = successful >= position;
+  const amount = isGift ? reward * GROUP : reward;
+  return (
+    <li className="flex w-[62px] shrink-0 flex-col items-center gap-1.5">
+      {isGift ? (
+        <GoldGift done={done} />
+      ) : done ? (
+        <span className="relative flex size-11 items-center justify-center">
+          <img src={home("coin-gold.png")} alt="" className="size-10" />
+          <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-[#946503] ring-2 ring-white">
+            <Check className="size-2.5 text-white" strokeWidth={3.5} />
+          </span>
+        </span>
+      ) : (
+        <LockedSeal />
+      )}
+      <span className={cn("text-[13px] font-bold leading-4 tabular-nums", isGift || done ? "text-[#946503]" : "text-[#696B6F]")}>{inr(amount)}</span>
+    </li>
+  );
+}
+
+/** Reward strip: each referral earns the same amount, and every third tile shows that set's total. */
 export const ReferralProgress = forwardRef<
   HTMLElement,
-  { rules: BusinessRules; successful: number; earned: number; onViewAll: () => void; onInvite: () => void; className?: string }
->(({ rules, successful, earned, onViewAll, onInvite, className }, ref) => {
+  { rules: BusinessRules; successful: number; earned: number; onViewAll: () => void; className?: string }
+>(({ rules, successful, earned, onViewAll, className }, ref) => {
   const reduce = useReducedMotion();
-  const ms = rules.milestones;
-  const current = currentMilestone(ms, successful);
-  const next = ms.find((m) => successful < m.target);
-  const toNext = next ? next.target - successful : 0;
-  const title = current ? `${current.label === "First referral" ? "First" : current.label} badge unlocked` : "Win your first badge";
+  const stripRef = useRef<HTMLDivElement>(null);
+  const reward = rules.referrerReward;
+  const setTotal = reward * GROUP;
+  const firstPosition = Math.floor(successful / GROUP) * GROUP + 1;
+  const positions = Array.from({ length: GROUP * VISIBLE_GROUPS }, (_, i) => firstPosition + i);
+  const left = GROUP - (successful % GROUP);
+
+  useEffect(() => {
+    const el = stripRef.current;
+    if (!el || reduce) return;
+    let frame = 0;
+    let last = performance.now();
+    let offset = el.scrollLeft;
+    let pausedUntil = 0;
+    const pause = () => {
+      pausedUntil = Number.POSITIVE_INFINITY;
+    };
+    const release = () => {
+      pausedUntil = performance.now() + RESUME_AFTER_MS;
+    };
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 64);
+      last = now;
+      if (now >= pausedUntil) {
+        const half = el.scrollWidth / 2;
+        offset = (Math.abs(el.scrollLeft - offset) > 2 ? el.scrollLeft : offset) + (DRIFT_PX_PER_SECOND * dt) / 1000;
+        if (offset >= half) offset -= half;
+        el.scrollLeft = offset;
+      } else {
+        offset = el.scrollLeft;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    el.addEventListener("pointerdown", pause);
+    el.addEventListener("touchstart", pause, { passive: true });
+    window.addEventListener("pointerup", release);
+    window.addEventListener("touchend", release);
+    return () => {
+      cancelAnimationFrame(frame);
+      el.removeEventListener("pointerdown", pause);
+      el.removeEventListener("touchstart", pause);
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("touchend", release);
+    };
+  }, [reduce, firstPosition]);
+
+  const status =
+    successful === 0
+      ? `Earn your 1st ${inr(reward)}. Start referring!`
+      : `${left} more ${left === 1 ? "referral" : "referrals"} to complete your next ${inr(setTotal)}`;
 
   return (
-    <section ref={ref} aria-labelledby="progress-title" className={cn("px-4 pt-8", className)}>
-      <div className="relative overflow-hidden rounded-[20px] text-white shadow-[0_12px_28px_rgba(22,16,52,0.28)]" style={{ background: MILESTONE_BG }}>
-        {/* banner art */}
-        <div className="relative h-[150px]">
-          <motion.img
-            src={home("refer-milestone.jpg")}
-            alt=""
-            className="absolute -right-12 top-1 h-[140px] w-[210px] object-cover [mask-image:linear-gradient(90deg,transparent_4%,#000_34%)]"
-            initial={reduce ? false : { opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          />
-          <div className="relative flex h-full max-w-[58%] flex-col justify-center pl-5">
-            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#FFCB5C]">Referral milestones</p>
-            <h2 id="progress-title" className="mt-1.5 text-[20px] font-extrabold leading-6">
-              {title}
-            </h2>
-            <p className="mt-1.5 text-[12px] leading-4 text-white/70">
-              {successful} successful · {inr(earned)} earned
-            </p>
-          </div>
-        </div>
+    <section ref={ref} aria-labelledby="progress-title" className={cn("pt-5", className)}>
+      <h2 id="progress-title" className="sr-only">
+        Referral rewards
+      </h2>
 
-        {/* coin stepper */}
-        <div className="px-4 pb-4 pt-1">
-          <div className="rounded-[16px] bg-white/[0.06] px-2 pb-3 pt-4 ring-1 ring-white/10">
-            <MilestoneTrack milestones={ms} count={successful} dark />
-          </div>
-
-          <p className="mt-3 text-center text-[13px] text-white/80">
-            {next ? (
-              <>
-                <b className="text-white">{toNext} more</b> {toNext === 1 ? "friend" : "friends"} to unlock <b className="text-[#FFCB5C]">{next.label}</b>
-              </>
-            ) : (
-              "Every badge unlocked. Keep referring to keep earning."
-            )}
-          </p>
-
-          <div className="mt-3 flex gap-2">
-            <button onClick={onInvite} className="h-11 flex-1 rounded-[12px] bg-[linear-gradient(180deg,#FFD873,#F2B330)] text-[14px] font-bold text-[#2A1A00] active:brightness-95">
-              Invite To Level Up
-            </button>
-            <button onClick={onViewAll} className="flex h-11 items-center gap-0.5 rounded-[12px] px-3 text-[14px] font-semibold text-white ring-1 ring-white/25 active:bg-white/10">
-              All Badges <ChevronRight className="size-4" />
-            </button>
-          </div>
+      <div
+        ref={stripRef}
+        className="no-scrollbar overflow-x-auto [mask-image:linear-gradient(90deg,transparent,#000_16px,#000_calc(100%-16px),transparent)]"
+        role="group"
+        aria-label={`Rewards: ${inr(reward)} per referral, ${inr(setTotal)} for every ${GROUP} referrals`}
+      >
+        <div className="flex w-max">
+          <ul className="flex">
+            {positions.map((p) => (
+              <Tile key={p} position={p} successful={successful} reward={reward} />
+            ))}
+          </ul>
+          <ul className="flex" aria-hidden>
+            {positions.map((p) => (
+              <Tile key={p} position={p} successful={successful} reward={reward} />
+            ))}
+          </ul>
         </div>
       </div>
-      <p className="mt-2 px-1 text-[11px] leading-[15px] text-[#696B6F]">Badges recognise your referrals and don't carry extra cash.</p>
+
+      <div className="px-4 pt-4">
+        <p className="rounded-t-[12px] bg-[linear-gradient(180deg,#FDF1D2,#FFFBF0)] px-3 py-2 text-center text-[13px] font-semibold leading-[18px] text-[#6F4B02]">{status}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { value: String(successful), label: "Successful referrals" },
+            { value: inr(earned), label: "Cashback earned" },
+          ].map((s) => (
+            <button key={s.label} onClick={onViewAll} className="rounded-[14px] border border-[#F3DDA3] bg-white px-2 py-2.5 text-center active:bg-[#FFFBF0]">
+              <span className="block text-[18px] font-extrabold leading-6 text-[#292C31] tabular-nums">{s.value}</span>
+              <span className="mt-0.5 flex items-center justify-center gap-0.5 text-[12px] font-medium leading-4 text-[#696B6F]">
+                {s.label} <ChevronRight className="size-3.5" />
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
     </section>
   );
 });

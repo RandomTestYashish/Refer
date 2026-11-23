@@ -9,7 +9,8 @@ import { inr } from "@/lib/utils";
  * Light motion only: coins float in, the amount pops and a glint sweeps across it.
  */
 
-export const HERO_HEIGHT = 432;
+export const HERO_HEIGHT = 336;
+const ART_SCALE = 0.72;
 
 const AMOUNT_GRADIENT =
   "linear-gradient(74.27deg, #906409 5.69%, #FFBB2C 6.15%, #FCD991 52.17%, #FFBB2C 88.56%, #7D5500 114.71%)";
@@ -23,8 +24,8 @@ const COINS = [
   { img: "coin-gold.png", x: 312, y: 112, s: 26, r: 14, blur: 0, d: 0.8 },
   { img: "coin-gold.png", x: 58, y: 206, s: 16, r: 22, blur: 1.2, d: 1.4 },
   { img: "coin-tilted.png", x: 300, y: 196, s: 20, r: -26, blur: 0.8, d: 0.4 },
-  { img: "coin-gold.png", x: 8, y: 318, s: 22, r: -8, blur: 1.6, d: 1.1 },
-  { img: "coin-tilted.png", x: 340, y: 300, s: 24, r: 20, blur: 1.4, d: 1.8 },
+  { img: "coin-gold.png", x: 8, y: 262, s: 22, r: -8, blur: 1.6, d: 1.1 },
+  { img: "coin-tilted.png", x: 340, y: 258, s: 24, r: 20, blur: 1.4, d: 1.8 },
 ];
 const SPARKS = [
   { x: 92, y: 104, s: 10, d: 0 },
@@ -32,7 +33,7 @@ const SPARKS = [
   { x: 40, y: 262, s: 8, d: 1.6 },
   { x: 330, y: 250, s: 10, d: 0.5 },
   { x: 150, y: 96, s: 7, d: 2.1 },
-  { x: 236, y: 196, s: 8, d: 1.2 },
+  { x: 286, y: 158, s: 8, d: 1.2 },
 ];
 
 function HeroBackdrop({ reduce }: { reduce: boolean }) {
@@ -122,7 +123,8 @@ export function GoldHero({ rules }: { rules: BusinessRules }) {
       {/* background elements: slow sunburst, drifting coins, twinkling sparkles */}
       <HeroBackdrop reduce={!!reduce} />
 
-      {/* coin stack */}
+      {/* coin stack + amount, scaled together for the compact banner */}
+      <div className="absolute inset-0" style={{ transform: `scale(${ART_SCALE})`, transformOrigin: "50% 98px" }}>
       <motion.div
         className="absolute left-[calc(50%+0.5px)] top-[121px] h-[101px] w-[170px]"
         style={{ x: "-50%" }}
@@ -174,6 +176,7 @@ export function GoldHero({ rules }: { rules: BusinessRules }) {
         <span className="absolute left-1/2 top-[365.52px] h-[18px] w-[81px] -translate-x-1/2 whitespace-nowrap text-center text-[14px] font-medium uppercase leading-[normal] tracking-[2px] text-[#906409]">Per year</span>
         <span className="absolute left-1/2 top-[371.32px] h-[2.118px] w-[87px] translate-x-[calc(-50%+105px)] bg-[linear-gradient(270deg,rgba(253,231,159,0),#F3C563)]" aria-hidden />
       </h1>
+      </div>
     </section>
   );
 }

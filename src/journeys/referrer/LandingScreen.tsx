@@ -10,7 +10,6 @@ import { HowItWorks } from "@/components/app/refer/HowItWorks";
 import { ReferralProgress, currentMilestone } from "@/components/app/refer/ReferralProgress";
 import { ReferralActivity } from "@/components/app/refer/ReferralActivity";
 import { MilestoneUnlockSheet } from "@/components/app/refer/MilestoneUnlockSheet";
-import { SheetSection } from "@/components/app/refer/SheetUI";
 import { QuickInvite } from "@/components/app/refer/QuickInvite";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
@@ -139,6 +138,15 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             <OfferCard rules={rules} />
           </section>
 
+          {/* Reward strip */}
+          <ReferralProgress
+            ref={progressRef}
+            rules={rules}
+            successful={successful}
+            earned={stats.earned}
+            onViewAll={() => navigate("a_dashboard")}
+          />
+
           {/* Invite — the primary action */}
           <section aria-labelledby="invite-title" className="px-4 pt-5">
             <QuickInvite ref={ctaRef} rules={rules} onInvite={invite} onMore={() => invite("quick_more")} />
@@ -156,16 +164,6 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             </div>
             <p className="mt-3 text-center text-[11px] leading-[15px] text-[#696B6F]">Each invite gets its own link, valid for {rules.linkValidityHours} hours.</p>
           </section>
-
-          {/* Milestones */}
-          <ReferralProgress
-            ref={progressRef}
-            rules={rules}
-            successful={successful}
-            earned={stats.earned}
-            onViewAll={() => navigate("a_milestones")}
-            onInvite={() => invite("progress")}
-          />
 
           <ReferralActivity
             referrals={referrals}
@@ -185,15 +183,22 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
 
           <HowItWorks ref={howRef} rules={rules} />
 
-          {/* FAQs — grouped card */}
-          <SheetSection id="faq-title" title="Frequently asked questions">
+          {/* FAQ and terms — two plain dropdowns */}
+          <section aria-label="Help and terms" className="px-4 pt-8">
             <Accordion
               type="single"
               collapsible
               className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F7F7F7)] px-4 [&>div:last-child]:border-0"
-              onValueChange={(v) => v && track("faq_opened", { question: v })}
+              onValueChange={(v) => {
+                if (v === "faq") track("faq_opened", { question: "all" });
+                if (v === "terms") track("terms_viewed", { section: "all" });
+              }}
             >
-              {[
+              <AccordionItem value="faq" className="border-b border-[#E6E9EF]">
+                <AccordionTrigger className="text-[15px] font-bold">FAQs</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-3">
+                    {([
                 ["earn", "How can I earn rewards?", `Share your link. You earn ${inr(rules.referrerReward)} cashback for every friend who joins Airtel and completes an eligible recharge or bill payment, up to ${inr(rules.referrerReward * rules.referralCapYear)} a year.`],
                 ["successful", "What makes a referral successful?", `Your friend joins through your link and completes their first recharge or bill payment of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days, and the transaction passes validation.`],
                 ["friend", "What does my friend need to do?", `Open your invitation, sign in to the Airtel app and complete a first recharge or bill payment of ${inr(rules.minTransaction)}+. They get ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data (first-time users only).`],
@@ -202,25 +207,20 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
                 ["pending", "Why is my reward still pending?", "Your friend may not have made their first recharge or bill payment yet, or the transaction is still being validated. You'll be notified when it's credited."],
                 ["ineligible", "Why was my referral not eligible?", "Common reasons: your friend was already an Airtel user, joined through someone else's link first, or didn't make their first recharge or bill payment in time."],
                 ["expired", "What happens if an invitation expires?", `Links last ${rules.linkValidityHours} hours. To create a fresh link, resend it from My Referrals. The earlier invite stays in your history.`],
-              ].map(([id, q, a]) => (
-                <AccordionItem key={id} value={id} className="border-b border-[#E6E9EF]">
-                  <AccordionTrigger className="text-[15px] font-bold">{q}</AccordionTrigger>
-                  <AccordionContent>{a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-
-          </SheetSection>
-
-          {/* Terms — same grouped accordion as the FAQs */}
-          <SheetSection id="terms-title" title="Terms & conditions">
-            <Accordion
-              type="single"
-              collapsible
-              className="overflow-hidden rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F7F7F7)] px-4 [&>div:last-child]:border-0"
-              onValueChange={(v) => v && track("terms_viewed", { section: v })}
-            >
-              {[
+              ] as string[][]).map(([id, q, a]) => (
+                      <div key={id}>
+                        <p className="text-[13px] font-bold leading-[18px] text-[#292C31]">{q}</p>
+                        <p className="mt-0.5 text-[13px] leading-[18px] text-[#3E4146]">{a}</p>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="terms" className="border-b border-[#E6E9EF]">
+                <AccordionTrigger className="text-[15px] font-bold">Terms &amp; conditions</AccordionTrigger>
+                <AccordionContent>
+                  <ul className="list-disc space-y-1.5 pl-4 text-[13px] leading-[18px] text-[#3E4146]">
+                    {([
                 ["rewards", "Rewards", [
                   `You get ${inr(rules.referrerReward)} cashback for every eligible referred user, usable on your next recharge or bill payment`,
                   `Your friend gets ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data on their first recharge or bill payment (first-time users only)`,
@@ -240,20 +240,14 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
                   `A referral counts for the first valid invitation link your friend opens`,
                   `Links are valid for ${rules.linkValidityHours} hours and can be resent from My Referrals`,
                 ]],
-              ].map(([id, q, items]) => (
-                <AccordionItem key={id as string} value={id as string} className="border-b border-[#E6E9EF]">
-                  <AccordionTrigger className="text-[15px] font-bold">{q as string}</AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="list-disc space-y-1.5 pl-4 text-[13px] leading-[18px] text-[#3E4146]">
-                      {(items as string[]).map((t) => (
-                        <li key={t}>{t}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              ] as [string, string, string[]][]).flatMap(([, , items]) => items).map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
-          </SheetSection>
+          </section>
 
           {/* Page footer */}
           <footer className="mt-12 px-5 pb-32">
