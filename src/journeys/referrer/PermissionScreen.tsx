@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookUser, EyeOff, Link2, Lock, Settings, ShieldCheck, UserX } from "lucide-react";
-import { AppBar, Screen, ScreenBody, ScreenFooter, SimNote } from "@/components/app/primitives";
+import { AppBar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
 import { ErrorState } from "@/components/app/ErrorState";
 import { Button } from "@/components/ui/button";
 import { useProto } from "@/store/useProto";
@@ -52,9 +52,7 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
           }}
           secondary={{ label: "Share Link Manually", onClick: () => navigate("a_preview", { mode: "manual" }) }}
           tertiary={{ label: "Not Now", onClick: () => useProto.getState().back() }}
-        >
-          <SimNote>“Open Settings” simulates the user enabling access</SimNote>
-        </ErrorState>
+        />
       </Screen>
     );
 

@@ -4,7 +4,7 @@ import { Bell, BellRing, Send, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Callout } from "@/components/ui/callout";
 import { AvatarStack, ReferralLinkField } from "@/components/app/InviteKit";
-import { canRemind } from "@/components/app/ReferralActions";
+import { canRemind, remindedToday } from "@/components/app/ReferralActions";
 import { AppBar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
 import { BAND, CARD, HeroCard, LinkButton, SectionTitle } from "@/components/app/gen4";
 import { MilestoneTrack } from "@/components/app/Milestones";
@@ -36,7 +36,7 @@ export function DashboardScreen() {
   const unread = notices.filter((n) => !n.read);
 
   const invite = () => navigate(granted ? "a_contacts" : "a_permission");
-  const remindable = referrals.filter((r) => canRemind(r) && r.rewardA === "locked");
+  const remindable = referrals.filter((r) => canRemind(r) && r.rewardA === "locked" && !remindedToday(r));
   const lockedTotal = referrals.filter((r) => ["locked", "validating", "delayed"].includes(r.rewardA) && !["expired", "not_eligible", "failed"].includes(r.status)).length * rules.referrerReward;
   const remind = useProto((s) => s.remind);
   const remindAll = () => {
@@ -48,12 +48,12 @@ export function DashboardScreen() {
     <Screen>
       <AppBar title="My Referrals" />
       <ScreenBody className="pb-6">
-        {referrals.length === 0 ? (
+        {referrals.length === 0 && stats.milestoneCount === 0 ? (
           <div className="flex h-full flex-col px-5 pb-10 pt-6">
             <AvatarStack size={56} />
             <h2 className="mt-5 text-display">Your invites</h2>
             <p className="mt-2 text-[14px] leading-[21px] text-airtel-sub">
-              Invite friends and track how close they are to earning you both {inr(rules.referrerReward)}.
+              Track every invite here. You earn {inr(rules.referrerReward)} and your friend gets {inr(rules.friendReward)} + {rules.friendDataGB} GB after their first recharge.
             </p>
             <div className="mt-6 rounded-[18px] border-2 border-dashed border-[#DCDCDC] px-5 py-7 text-center">
               <Users className="mx-auto size-7 text-[#B5B5B5]" />
@@ -98,8 +98,8 @@ export function DashboardScreen() {
                 <div className="mt-4 grid grid-cols-4 rounded-[12px] bg-white py-2.5 text-center ring-1 ring-[#E6E9EF]">
                   {[
                     ["Invited", stats.total],
-                    ["Accepted", stats.accepted],
-                    ["Pending", stats.pending],
+                    ["Joined", stats.accepted],
+                    ["In progress", stats.pending],
                     ["Successful", stats.successful],
                   ].map(([l, v]) => (
                     <div key={l as string}>

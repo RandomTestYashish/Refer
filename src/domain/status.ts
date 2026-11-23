@@ -5,9 +5,9 @@ type Tone = "success" | "warning" | "error" | "info" | "neutral" | "soft";
 export const STATUS_META: Record<ReferralStatus, { label: string; tone: Tone; step: number }> = {
   invited: { label: "Invited", tone: "neutral", step: 0 },
   link_opened: { label: "Link opened", tone: "info", step: 1 },
-  accepted: { label: "Accepted", tone: "info", step: 2 },
+  accepted: { label: "Joined", tone: "info", step: 2 },
   pending_recharge: { label: "Pending recharge", tone: "warning", step: 3 },
-  transaction_completed: { label: "Transaction completed", tone: "info", step: 4 },
+  transaction_completed: { label: "Recharge done", tone: "info", step: 4 },
   reward_processing: { label: "Reward processing", tone: "warning", step: 5 },
   reward_credited: { label: "Reward credited", tone: "success", step: 6 },
   expired: { label: "Expired", tone: "neutral", step: -1 },

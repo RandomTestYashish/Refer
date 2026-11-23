@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Ban, CalendarX2, Clock3, Hourglass, Lock, RotateCcw, ShieldAlert, Undo2, UserX } from "lucide-react";
-import { AppBar, RewardCoin, Screen, ScreenBody, ScreenFooter, SimNote } from "@/components/app/primitives";
+import { AppBar, RewardCoin, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
 import { ErrorState } from "@/components/app/ErrorState";
 import { CARD } from "@/components/app/gen4";
 import { RewardBadge, StatusBadge } from "@/components/app/status";
-import { ReferralAction, canRemind, canResend } from "@/components/app/ReferralActions";
+import { ReferralAction, canRemind, canResend, referralFirstName } from "@/components/app/ReferralActions";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { REASON_COPY } from "@/domain/status";
@@ -37,7 +37,9 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
       </Screen>
     );
 
-  const first = r.name.split(" ")[0];
+  const first = referralFirstName(r);
+  const inviteMore = () => navigate(useProto.getState().contactsGranted ? "a_contacts" : "a_permission");
+  const bothEarn = `${inr(rules.referrerReward)} for you and ${inr(rules.friendReward)} + ${rules.friendDataGB} GB for them`;
   const header = <AppBar title="Your reward" />;
   const toDashboard = { label: "Back To My Referrals", onClick: () => resetTo("a_dashboard") };
   const reason = r.reason ? REASON_COPY[r.reason] : undefined;
@@ -70,7 +72,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           title={reason.title}
           body={reason.body}
           status={<StatusBadge status={r.status} />}
-          primary={{ label: "Invite Someone Else", onClick: () => navigate("a_contacts") }}
+          primary={{ label: "Invite Someone Else", onClick: inviteMore }}
           secondary={toDashboard}
         />
       </Screen>
@@ -93,12 +95,12 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
               setTimeout(() => {
                 setRetrying(false);
                 const st = useProto.getState();
-                if (st.scenario.reward === "failed") toast.error("Still failing", { description: "Set Reward outcome to Credited in the panel to recover." });
+                if (st.scenario.reward === "failed") toast.error("Still couldn't credit it", { description: "We'll keep retrying automatically." });
                 else st.applyRewardOutcome(r.id, undefined, true);
               }, 1100);
             },
           }}
-          secondary={{ label: "Contact Support", onClick: () => toast("Support ticket created", { description: "Prototype — no ticket was actually raised." }) }}
+          secondary={{ label: "Contact Support", onClick: () => toast("Support request sent", { description: "We'll get back to you soon." }) }}
           tertiary={toDashboard}
         />
       </Screen>
@@ -113,7 +115,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           title="Reward reversed"
           body={`${first}'s qualifying recharge was reversed or refunded, so the ${inr(rules.referrerReward)} reward linked to it has been withdrawn.`}
           status={<RewardBadge state="reversed" />}
-          primary={{ label: "Invite Another Friend", onClick: () => navigate("a_contacts") }}
+          primary={{ label: "Invite Another Friend", onClick: inviteMore }}
           secondary={toDashboard}
         />
       </Screen>
@@ -129,7 +131,7 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           title={reason?.title ?? "Reward expired"}
           body={reason?.body ?? "This reward has expired."}
           status={<RewardBadge state="expired" />}
-          primary={{ label: "Invite Another Friend", onClick: () => navigate("a_contacts") }}
+          primary={{ label: "Invite Another Friend", onClick: inviteMore }}
           secondary={toDashboard}
         />
       </Screen>
@@ -156,8 +158,8 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
               <h2 className="mt-6 text-title">Your reward is waiting!</h2>
               <p className="mt-2 text-[14px] leading-[21px] text-airtel-sub">
                 {["invited", "link_opened"].includes(r.status)
-                  ? `${first} hasn't joined Airtel yet. Give them a nudge — you'll each get ${inr(rules.referrerReward)} once they complete their first eligible recharge.`
-                  : `${first} hasn't completed their first eligible recharge yet. A recharge of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days unlocks ${inr(rules.referrerReward)} for each of you.`}
+                  ? `${first} hasn't joined Airtel yet. Give them a nudge. Their first eligible recharge unlocks ${bothEarn}.`
+                  : `${first} hasn't completed their first eligible recharge yet. A recharge of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days unlocks ${bothEarn}.`}
               </p>
             </>
           ) : r.rewardA === "validating" ? (
@@ -203,11 +205,10 @@ export function PendingRewardScreen({ params }: { params?: Record<string, string
           </ul>
         </div>
         {r.rewardA === "delayed" && (
-          <Button variant="link" className="mx-auto mt-3 flex" onClick={() => toast("We'll keep you posted", { description: "Prototype — notification preferences are simulated." })}>
+          <Button variant="link" className="mx-auto mt-3 flex" onClick={() => toast("We'll keep you posted", { description: "You'll get an update when it's credited." })}>
             Notify Me When Credited
           </Button>
         )}
-        <SimNote className="mt-4">Use “Simulate friend's recharge” in the panel to unlock live</SimNote>
       </ScreenBody>
       <ScreenFooter className="space-y-2">
         {canRemind(r) || canResend(r) ? (

@@ -6,14 +6,14 @@ import { ErrorState } from "@/components/app/ErrorState";
 import { Confetti } from "@/components/app/Confetti";
 import { Button } from "@/components/ui/button";
 import { CONTACTS } from "@/domain/data";
-import { useProto } from "@/store/useProto";
+import { activeLink, useProto } from "@/store/useProto";
 
 type Phase = "sending" | "success" | "failure" | "pending";
 
 export function SendingScreen({ params }: { params?: Record<string, string> }) {
   const ids = (params?.ids ?? "").split(",").filter(Boolean);
   const channel = (params?.channel ?? "sms") as "sms" | "whatsapp" | "link";
-  const people = ids.map((id) => CONTACTS.find((c) => c.id === id) ?? { id, name: "Friend via link", phone: "", hue: 200 });
+  const people = ids.map((id) => CONTACTS.find((c) => c.id === id) ?? { id, name: "Your share link", phone: "", hue: 200 });
   const nonce = params?.n;
   const prior = useProto.getState().sendResults[nonce ?? ""];
   const [phase, setPhase] = useState<Phase>(prior?.phase ?? "sending");
@@ -49,6 +49,11 @@ export function SendingScreen({ params }: { params?: Record<string, string> }) {
         const created: string[] = [];
         ids.forEach((cid) => {
           const prev = st.referrals.find((r) => r.contactId === cid);
+          // Sharing the same live link again isn't a new referral.
+          if (cid === "c_link" && prev && ["invited", "link_opened"].includes(prev.status) && activeLink(prev).state === "active") {
+            created.push(prev.id);
+            return;
+          }
           if (prev && prev.status === "expired" && cid !== "c_link") {
             st.resend(prev.id);
             created.push(prev.id);
@@ -193,7 +198,7 @@ export function SendingScreen({ params }: { params?: Record<string, string> }) {
               }
               primary={{ label: "Retry", onClick: () => setAttempt((a) => a + 1) }}
               secondary={{
-                label: failKind === "network" ? "Edit Invitation" : "Share Another Way",
+                label: failKind === "network" ? "Go Back" : "Share Another Way",
                 onClick: () => useProto.getState().back(),
               }}
             />

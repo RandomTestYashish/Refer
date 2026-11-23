@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CONTACTS } from "@/domain/data";
+import { remindedToday } from "@/components/app/ReferralActions";
 import { activeLink, useProto } from "@/store/useProto";
 import { cn, timeLeft } from "@/lib/utils";
 import type { Referral } from "@/domain/types";
@@ -76,7 +77,7 @@ export function ContactsScreen() {
               setTimeout(() => {
                 setRetrying(false);
                 if (useProto.getState().scenario.contacts === "unavailable")
-                  toast.error("Still unavailable", { description: "Switch “Contacts” to Granted in the panel to recover." });
+                  toast.error("Still unavailable", { description: "Try again in a moment, or share your link." });
               }, 900);
             },
           }}
@@ -195,9 +196,9 @@ export function ContactsScreen() {
                       <span className="min-w-0 flex-1">
                         <span className="flex items-center gap-1.5 text-[15px] font-semibold">
                           {c.name}
-                          {active && <Badge variant="info">Invited · {timeLeft(activeLink(r).expiresAt - Date.now())}</Badge>}
+                          {active && <Badge variant="info">Invited</Badge>}
                           {r?.status === "expired" && <Badge variant="neutral">Link expired</Badge>}
-                          {joined && <Badge variant="success">Joined</Badge>}
+                          {joined && <Badge variant={r.status === "not_eligible" ? "neutral" : "success"}>{r.status === "not_eligible" ? "Not eligible" : "Joined"}</Badge>}
                         </span>
                         <span className="block text-[13px] text-airtel-sub tabular">{c.phone}</span>
                       </span>
@@ -231,6 +232,7 @@ export function ContactsScreen() {
           <DialogFooter>
             <Button
               block
+              disabled={!!dup && remindedToday(dup)}
               onClick={() => {
                 if (dup) {
                   remind(dup.id);
@@ -239,7 +241,7 @@ export function ContactsScreen() {
                 setDup(null);
               }}
             >
-              Send Reminder
+              {dup && remindedToday(dup) ? "Reminder Already Sent" : "Send Reminder"}
             </Button>
             <Button block variant="ghost" onClick={() => setDup(null)}>
               Cancel

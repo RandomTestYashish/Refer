@@ -143,8 +143,10 @@ export const ReferralProgress = forwardRef<
 
   const status =
     successful === 0
-      ? `Earn your 1st ${inr(reward)}. Start referring!`
-      : `${left} more ${left === 1 ? "referral" : "referrals"} to complete your next ${inr(setTotal)}`;
+      ? `${inr(reward)} per friend. ${GROUP} friends = ${inr(setTotal)}`
+      : successful >= rules.referralCapYear
+        ? "You've reached this year's referral limit"
+        : `${left} more ${left === 1 ? "friend" : "friends"} to complete your next ${inr(setTotal)}`;
 
   return (
     <section ref={ref} aria-labelledby="progress-title" className={cn("pt-5", className)}>

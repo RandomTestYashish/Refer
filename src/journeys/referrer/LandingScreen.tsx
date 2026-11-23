@@ -52,6 +52,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
   const successful = stats.milestoneCount;
   const badge = currentMilestone(rules.milestones, successful);
   const nextM = rules.milestones.find((m) => successful < m.target);
+  const friendWho = rules.existingNoTxnEligible ? "new users, or existing users yet to make a transaction" : "new Airtel users only";
 
   // Primary CTA: single navigation, no duplicate taps.
   const inviting = useRef(false);
@@ -154,11 +155,12 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
               onInvite={invite}
               onShare={(channel) => {
                 track("invite_friends_clicked", { source: `share_${channel}` });
-                navigate("a_preview", { mode: "manual" });
+                navigate("a_preview", { mode: "manual", channel });
               }}
             />
           </section>
 
+          {(referrals.length > 0 || offline) && (
           <ReferralActivity
             referrals={referrals}
             reward={rules.referrerReward}
@@ -174,6 +176,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             }}
             onInvite={() => invite("activity_empty")}
           />
+          )}
 
           <HowItWorks ref={howRef} rules={rules} onInvite={() => invite("how_it_works")} />
 
@@ -195,11 +198,11 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
                     {([
                 ["earn", "How can I earn rewards?", `Share your link. You earn ${inr(rules.referrerReward)} cashback for every friend who joins Airtel and completes an eligible recharge or bill payment, up to ${inr(rules.referrerReward * rules.referralCapYear)} a year.`],
                 ["successful", "What makes a referral successful?", `Your friend joins through your link and completes their first recharge or bill payment of ${inr(rules.minTransaction)}+ within ${rules.firstTxnDeadlineDays} days, and the transaction passes validation.`],
-                ["friend", "What does my friend need to do?", `Open your invitation, sign in to the Airtel app and complete a first recharge or bill payment of ${inr(rules.minTransaction)}+. They get ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data (first-time users only).`],
+                ["friend", "What does my friend need to do?", `Open your invitation, sign in to the Airtel app and complete a first recharge or bill payment of ${inr(rules.minTransaction)}+. They get ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data (${friendWho}).`],
                 ["when", "When will I receive my reward?", `After your friend's transaction is validated, which can take up to ${rules.rewardValidationDays} days. Use your cashback within ${rules.cashbackValidityDays} days on a recharge or bill payment.`],
                 ["limit", "Is there a limit on rewards?", `Yes. Up to ${rules.referralCapMonth} rewarded referrals a month and ${rules.referralCapYear} a year.`],
                 ["pending", "Why is my reward still pending?", "Your friend may not have made their first recharge or bill payment yet, or the transaction is still being validated. You'll be notified when it's credited."],
-                ["ineligible", "Why was my referral not eligible?", "Common reasons: your friend was already an Airtel user, joined through someone else's link first, or didn't make their first recharge or bill payment in time."],
+                ["ineligible", "Why was my referral not eligible?", "Common reasons: your friend was already an active Airtel user, joined through someone else's link first, or didn't make their first recharge or bill payment in time."],
                 ["expired", "What happens if an invitation expires?", `Links last ${rules.linkValidityHours} hours. To create a fresh link, resend it from My Referrals. The earlier invite stays in your history.`],
               ] as string[][]).map(([id, q, a]) => (
                       <div key={id}>
@@ -217,7 +220,8 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
                     {([
                 ["rewards", "Rewards", [
                   `You get ${inr(rules.referrerReward)} cashback for every eligible referred user, usable on your next recharge or bill payment`,
-                  `Your friend gets ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data on their first recharge or bill payment (first-time users only)`,
+                  `Your friend gets ${inr(rules.friendReward)} cashback + ${rules.friendDataGB} GB data on their first recharge or bill payment (${friendWho})`,
+                  `The ${inr(rules.referrerReward * 3)} on the rewards strip is the total for 3 referrals, not an extra bonus`,
                   "Milestone badges are recognition only and carry no additional cash reward",
                 ]],
                 ["eligibility", "Eligibility", [

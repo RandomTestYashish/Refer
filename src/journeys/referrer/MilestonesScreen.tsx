@@ -69,7 +69,7 @@ export function MilestonesScreen() {
                 <p className="mt-2.5 text-[12px] text-airtel-sub">
                   {m.id === "first"
                     ? `Your first ₹${rules.referrerReward} referral reward`
-                    : "Milestone benefit to be announced"}
+                    : "Recognition badge, no extra cashback"}
                 </p>
               </motion.div>
             );
@@ -77,7 +77,7 @@ export function MilestonesScreen() {
         </div>
         <p className="mt-4 flex gap-2 text-[11.5px] leading-[16px] text-airtel-sub">
           <Info className="mt-px size-3.5 shrink-0" />
-          Milestone levels are part of the proposal. Additional milestone rewards are not yet confirmed and are intentionally not shown.
+          Badges recognise your referrals. You earn the same cashback on every successful referral.
         </p>
       </ScreenBody>
       <ScreenFooter>

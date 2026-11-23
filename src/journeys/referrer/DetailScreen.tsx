@@ -3,7 +3,7 @@ import { Callout } from "@/components/ui/callout";
 import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter, SectionTitle } from "@/components/app/primitives";
 import { RewardBadge, StatusBadge } from "@/components/app/status";
 import { ReferralTimeline } from "@/components/app/Timeline";
-import { ReferralAction, canRemind, canResend } from "@/components/app/ReferralActions";
+import { ReferralAction, canRemind, canResend, isLinkShare, referralFirstName, referralTitle } from "@/components/app/ReferralActions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CONTACTS } from "@/domain/data";
@@ -32,9 +32,9 @@ export function DetailScreen({ params }: { params?: Record<string, string> }) {
       <ScreenBody className="px-4 pb-6">
         <div className="rounded-[20px] bg-white p-4 shadow-card">
           <div className="flex items-center gap-3">
-            <ContactAvatar name={r.name} hue={c?.hue ?? 200} size={52} />
-            <div className="flex-1">
-              <p className="text-[17px] font-bold">{r.name}</p>
+            <ContactAvatar name={isLinkShare(r) ? "Link" : r.name} hue={c?.hue ?? 200} size={52} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[17px] font-bold">{referralTitle(r)}</p>
               <p className="text-[12.5px] text-airtel-sub tabular">{r.phone || "Shared via link"}</p>
             </div>
             <StatusBadge status={r.status} />
@@ -55,7 +55,7 @@ export function DetailScreen({ params }: { params?: Record<string, string> }) {
             <ChevronRight className="size-5 text-airtel-sub" />
           </button>
           <div className="mt-2 flex items-center justify-between px-1 text-[12px] text-airtel-sub">
-            <span>Friend's reward: {inr(rules.friendReward)}</span>
+            <span>Friend's reward: {inr(rules.friendReward)} + {rules.friendDataGB} GB</span>
             <RewardBadge state={r.rewardB} />
           </div>
         </div>
@@ -67,7 +67,7 @@ export function DetailScreen({ params }: { params?: Record<string, string> }) {
         )}
         {r.status === "pending_recharge" && (
           <Callout tone="warning" title="Waiting for first recharge" className="mt-3">
-            {r.name.split(" ")[0]} needs to recharge {inr(rules.minTransaction)}+ within {rules.firstTxnDeadlineDays} days of joining.
+            {referralFirstName(r)} needs to recharge {inr(rules.minTransaction)}+ within {rules.firstTxnDeadlineDays} days of joining.
           </Callout>
         )}
 

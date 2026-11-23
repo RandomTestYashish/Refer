@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
-import { Copy, Mail, MessageCircle, MessageSquareText, RotateCcw, Send, Share2 } from "lucide-react";
-import { AppBar, AirtelMark, ContactAvatar, Screen, ScreenFooter, SimNote } from "@/components/app/primitives";
+import { Copy, Mail, MessageCircle, MessageSquareText, Send, Share2 } from "lucide-react";
+import { AppBar, AirtelMark, ContactAvatar, Screen, ScreenFooter } from "@/components/app/primitives";
 import { IconAction } from "@/components/app/gen4";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -55,12 +55,17 @@ function InviteCard({ rules }: { rules: { referrerReward: number; friendReward: 
 
 export function PreviewScreen({ params }: { params?: Record<string, string> }) {
   const manual = params?.mode === "manual";
+  /** Set when the user already chose an app on the landing page: skip the reveal and go straight there. */
+  const quick = params?.channel as "whatsapp" | "sms" | "more" | undefined;
+  const quickDone = useRef(false);
   const selected = useProto((s) => s.selectedContactIds);
   const scenario = useProto((s) => s.scenario);
   const rules = useProto((s) => s.rules);
   const navigate = useProto((s) => s.navigate);
+  const replace = useProto((s) => s.replace);
+  const back = useProto((s) => s.back);
   const reduce = useReducedMotion();
-  const [phase, setPhase] = useState<Phase>(reduce ? 4 : 0);
+  const [phase, setPhase] = useState<Phase>(reduce || quick ? 4 : 0);
   const [run, setRun] = useState(0);
   const [sheet, setSheet] = useState(false);
   const [waMissing, setWaMissing] = useState(false);
@@ -73,6 +78,12 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
 
   // Choreography (ms): creating → card → into envelope → flap + seal → ready + sheet.
   useEffect(() => {
+    if (quick) return;
+    if (run < 0) {
+      setPhase(4);
+      setSheet(true);
+      return;
+    }
     if (reduce) {
       setPhase(4);
       const t = setTimeout(() => setSheet(true), 300);
@@ -88,7 +99,17 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
       setTimeout(() => setSheet(true), 4900),
     ];
     return () => t.forEach(clearTimeout);
-  }, [run, reduce]);
+  }, [run, reduce, quick]);
+
+  useEffect(() => {
+    if (!quick || quickDone.current) return;
+    quickDone.current = true;
+    if (quick === "more") setMore(true);
+    else send(quick);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quick]);
+
+  const goSend = (channel: "sms" | "whatsapp" | "link") => (quick ? replace : navigate)("a_sending", { ids, channel, n: String(Date.now()) });
 
   const send = (channel: "sms" | "whatsapp" | "link") => {
     if (!manual && recipients.length === 0) {
@@ -101,7 +122,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
       return;
     }
     setSheet(false);
-    navigate("a_sending", { ids, channel, n: String(Date.now()) });
+    goSend(channel);
   };
 
   const copy = async () => {
@@ -252,14 +273,10 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
 
       <ScreenFooter className="border-0 bg-white">
         <div className="flex gap-3">
-          <Button size="lg" variant="outline" className="w-14 shrink-0 px-0" onClick={() => setRun((r) => r + 1)} aria-label="Replay animation" disabled={phase < 4}>
-            <RotateCcw />
-          </Button>
-          <Button size="lg" className="flex-1" onClick={() => setSheet(true)} disabled={phase < 4}>
+          <Button size="lg" className="flex-1" onClick={() => (phase < 4 ? setRun(-1) : setSheet(true))}>
             <Share2 /> Share Invite
           </Button>
         </div>
-        <SimNote className="mt-2">No real messages are sent</SimNote>
       </ScreenFooter>
 
       {/* Share sheet */}
@@ -302,7 +319,13 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
       </Sheet>
 
       {/* WhatsApp unavailable */}
-      <Dialog open={waMissing} onOpenChange={setWaMissing}>
+      <Dialog
+        open={waMissing}
+        onOpenChange={(o) => {
+          setWaMissing(o);
+          if (!o && quick) back();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <div className="mx-auto mb-1 flex size-12 items-center justify-center rounded-full bg-airtel-warning-soft">
@@ -316,7 +339,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
               block
               onClick={() => {
                 setWaMissing(false);
-                navigate("a_sending", { ids, channel: "sms", n: String(Date.now()) });
+                goSend("sms");
               }}
             >
               Send Via SMS
@@ -349,7 +372,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
             <Button
               block
               onClick={() => {
-                if (useProto.getState().scenario.share === "copy_fail") toast.error("Copy failed again", { description: "Set Share outcome to OK in the panel to recover." });
+                if (useProto.getState().scenario.share === "copy_fail") toast.error("Copy failed again", { description: "Long-press the link above to copy it." });
                 else {
                   setCopyFail(false);
                   toast.success("Link copied.");
@@ -373,7 +396,13 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
       </Dialog>
 
       {/* Other share options */}
-      <Sheet open={more} onOpenChange={setMore}>
+      <Sheet
+        open={more}
+        onOpenChange={(o) => {
+          setMore(o);
+          if (!o && quick) back();
+        }}
+      >
         <SheetContent>
           <SheetHeader>
             <SheetTitle>Share invitation</SheetTitle>

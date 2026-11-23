@@ -6,6 +6,7 @@ import { Confetti } from "@/components/app/Confetti";
 import { MilestoneTrack } from "@/components/app/Milestones";
 import { CARD } from "@/components/app/gen4";
 import { Button } from "@/components/ui/button";
+import { referralFirstName } from "@/components/app/ReferralActions";
 import { referralStats, useProto } from "@/store/useProto";
 import { inr } from "@/lib/utils";
 
@@ -25,7 +26,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
     return () => t.forEach(clearTimeout);
   }, []);
 
-  const first = r?.name.split(" ")[0] ?? "Your friend";
+  const first = r ? referralFirstName(r) : "Your friend";
   const nextM = rules.milestones.find((m) => stats.milestoneCount < m.target);
   const justUnlocked = rules.milestones.find((m) => m.target === stats.milestoneCount);
 
@@ -68,7 +69,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
             <motion.div key="d" initial={{ y: 12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mt-6">
               <h1 className="text-display">{inr(rules.referrerReward)} unlocked!</h1>
               <p className="mt-2 text-[15px] leading-[22px] text-airtel-sub">
-                {first} completed their first eligible recharge. You and {first} each earn {inr(rules.referrerReward)}.
+                {first} completed their first eligible recharge. You earn {inr(rules.referrerReward)}, and they get {inr(rules.friendReward)} + {rules.friendDataGB} GB.
               </p>
             </motion.div>
           )}
@@ -108,7 +109,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
         <Button size="lg" block onClick={() => resetTo("a_dashboard")}>
           View My Referrals
         </Button>
-        <Button size="lg" block variant="outline" onClick={() => navigate("a_contacts")}>
+        <Button size="lg" block variant="outline" onClick={() => navigate(useProto.getState().contactsGranted ? "a_contacts" : "a_permission")}>
           Invite More Friends
         </Button>
       </div>
