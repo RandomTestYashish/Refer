@@ -175,7 +175,7 @@ export function LandingScreen({ params }: { params?: Record<string, string> }) {
             onInvite={() => invite("activity_empty")}
           />
 
-          <HowItWorks ref={howRef} rules={rules} />
+          <HowItWorks ref={howRef} rules={rules} onInvite={() => invite("how_it_works")} />
 
           {/* FAQ and terms — two plain dropdowns */}
           <section aria-label="Help and terms" className="px-4 pt-8">
