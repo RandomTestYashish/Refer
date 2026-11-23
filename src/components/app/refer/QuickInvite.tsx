@@ -1,19 +1,25 @@
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState, type ReactNode } from "react";
 import { Check, Copy, UserPlus } from "lucide-react";
 import { copyInviteLink } from "@/components/app/InviteKit";
-import { PERSONAL_LINK } from "@/domain/data";
 import { MessagesIcon, ShareIcon, WhatsAppIcon } from "@/components/app/refer/ShareIcons";
 import { Button } from "@/components/ui/button";
+import { PERSONAL_LINK } from "@/domain/data";
 
 type Channel = "whatsapp" | "sms" | "more";
 
-const CHANNELS: { id: Channel; label: string; color: string; Icon: typeof WhatsAppIcon }[] = [
-  { id: "whatsapp", label: "Share on WhatsApp", color: "#25D366", Icon: WhatsAppIcon },
-  { id: "sms", label: "Share by SMS", color: "#1A73E8", Icon: MessagesIcon },
-  { id: "more", label: "More ways to share", color: "#292C31", Icon: ShareIcon },
-];
+/** Gen4 Quick Action Button: 48px circle, 24px icon, Regular 12/18 label, 72px column. */
+function QuickAction({ label, icon, color, onClick }: { label: string; icon: ReactNode; color: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="flex w-[72px] flex-col items-center gap-1 active:opacity-70">
+      <span className="flex size-12 items-center justify-center rounded-full bg-[#E6E9EF] [&_svg]:size-6" style={{ color }}>
+        {icon}
+      </span>
+      <span className="w-full truncate text-center text-[12px] leading-[18px] text-[#292C31]">{label}</span>
+    </button>
+  );
+}
 
-/** Primary invite action, with the personal link and share targets in one quiet row. */
+/** Primary invite CTA, followed by a Gen4 four-action QAB card for sharing the personal link. */
 export const QuickInvite = forwardRef<HTMLDivElement, { onInvite: (source: string) => void; onShare: (channel: Channel) => void }>(
   ({ onInvite, onShare }, ctaRef) => {
     const [copied, setCopied] = useState(false);
@@ -24,35 +30,29 @@ export const QuickInvite = forwardRef<HTMLDivElement, { onInvite: (source: strin
     }, [copied]);
 
     return (
-      <div>
+      <div className="space-y-3">
         <div ref={ctaRef}>
-          <Button size="lg" block className="hover:border-black hover:bg-black" onClick={() => onInvite("sheet_cta")}>
+          <Button block className="hover:border-black hover:bg-black" onClick={() => onInvite("sheet_cta")}>
             <UserPlus /> Invite Friends
           </Button>
         </div>
-        <div className="mt-3 flex items-center gap-1.5">
-          <div className="flex h-10 min-w-0 flex-1 items-center rounded-[12px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] pl-3 pr-1">
-            <span className="min-w-0 flex-1 select-all truncate text-[13px] font-medium text-[#292C31]">{PERSONAL_LINK}</span>
-            <button
+        <section aria-labelledby="share-title" className="rounded-[16px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] p-4">
+          <h2 id="share-title" className="text-[12px] font-bold uppercase leading-[14px] text-[#696B6F]">
+            Share your link
+          </h2>
+          <p className="mt-1 truncate text-[12px] leading-[18px] text-[#696B6F]">{PERSONAL_LINK}</p>
+          <div className="mt-3 flex justify-between">
+            <QuickAction
+              label={copied ? "Copied" : "Copy link"}
+              color={copied ? "#0F7033" : "#292C31"}
+              icon={copied ? <Check strokeWidth={2.5} /> : <Copy />}
               onClick={async () => setCopied(await copyInviteLink(PERSONAL_LINK))}
-              className="flex size-8 shrink-0 items-center justify-center rounded-[8px] text-[#696B6F] active:bg-black/5"
-              aria-label={copied ? "Link copied." : "Copy link"}
-            >
-              {copied ? <Check className="size-4 text-[#0F7033]" strokeWidth={3} /> : <Copy className="size-4" />}
-            </button>
+            />
+            <QuickAction label="WhatsApp" color="#25D366" icon={<WhatsAppIcon />} onClick={() => onShare("whatsapp")} />
+            <QuickAction label="SMS" color="#1A73E8" icon={<MessagesIcon />} onClick={() => onShare("sms")} />
+            <QuickAction label="More" color="#292C31" icon={<ShareIcon />} onClick={() => onShare("more")} />
           </div>
-          {CHANNELS.map(({ id, label, color, Icon }) => (
-            <button
-              key={id}
-              onClick={() => onShare(id)}
-              aria-label={label}
-              className="relative flex size-10 shrink-0 items-center justify-center rounded-[12px] border border-[#E6E9EF] bg-[linear-gradient(180deg,#FFFFFF,#F5F5F5)] after:absolute after:-inset-0.5 active:brightness-95"
-              style={{ color }}
-            >
-              <Icon className="size-[21px]" />
-            </button>
-          ))}
-        </div>
+        </section>
       </div>
     );
   },
