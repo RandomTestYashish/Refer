@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { animate, motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { BadgeIndianRupee, Gift, Smartphone, UserPlus } from "lucide-react";
 import appIcon from "@/assets/refer/airtel-app-icon.png";
@@ -15,71 +15,133 @@ const MAX_TILT = 9;
 
 /* ───────────────────────── Faces ───────────────────────── */
 
-/** Front: the proposition. Also used, non-interactive, inside the envelope and share creative. */
-export function CardFront({ width, shimmer = true, className }: { width: number; shimmer?: boolean; className?: string }) {
-  const cap = useProto((s) => s.rules.yearlyEarningCap);
+/**
+ * Logo coin — the hero of the card. Tap to toss it: it spins like a coin and lands on the other face
+ * (app logo ↔ ₹ reward). The shadow shrinks while it's in the air.
+ */
+function LogoCoin({ size, interactive }: { size: number; interactive: boolean }) {
   const reward = useProto((s) => s.rules.referrerReward);
+  const reduce = useReducedMotion();
+  const [tosses, setTosses] = useState(0);
+  const spin = useMotionValue(0);
+  const lift = useMotionValue(0);
+  const air = useTransform(lift, [-1, 0], [0.55, 1]);
+  const showsReward = tosses % 2 === 1;
+
+  useEffect(() => {
+    if (tosses === 0) return;
+    const target = tosses * 540; // 1½ turns per toss → alternate face each time
+    if (reduce) {
+      spin.set(target);
+      return;
+    }
+    const a = animate(spin, target, { type: "spring", stiffness: 70, damping: 13, mass: 1 });
+    const b = animate(lift, [0, -1, 0], { duration: 0.75, times: [0, 0.42, 1], ease: ["easeOut", "easeIn"] });
+    return () => {
+      a.stop();
+      b.stop();
+    };
+  }, [tosses, reduce, spin, lift]);
+
+  const y = useTransform(lift, (v) => v * size * 0.45);
+  const toss = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation(); // don't flip the whole card
+    haptic([6, 30, 8]);
+    setTosses((t) => t + 1);
+  };
+
+  const face = "absolute inset-0 rounded-[26%] [backface-visibility:hidden]";
+  const coin = (
+    <motion.div className="relative size-full" style={{ rotateY: spin, y, transformStyle: "preserve-3d" }}>
+      {/* logo face */}
+      <div className={cn(face, "overflow-hidden shadow-[0_0.45em_0.9em_rgba(20,20,24,0.22)]")}>
+        <img src={appIcon} alt="" className="size-full scale-[1.2]" draggable={false} />
+        <span className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-transparent" aria-hidden />
+      </div>
+      {/* reward face */}
+      <div
+        className={cn(face, "flex flex-col items-center justify-center text-[#5B3A00] shadow-[0_0.5em_1em_rgba(30,8,10,0.35)]")}
+        style={{
+          transform: "rotateY(180deg)",
+          background: "radial-gradient(circle at 32% 28%,#FFF4C9 0%,#F4CE63 38%,#C9971E 72%,#94680C 100%)",
+          boxShadow: "inset 0 0 0 0.18em rgba(255,240,190,0.55), inset 0 -0.3em 0.6em rgba(90,55,0,0.35)",
+        }}
+      >
+        <span className="text-[1.75em] font-extrabold leading-none tracking-[-0.04em] tabular">₹{reward}</span>
+        <span className="mt-[0.2em] text-[0.5em] font-bold uppercase tracking-[0.14em]">per friend</span>
+      </div>
+    </motion.div>
+  );
+
+  return (
+    <div className="relative" style={{ width: size, height: size, perspective: 500, fontSize: size / 4.6 }}>
+      {/* ground shadow */}
+      <motion.span
+        aria-hidden
+        className="absolute inset-x-[14%] -bottom-[14%] h-[16%] rounded-[50%] bg-black/30 blur-[6px]"
+        style={{ scaleX: air, opacity: air }}
+      />
+      {interactive ? (
+        <motion.button
+          type="button"
+          onClick={toss}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toss(e);
+            }
+          }}
+          whileTap={{ scale: 0.92 }}
+          aria-label={showsReward ? `Coin showing ₹${reward} per friend. Tap to toss again.` : "Airtel app logo. Tap to toss the coin."}
+          data-testid="logo-coin"
+          data-face={showsReward ? "reward" : "logo"}
+          className="relative block size-full rounded-[26%] outline-none focus-visible:ring-4 focus-visible:ring-[#075EE8]/40"
+        >
+          {coin}
+        </motion.button>
+      ) : (
+        coin
+      )}
+    </div>
+  );
+}
+
+/** Front: the logo is the hero (the proposition itself lives in the page headline). */
+export function CardFront({ width, shimmer = true, interactive = false, className }: { width: number; shimmer?: boolean; interactive?: boolean; className?: string }) {
   const reduce = useReducedMotion();
   return (
     <div
-      className={cn("relative overflow-hidden rounded-[1.25em] text-white", className)}
+      className={cn("relative overflow-hidden rounded-[1.25em] text-refer-ink", className)}
       style={{
         width,
         height: width * CARD_RATIO,
         fontSize: width / 21,
-        background: "linear-gradient(150deg,#B23D47 0%,#8F2731 46%,#5A161D 100%)",
+        background: "linear-gradient(155deg,#FFFFFF 0%,#F4F4F6 38%,#E2E3E7 78%,#D3D5DA 100%)",
+        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)",
       }}
     >
-      {/* material: fine engraved lines + soft top-left light */}
-      <span
-        className="absolute inset-0 opacity-[0.07]"
-        style={{ background: "repeating-linear-gradient(115deg,#fff 0 1px,transparent 1px 7px)" }}
-        aria-hidden
-      />
-      <span className="absolute -left-[20%] -top-[60%] h-[140%] w-[90%] rounded-full bg-white/10 blur-2xl" aria-hidden />
-      <span className="absolute -bottom-[45%] -right-[15%] size-[18em] rounded-full border-[0.12em] border-white/15" aria-hidden />
-      <span className="absolute -bottom-[30%] right-[2%] size-[12em] rounded-full border-[0.12em] border-white/10" aria-hidden />
+      {/* material: fine engraved lines + soft light */}
+      <span className="absolute inset-0 opacity-[0.05]" style={{ background: "repeating-linear-gradient(115deg,#000 0 1px,transparent 1px 7px)" }} aria-hidden />
+      <span className="absolute left-1/2 top-1/2 size-[13em] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.95),rgba(255,255,255,0)_65%)]" aria-hidden />
+      <span className="absolute left-1/2 top-1/2 size-[11em] -translate-x-1/2 -translate-y-1/2 rounded-full border-[0.08em] border-black/[0.06]" aria-hidden />
+      <span className="absolute left-1/2 top-1/2 size-[15em] -translate-x-1/2 -translate-y-1/2 rounded-full border-[0.08em] border-black/[0.04]" aria-hidden />
 
       {shimmer && !reduce && (
         <motion.span
           aria-hidden
-          className="pointer-events-none absolute inset-y-[-30%] w-[35%] rotate-[18deg] bg-gradient-to-r from-transparent via-white/25 to-transparent mix-blend-soft-light"
+          className="pointer-events-none absolute inset-y-[-30%] w-[35%] rotate-[18deg] bg-gradient-to-r from-transparent via-white/80 to-transparent"
           initial={{ left: "-45%" }}
           animate={{ left: ["-45%", "130%"] }}
           transition={{ duration: 1.6, ease: [0.4, 0, 0.2, 1], repeat: Infinity, repeatDelay: 3.2, delay: 0.8 }}
         />
       )}
 
-      <div className="relative flex h-full flex-col justify-between p-[1.1em]">
-        <div className="flex items-center gap-[0.55em]">
-          <img src={appIcon} alt="" className="size-[2.4em] drop-shadow-[0_0.15em_0.3em_rgba(0,0,0,0.25)]" draggable={false} />
-          <span className="leading-[1.15em]">
-            <span className="block text-[0.82em] font-bold tracking-[0.01em]">Airtel Thanks</span>
-            <span className="block text-[0.66em] font-medium text-white/75">Refer a App</span>
-          </span>
-          <span className="ml-auto rounded-full bg-white/15 px-[0.6em] py-[0.2em] text-[0.6em] font-semibold uppercase tracking-[0.12em] backdrop-blur-sm">
-            Referral
-          </span>
-        </div>
-
-        <div>
-          <p className="text-[0.72em] font-semibold uppercase tracking-[0.18em] text-white/80">Earn up to</p>
-          <p
-            className="mt-[0.05em] bg-gradient-to-b from-white via-white to-[#EFDCD8] bg-clip-text text-[2.9em] font-extrabold leading-[1em] tracking-[-0.04em] text-transparent tabular"
-            data-testid="card-cap"
-          >
-            {inr(cap)}
-          </p>
-          <p className="mt-[0.15em] text-[0.82em] font-semibold text-white/90">a year, inviting friends to Airtel</p>
-        </div>
-
-        <div className="flex items-end justify-between text-[0.66em] font-medium text-white/80">
-          <span>{inr(reward)} for every friend who qualifies</span>
-          <span className="flex gap-[0.3em]" aria-hidden>
-            <span className="size-[1.1em] rounded-full bg-white/40" />
-            <span className="-ml-[0.6em] size-[1.1em] rounded-full bg-white/25" />
-          </span>
-        </div>
+      <div className="relative flex h-full items-center justify-center pb-[0.6em]">
+        <LogoCoin size={width * 0.3} interactive={interactive} />
+      </div>
+      <div className="absolute inset-x-[1.1em] bottom-[0.9em] flex items-center justify-between text-[0.6em] font-semibold uppercase tracking-[0.16em] text-refer-muted">
+        <span>Refer a App</span>
+        {interactive && <span className="normal-case tracking-normal text-refer-muted/80">Tap the logo</span>}
       </div>
     </div>
   );
@@ -163,7 +225,7 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
   // Specular glare that follows the pointer on the front face
   const gx = useTransform(tx, [-0.5, 0.5], [10, 90]);
   const gy = useTransform(ty, [-0.5, 0.5], [0, 100]);
-  const glare = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.22), rgba(255,255,255,0) 55%)`;
+  const glare = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.7), rgba(255,255,255,0) 50%)`;
 
   const onMove = (e: PointerEvent) => {
     if (reduce || !ref.current) return;
@@ -191,7 +253,7 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
       {/* ground shadow */}
       <motion.span
         aria-hidden
-        className="absolute inset-x-[8%] bottom-0 h-[38%] rounded-[50%] bg-[#1E1213] blur-[20px]"
+        className="absolute inset-x-[8%] bottom-0 h-[38%] rounded-[50%] bg-[#1A1B1F] blur-[20px]"
         style={{ x: shadowX, y: shadowY, scaleX: shadowScale, opacity: shadowOpacity }}
       />
       <motion.div
@@ -212,8 +274,8 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
         style={{ rotateX: rx, rotateY, y: lift, scale, transformStyle: "preserve-3d" }}
       >
         <div className="absolute inset-0 [backface-visibility:hidden]" style={{ transform: "translateZ(1px)" }} aria-hidden={flipped}>
-          <CardFront width={width} />
-          <motion.span className="pointer-events-none absolute inset-0 rounded-[20px]" style={{ background: glare }} aria-hidden />
+          <CardFront width={width} interactive />
+          <motion.span className="pointer-events-none absolute inset-0 rounded-[20px] mix-blend-soft-light" style={{ background: glare }} aria-hidden />
         </div>
         <div className="absolute inset-0 [backface-visibility:hidden]" style={{ transform: "rotateY(180deg) translateZ(1px)" }} aria-hidden={!flipped}>
           <CardBack width={width} />

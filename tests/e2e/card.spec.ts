@@ -7,13 +7,29 @@ test.describe("Referral card", () => {
     await expect(ui(page).getByRole("heading", { name: /earn up to ₹5,000\s*a year/i })).toBeVisible();
     const card = ui(page).getByTestId("referral-card");
     await expect(card).toHaveAttribute("data-side", "front");
-    await expect(ui(page).getByTestId("card-cap")).toHaveText("₹5,000");
+    await expect(ui(page).getByTestId("logo-coin")).toHaveAttribute("data-face", "logo");
+  });
+
+  test("logo coin tosses between faces without flipping the card", async ({ page }) => {
+    await landing(page);
+    const card = ui(page).getByTestId("referral-card");
+    const coin = ui(page).getByTestId("logo-coin");
+    await coin.click();
+    await expect(coin).toHaveAttribute("data-face", "reward");
+    await expect(coin).toContainText("₹25");
+    await expect(card).toHaveAttribute("data-side", "front");
+    await coin.click();
+    await expect(coin).toHaveAttribute("data-face", "logo");
+    await coin.focus();
+    await page.keyboard.press("Enter");
+    await expect(coin).toHaveAttribute("data-face", "reward");
+    await expect(card).toHaveAttribute("data-side", "front");
   });
 
   test("flips to How it works and back, repeatedly (tap, toggle and keyboard)", async ({ page }) => {
     await landing(page);
     const card = ui(page).getByTestId("referral-card");
-    await card.click();
+    await card.click({ position: { x: 20, y: 20 } });
     await expect(card).toHaveAttribute("data-side", "back");
     await expect(card.getByText("How it works")).toBeVisible();
     await expect(card.getByText(/Your friend gets ₹25 \+ 2 GB/)).toBeVisible();
@@ -23,7 +39,7 @@ test.describe("Referral card", () => {
     await expect(card).toHaveAttribute("data-side", "front");
     await expect(ui(page).getByTestId("flip-toggle")).toHaveText(/How it works/);
 
-    for (let i = 0; i < 4; i++) await card.click();
+    for (let i = 0; i < 4; i++) await card.click({ position: { x: 20, y: 20 } });
     await expect(card).toHaveAttribute("data-side", "front");
 
     await card.focus();
