@@ -9,7 +9,8 @@
     "build:single": "tsc -b && vite build --mode single",
     "build:demo": "tsc -b && vite build --mode demo",
     "preview": "vite preview",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.2",
@@ -39,6 +40,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^22.10.5",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.18",

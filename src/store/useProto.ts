@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { DEFAULT_RULES, type BusinessRules } from "@/config/businessRules";
+import { DEFAULT_RULES, validMilestones, type BusinessRules, type TierId } from "@/config/businessRules";
 import { CONTACTS, PLANS, REFERRER } from "@/domain/data";
 import { HOME_SCREEN } from "@/domain/screens";
 import {
@@ -87,6 +87,8 @@ interface State {
   notices: Notice[];
   /** Completed send attempts keyed by the nonce of the a_sending screen (prevents re-sending on remount). */
   sendResults: Record<string, { phase: "success" | "pending"; created: string[] }>;
+  /** Tiers whose unlock celebration has already been shown. */
+  celebrated: TierId[];
 }
 
 interface Actions {
@@ -116,6 +118,7 @@ interface Actions {
   markNoticesRead: () => void;
   recordSend: (nonce: string, phase: "success" | "pending", created: string[]) => void;
   ensureReferral: () => string;
+  markCelebrated: (ids: TierId[]) => void;
 
   // User B
   openLink: (code?: string) => { ok: true } | { ok: false; error: "invalid_link" | "expired_link" | "no_invite" };
@@ -144,6 +147,7 @@ const initial = (): State => ({
   bRun: EMPTY_BRUN,
   notices: [],
   sendResults: {},
+  celebrated: [],
 });
 
 /* ------------------------------------------------------------------ */
@@ -380,6 +384,7 @@ export const useProto = create<Store>()(
           }));
         },
         recordSend: (nonce, phase, created) => set((s) => ({ sendResults: { ...s.sendResults, [nonce]: { phase, created } } })),
+        markCelebrated: (ids) => set((s) => ({ celebrated: Array.from(new Set([...s.celebrated, ...ids])) })),
         markNoticesRead: () => set((s) => ({ notices: s.notices.map((n) => ({ ...n, read: true })) })),
         ensureReferral: () => {
           const s = get();
@@ -514,7 +519,12 @@ export const useProto = create<Store>()(
         return {
           ...current,
           ...p,
-          rules: { ...DEFAULT_RULES, ...(p.rules ?? {}) },
+          rules: {
+            ...DEFAULT_RULES,
+            ...(p.rules ?? {}),
+            milestones: validMilestones(p.rules?.milestones) ? p.rules!.milestones : DEFAULT_RULES.milestones,
+          },
+          celebrated: Array.isArray(p.celebrated) ? p.celebrated : [],
           scenario: { ...DEFAULT_SCENARIO, ...(p.scenario ?? {}) },
         };
       },
@@ -548,3 +558,20 @@ export function referralStats(referrals: Referral[], pastSuccesses: number, rewa
   };
 }
 
+
+/** Milestone status for the current month. */
+export type TierStatus = "earned" | "pending" | "locked";
+
+/**
+ * earned  — successful referrals this month reached the tier.
+ * pending — the next tier to earn, and referrals already in progress could reach it.
+ * locked  — everything else.
+ */
+export function tierStatuses(milestones: BusinessRules["milestones"], count: number, inProgress: number): TierStatus[] {
+  const nextIdx = milestones.findIndex((m) => count < m.target);
+  return milestones.map((m, i) => (count >= m.target ? "earned" : i === nextIdx && count + inProgress >= m.target ? "pending" : "locked"));
+}
+
+/** Referrals that could still turn into a success (friend joined / recharging / validating). */
+export const inProgressCount = (referrals: Referral[]) =>
+  referrals.filter((r) => ["accepted", "pending_recharge", "transaction_completed", "reward_processing"].includes(r.status)).length;

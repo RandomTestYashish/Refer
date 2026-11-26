@@ -7,6 +7,7 @@ import { Confetti } from "@/components/app/Confetti";
 import { Button } from "@/components/ui/button";
 import { CONTACTS } from "@/domain/data";
 import { useProto } from "@/store/useProto";
+import { performSend } from "./sendInvites";
 
 type Phase = "sending" | "success" | "failure" | "pending";
 
@@ -21,45 +22,24 @@ export function SendingScreen({ params }: { params?: Record<string, string> }) {
   const [attempt, setAttempt] = useState(0);
   const [failKind, setFailKind] = useState<"network" | "sms">("network");
   const createdRef = useRef<string[]>(prior?.created ?? []);
-  const store = useProto;
 
   useEffect(() => {
     if (prior && attempt === 0) return; // already sent — don't resend when this screen remounts
     setPhase("sending");
     setTick(0);
     const timers: ReturnType<typeof setTimeout>[] = [];
-    const { scenario } = store.getState();
     const per = Math.min(520, 1400 / Math.max(1, people.length));
     people.forEach((_, i) => timers.push(setTimeout(() => setTick(i + 1), 500 + per * (i + 1))));
     timers.push(
       setTimeout(() => {
-        const st = store.getState();
-        if (scenario.network === "failure") {
-          setFailKind("network");
+        const out = performSend(ids, channel, nonce);
+        if (out.phase === "failure") {
+          setFailKind(out.kind === "sms" ? "sms" : "network");
           setPhase("failure");
           return;
         }
-        if (scenario.share === "sms_fail" && channel === "sms") {
-          setFailKind("sms");
-          setPhase("failure");
-          return;
-        }
-        // Create referral records (expired contacts are resent: new link, history kept).
-        const fresh: string[] = [];
-        const created: string[] = [];
-        ids.forEach((cid) => {
-          const prev = st.referrals.find((r) => r.contactId === cid);
-          if (prev && prev.status === "expired" && cid !== "c_link") {
-            st.resend(prev.id);
-            created.push(prev.id);
-          } else fresh.push(cid);
-        });
-        created.push(...st.createInvites(fresh, channel, scenario.network === "slow"));
-        createdRef.current = created;
-        st.setSelected([]);
-        const result = scenario.network === "slow" ? "pending" : "success";
-        if (nonce) st.recordSend(nonce, result, created);
-        setPhase(result);
+        createdRef.current = out.created;
+        setPhase(out.phase);
       }, 700 + per * people.length + 500),
     );
     return () => timers.forEach(clearTimeout);

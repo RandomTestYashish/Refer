@@ -7,6 +7,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Inter"', "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        script: ['"Caveat"', '"Segoe Script"', '"Bradley Hand"', "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",

@@ -113,7 +113,7 @@ export function LaunchScreen({ params }: { params?: Record<string, string> }) {
             </AnimatePresence>
           </motion.div>
         ) : (
-          <motion.div key="restored" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col bg-white pt-[44px]">
+          <motion.div key="restored" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col bg-white pt-[var(--sb,44px)]">
             <div className="flex flex-1 flex-col items-center justify-center px-7 text-center">
               <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 220, damping: 16 }} className="relative">
                 <ContactAvatar name={REFERRER.name} hue={350} size={88} />

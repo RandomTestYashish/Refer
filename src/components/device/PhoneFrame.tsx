@@ -2,6 +2,7 @@ import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { BatteryFull, Signal, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useIsDevice } from "@/lib/device";
 import { PortalContainerContext } from "@/components/ui/portal-context";
 
 export const SCREEN_W = 375;
@@ -46,6 +47,7 @@ export function PhoneFrame({
   const hostRef = useRef<HTMLDivElement>(null);
   const [screenEl, setScreenEl] = useState<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);
+  const device = useIsDevice();
 
   useEffect(() => {
     const el = hostRef.current;
@@ -56,7 +58,24 @@ export function PhoneFrame({
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [device]);
+
+  if (device)
+    // On a real phone: run full-bleed, using the phone's own status bar and safe areas.
+    return (
+      <div
+        ref={setScreenEl}
+        className="fixed inset-0 overflow-hidden bg-white"
+        style={{ ["--sb" as string]: "max(env(safe-area-inset-top, 0px), 8px)", transform: "translateZ(0)" }}
+        data-phone-screen
+        data-device-mode
+      >
+        <PortalContainerContext.Provider value={screenEl}>
+          <div className="absolute inset-0">{children}</div>
+          {overlay}
+        </PortalContainerContext.Provider>
+      </div>
+    );
 
   return (
     <div ref={hostRef} className="flex h-full w-full items-center justify-center overflow-hidden">

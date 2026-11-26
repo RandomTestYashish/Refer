@@ -44,7 +44,7 @@ export function SmsScreen() {
 
   if (!r)
     return (
-      <div className="flex h-full flex-col bg-white pt-[44px]">
+      <div className="flex h-full flex-col bg-white pt-[var(--sb,44px)]">
         <div className="px-4 pb-2 pt-3">
           <p className="text-[34px] font-bold tracking-[-0.02em]">Messages</p>
         </div>
@@ -94,7 +94,7 @@ export function SmsScreen() {
             </motion.p>
           </motion.div>
         ) : (
-          <motion.div key="thread" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col bg-white pt-[44px]">
+          <motion.div key="thread" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex h-full flex-col bg-white pt-[var(--sb,44px)]">
             {/* Conversation header */}
             <div className="flex shrink-0 items-center border-b border-black/10 bg-[#F9F9F9]/95 px-2 pb-2 pt-1">
               <button aria-label="Back to lock screen" onClick={() => setStage("lock")} className="flex items-center text-[#0A7AFF]">
@@ -179,7 +179,7 @@ export function SmsScreen() {
             animate={{ y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 30 }}
-            className="absolute inset-0 z-40 flex flex-col bg-white pt-[44px]"
+            className="absolute inset-0 z-40 flex flex-col bg-white pt-[var(--sb,44px)]"
           >
             <div className="mx-3 mt-1 flex h-10 items-center justify-center rounded-[12px] bg-[#F2F2F7] text-[15px]">🔒 airtel.in</div>
             <div className="mx-3 mt-1 h-[3px] overflow-hidden rounded bg-[#F2F2F7]">

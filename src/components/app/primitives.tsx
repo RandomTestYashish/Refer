@@ -34,7 +34,7 @@ export function Wordmark({ className, white }: { className?: string; white?: boo
 /** Root layout of every in-app screen: fixed header, scrollable body, optional sticky footer. */
 export function Screen({ children, className }: { children: React.ReactNode; className?: string }) {
   // 44px top padding keeps content clear of the simulated status bar.
-  return <div className={cn("flex h-full flex-col bg-white pt-[44px]", className)}>{children}</div>;
+  return <div className={cn("flex h-full flex-col bg-white pt-[var(--sb,44px)]", className)}>{children}</div>;
 }
 
 export const ScreenBody = React.forwardRef<HTMLDivElement, { children: React.ReactNode; className?: string }>(

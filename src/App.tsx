@@ -9,11 +9,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ControlBar } from "@/panel/ControlBar";
 import { ScenarioPanel } from "@/panel/ScenarioPanel";
 import { useProto } from "@/store/useProto";
+import { useIsDevice } from "@/lib/device";
 
 export default function App() {
   const [tone, setTone] = useState<"dark" | "light">("dark");
   const [panelOpen, setPanelOpen] = useState(false);
   const journey = useProto((s) => s.journey);
+  const device = useIsDevice();
 
   useEffect(() => setTone("dark"), [journey]);
 
@@ -21,7 +23,7 @@ export default function App() {
     <MotionConfig reducedMotion="user">
       <TooltipProvider delayDuration={300}>
         <div className="flex h-[100dvh] flex-col">
-          <ControlBar onTogglePanel={() => setPanelOpen((o) => !o)} />
+          {!device && <ControlBar onTogglePanel={() => setPanelOpen((o) => !o)} />}
           <div className="relative flex min-h-0 flex-1">
             <main className="relative min-w-0 flex-1 p-3 sm:p-6">
               <StatusToneContext.Provider value={setTone}>
@@ -32,7 +34,7 @@ export default function App() {
             </main>
 
             {/* Scenario panel: docked on wide screens, drawer on narrow ones */}
-            <aside
+            {!device && <aside
               className={`no-scrollbar absolute inset-y-0 right-0 z-30 w-[340px] max-w-[92vw] overflow-y-auto border-l border-[#E2E2E6] bg-white shadow-[-12px_0_40px_rgba(0,0,0,0.08)] transition-transform duration-300 xl:static xl:translate-x-0 xl:shadow-none ${
                 panelOpen ? "translate-x-0" : "translate-x-full"
               }`}
@@ -42,7 +44,7 @@ export default function App() {
                 <X className="size-4" />
               </button>
               <ScenarioPanel />
-            </aside>
+            </aside>}
           </div>
         </div>
       </TooltipProvider>

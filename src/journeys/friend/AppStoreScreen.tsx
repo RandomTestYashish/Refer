@@ -59,7 +59,7 @@ export function AppStoreScreen() {
   const C = 2 * Math.PI * R;
 
   return (
-    <div className="flex h-full flex-col bg-white pt-[44px]">
+    <div className="flex h-full flex-col bg-white pt-[var(--sb,44px)]">
       <div className="flex shrink-0 items-center justify-between px-2 py-1 text-[#0A7AFF]">
         <button onClick={back} className="flex items-center text-[17px]" aria-label="Back to Messages">
           <ChevronLeft className="size-7" /> Messages

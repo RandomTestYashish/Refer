@@ -212,7 +212,7 @@ export function HomeScreen() {
 
       {/* ENTRY POINT 2 — Hamburger menu drawer */}
       <Sheet open={menu} onOpenChange={setMenu}>
-        <SheetContent side="left" className="w-[300px] pt-[44px]" hideClose>
+        <SheetContent side="left" className="w-[300px] pt-[var(--sb,44px)]" hideClose>
           <SheetTitle className="sr-only">Menu</SheetTitle>
           <SheetDescription className="sr-only">Airtel app menu</SheetDescription>
           <div className="flex items-center gap-3 px-5 py-5">

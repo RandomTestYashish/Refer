@@ -7,6 +7,42 @@ High-fidelity, clickable prototype of the Refer & Earn experience for both journ
 
 Both journeys share one mock referral store (Zustand, persisted to `localStorage`), so User A sees User B's progress live.
 
+## Refer a App experience (branch `refer-card`)
+
+The referrer journey is rebuilt around one connected flow:
+
+1. **Header**: back, "Refer a App", help sheet (how it works, FAQs, T&C, customer care).
+2. **Proposition**: "Earn up to ₹5,000 a year" (from `yearlyEarningCap`).
+3. **Interactive referral card** (`components/refer/ReferralCard.tsx`): shimmer, pointer/finger tilt with a responsive shadow and glare, spring 3D flip. The back explains how it works. Tap the card, press Enter/Space, or use "How it works".
+4. **Invite a friend**: Invite Friends → permission → searchable multi-select contacts → **personalised envelope** (`InviteEnvelope.tsx`). The card slides into the envelope, a handwritten "Hi Priya, Aarav invited you to try Airtel!" appears, you confirm, it seals and flies, then "Your invite is sent!". Nothing is recorded before you confirm, and failure/offline states offer a retry.
+5. **WhatsApp / SMS / any app** (`ShareCreative.tsx`): a customisable 1080×1350 creative (theme, friend name, personal note) exported as a PNG through the native share sheet, with `wa.me` / `sms:` fallbacks. The app never claims a message was sent. It asks "Did you send your invite?" before tracking it.
+6. **Milestones** (`AchievementBadge.tsx`, `MilestoneCollection.tsx`): Bronze, Silver, Gold and Platinum collectible badges (metal rim, enamel, die-cut sticker edge). Tap one to flip it and see its status (earned / in progress / locked), reward, requirement and next tier. Each newly earned tier gets a one-time unlock celebration. Progress is capped at Platinum per month.
+7. Minimal **How it works**, separate **FAQ** and **Terms & conditions** accordions, and a **Refer more. Earn more.** footer.
+
+Motion respects `prefers-reduced-motion`. On phone-sized screens (≤ 520px) the prototype runs full-screen without the device frame, so it can be tried on a real phone (`npm run dev -- --host`, then open the Network URL).
+
+### Business rules awaiting confirmation
+
+All values live in `src/config/businessRules.ts` and are editable in the developer panel. Unconfirmed ones are placeholders (dashed fields in the panel):
+
+| Item | Status |
+|---|---|
+| First referral = ₹25 + Bronze | Confirmed |
+| Platinum = ₹200, highest tier per month | Confirmed (threshold **not** confirmed, placeholder 30) |
+| Silver / Gold thresholds and rewards | **Not confirmed**: placeholders 5 / 15, reward "to be announced" |
+| Friend data benefit | **Not confirmed**: configurable, shown as "2 GB" |
+| Reward release timing / validation window | **Not confirmed** |
+| Final eligibility wording and legal T&C | **Not confirmed**: T&C shows only rule-derived points plus "Full programme terms will be published by Airtel" |
+| Existing users with no qualifying transaction | **Not confirmed** (toggle in panel) |
+
+### Tests
+
+```bash
+npm run test:e2e
+```
+
+Playwright runs every journey at 375×812, Pixel 7, 320×568 and in the desktop device frame: card flip, contacts, envelope send (single/multi/failure/offline), sharing hand-offs, milestones (earned/pending/locked/monthly cap), accordions, keyboard, reduced motion and layout overflow.
+
 ## Run locally
 
 ```bash

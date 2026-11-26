@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StatusBadge, RewardBadge } from "@/components/app/status";
-import { DEFAULT_RULES, RULE_LABELS, type BusinessRules } from "@/config/businessRules";
+import { DEFAULT_RULES, PENDING_CONFIRMATION, RULE_LABELS, type BusinessRules } from "@/config/businessRules";
 import { CONTACTS } from "@/domain/data";
 import { DEFAULT_SCENARIO, type Scenario } from "@/domain/types";
 import { activeLink, useProto } from "@/store/useProto";
@@ -201,9 +201,9 @@ export function ScenarioPanel() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {[0, 4, 14, 29].map((n) => (
+              {[0, ...s.rules.milestones.map((m) => m.target - 1).filter((n) => n > 0), s.rules.milestones[s.rules.milestones.length - 1].target].map((n) => (
                 <SelectItem key={n} value={String(n)} className="text-[12px]">
-                  {n === 0 ? "None" : `${n} (1 before ${n === 4 ? "Bronze" : n === 14 ? "Silver" : "Gold"})`}
+                  {n === 0 ? "None" : (() => { const m = s.rules.milestones.find((x) => x.target - 1 === n); return m ? `${n} (1 before ${m.label})` : `${n} (Platinum reached)`; })()}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -273,7 +273,44 @@ export function ScenarioPanel() {
             </label>
           ))}
         </div>
-        <p className="mt-2 text-[10.5px] text-airtel-sub">Attribution: first valid referral link opened. Milestones: Bronze 5 · Silver 15 · Gold 30.</p>
+        <label className="mt-2 block">
+          <span className="text-[10.5px] font-medium text-airtel-sub">Friend data benefit</span>
+          <Input value={s.rules.friendDataBenefit} onChange={(e) => s.setRules({ friendDataBenefit: e.target.value.slice(0, 12) })} className="mt-0.5 h-8 rounded-[8px] px-2 text-[12.5px]" />
+        </label>
+        <p className="mt-3 text-[10.5px] font-semibold text-airtel-ink">Monthly milestones (successful referrals · ₹ reward)</p>
+        <div className="mt-1 space-y-1.5">
+          {s.rules.milestones.map((m, i) => (
+            <div key={m.id} className="grid grid-cols-[64px_1fr_1fr] items-center gap-2">
+              <span className="text-[11.5px] font-semibold">{m.label}</span>
+              <Input
+                type="number"
+                min={1}
+                aria-label={`${m.label} threshold`}
+                value={m.target}
+                onChange={(e) => s.setRules({ milestones: s.rules.milestones.map((x, j) => (j === i ? { ...x, target: Math.max(1, Number(e.target.value) || 1) } : x)) })}
+                className={`h-8 rounded-[8px] px-2 text-[12.5px] ${m.confirmed.target ? "" : "border-dashed border-airtel-warning"}`}
+              />
+              <Input
+                type="number"
+                min={0}
+                placeholder="TBC"
+                aria-label={`${m.label} reward`}
+                value={m.reward ?? ""}
+                onChange={(e) => s.setRules({ milestones: s.rules.milestones.map((x, j) => (j === i ? { ...x, reward: e.target.value === "" ? null : Math.max(0, Number(e.target.value)) } : x)) })}
+                className={`h-8 rounded-[8px] px-2 text-[12.5px] ${m.confirmed.reward ? "" : "border-dashed border-airtel-warning"}`}
+              />
+            </div>
+          ))}
+        </div>
+        <p className="mt-2 text-[10.5px] text-airtel-sub">Dashed fields are placeholders awaiting business confirmation. Attribution: first valid referral link opened.</p>
+        <div className="mt-2 rounded-[10px] bg-airtel-warning-soft p-2 text-[10.5px] leading-[14px] text-airtel-warning-text">
+          <p className="font-bold">Pending confirmation</p>
+          <ul className="mt-0.5 list-disc pl-3.5">
+            {PENDING_CONFIRMATION.map((x) => (
+              <li key={x}>{x}</li>
+            ))}
+          </ul>
+        </div>
         <Button size="sm" variant="ghost" className="mt-1 h-8 px-2 text-[12px]" onClick={() => s.setRules(DEFAULT_RULES)}>
           Restore default rules
         </Button>

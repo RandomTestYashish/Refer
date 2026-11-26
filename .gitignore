@@ -1,6 +1,8 @@
 node_modules
 dist
 dist-single
+dist-demo
 *.log
 .DS_Store
-dist-demo
+test-results/
+playwright-report/
