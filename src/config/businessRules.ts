@@ -30,6 +30,8 @@ export interface BusinessRules {
   firstTxnDeadlineDays: number; // time the friend has to make the first qualifying recharge
   rewardValidationDays: number; // separate window before a reward is final (NOT the same as the deadline)
   existingNoTxnEligible: boolean; // segment 2 eligibility — final business rule pending
+  /** Social-proof line shown above the main CTA — the claim must be verified before launch. */
+  socialProof: string;
   milestones: Milestone[];
 }
 
@@ -44,6 +46,7 @@ export const DEFAULT_RULES: BusinessRules = {
   firstTxnDeadlineDays: 10,
   rewardValidationDays: 30,
   existingNoTxnEligible: true,
+  socialProof: "Millions use the Airtel Thanks app every day",
   milestones: [
     // Confirmed: first successful referral → ₹25 and Bronze.
     { id: "bronze", label: "Bronze", target: 1, reward: 25, confirmed: { target: true, reward: true } },
@@ -75,6 +78,7 @@ export const PENDING_CONFIRMATION: string[] = [
   "Reward release timing / validation window",
   "Final eligibility wording and legal terms",
   "Whether existing users with no qualifying transaction are eligible",
+  "Social-proof claim (“Millions use the Airtel Thanks app every day”) needs a verified figure",
 ];
 
 /** True when persisted rules still use the old milestone shape. */

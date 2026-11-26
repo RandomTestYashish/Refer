@@ -34,6 +34,7 @@ All values live in `src/config/businessRules.ts` and are editable in the develop
 | Reward release timing / validation window | **Not confirmed** |
 | Final eligibility wording and legal T&C | **Not confirmed**: T&C shows only rule-derived points plus "Full programme terms will be published by Airtel" |
 | Existing users with no qualifying transaction | **Not confirmed** (toggle in panel) |
+| Social-proof line ("Millions use the Airtel Thanks app every day") | **Needs a verified figure**: editable in panel |
 
 ### Tests
 

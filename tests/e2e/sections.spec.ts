@@ -19,6 +19,11 @@ test.describe("Supporting sections & quality", () => {
     await expect(ui(page).getByText(/Refer more\.\s*Earn more\./)).toBeVisible();
   });
 
+  test("social proof sits above the main action and follows the business rule", async ({ page }) => {
+    await landing(page, { rules: { socialProof: "Trusted by many" } });
+    await expect(ui(page).getByTestId("social-proof")).toHaveText(/Trusted by many/);
+  });
+
   test("help sheet opens FAQs", async ({ page }) => {
     await landing(page);
     await ui(page).getByRole("button", { name: "Help" }).click();
