@@ -8,7 +8,6 @@ export default {
       fontFamily: {
         sans: ['"Inter"', "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
         script: ['"Caveat"', '"Segoe Script"', '"Bradley Hand"', "cursive"],
-        serif: ['"Fraunces"', "Georgia", '"Times New Roman"', "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

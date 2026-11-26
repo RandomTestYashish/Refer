@@ -142,7 +142,7 @@ export function LandingScreen() {
 
         {/* Proposition */}
         <section className="mt-8 px-6 text-center">
-          <h2 className="font-serif text-[30px] font-bold leading-[36px] tracking-[-0.02em] text-refer-ink [text-wrap:balance]">
+          <h2 className="text-[29px] font-extrabold leading-[35px] tracking-[-0.035em] text-refer-ink [text-wrap:balance]">
             earn up to <span className="text-refer-accent tabular">{inr(rules.yearlyEarningCap)}</span>
             <br />a year inviting <span className="text-refer-accent">friends</span>
           </h2>
@@ -240,7 +240,7 @@ export function LandingScreen() {
 
         {/* Footer */}
         <footer className="mx-6 mb-6 mt-14">
-          <p className="font-serif text-[40px] font-bold leading-[42px] tracking-[-0.03em] text-[#E6E6E9]">
+          <p className="text-[40px] font-extrabold leading-[42px] tracking-[-0.045em] text-[#E6E6E9]">
             Refer more.
             <br />
             Earn more.
