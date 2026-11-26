@@ -29,7 +29,7 @@ export function UnlockedScreen({ params }: { params?: Record<string, string> }) 
   const justUnlocked = rules.milestones.find((m) => m.target === stats.milestoneCount);
 
   return (
-    <Screen className="relative overflow-hidden bg-gradient-to-b from-[#FFF4F6] via-white to-white">
+    <Screen className="relative overflow-hidden bg-gradient-to-b from-[#F7F9FF] to-[#F5FBFB]">
       {phase >= 2 && <Confetti originY="26%" />}
       <div className="flex flex-1 flex-col items-center px-7 pt-14 text-center">
         <div className="relative flex h-[170px] items-center justify-center">

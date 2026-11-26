@@ -28,17 +28,17 @@ export function MilestoneCollection({ className }: { className?: string }) {
   const capped = rawCount >= ms[ms.length - 1].target;
   return (
     <div className={className} data-testid="milestones">
-      <div className="flex items-center gap-3 rounded-[20px] border border-[#EDEDEF] bg-white p-3.5">
+      <div className="flex items-center gap-3 rounded-[16px] border border-refer-line bg-gradient-to-b from-white to-[#F5F5F5] p-4 shadow-card">
         <div className="flex -space-x-2.5" aria-hidden>
           {ms.map((m, i) => (
             <TierBadge key={m.id} tier={m.id} status={statuses[i]} size={30} className={cn(statuses[i] !== "earned" && "opacity-70")} />
           ))}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-bold leading-[18px] text-airtel-ink" data-testid="milestone-summary">
+          <p className="text-[14px] font-bold leading-[16px] text-refer-ink" data-testid="milestone-summary">
             {earned} of {ms.length} badges · {month}
           </p>
-          <p className="text-[12px] leading-[16px] text-airtel-sub tabular">
+          <p className="mt-1 text-[12px] leading-[14px] text-refer-muted tabular">
             {count} successful {count === 1 ? "referral" : "referrals"} this month{inProgress > 0 ? ` · ${inProgress} in progress` : ""}
           </p>
         </div>
@@ -58,7 +58,7 @@ export function MilestoneCollection({ className }: { className?: string }) {
           />
         ))}
       </div>
-      <p className="mt-3 flex gap-1.5 text-[11.5px] leading-[16px] text-airtel-sub">
+      <p className="mt-3 flex gap-1.5 text-[12px] leading-[18px] text-refer-muted">
         <Info className="mt-px size-3.5 shrink-0" />
         {capped
           ? `You've reached Platinum, the highest tier for ${month}.`

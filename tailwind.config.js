@@ -43,14 +43,16 @@ export default {
           "error-soft": "#FFD5D7",
           "error-line": "#FEACAF",
         },
-        // Refer a App — calm, toned-down accent used on the referral screens.
+        // Refer a App — mapped 1:1 to Gen4 Foundations semantic tokens.
         refer: {
-          accent: "#A3313A", // muted crimson
-          deep: "#6E1D25",
-          soft: "#FBF6F5",
-          line: "#EEE3E2",
-          ink: "#151515",
-          muted: "#77777C",
+          accent: "#981C20", // color/accent/heavy (toned-down brand red)
+          strong: "#CA262B", // color/accent/strong
+          deep: "#651316", // gen4red/800
+          soft: "#FFD5D7", // gen4red/50 (color/danger/faded)
+          line: "#E6E9EF", // color/secondary/light — border/card
+          ink: "#292C31", // color/primary/strong
+          muted: "#696B6F", // color/primary/light
+          subtle: "#87888A", // color/primary/faded
         },
         gen4: {
           black: "#000000",
@@ -90,6 +92,10 @@ export default {
       },
       boxShadow: {
         card: "0 5px 5.62px rgba(180,180,180,0.2)", // Shadow-Level2 (Default)
+        "g4-1": "0 2px 4px rgba(0,0,0,0.1)", // Shadow-Level1
+        "g4-3": "0 8px 12px rgba(0,0,0,0.1)", // Shadow-Level3
+        "g4-4": "0 12px 16px rgba(0,0,0,0.1)", // Shadow-Level4
+        "g4-5": "0 16px 24px rgba(0,0,0,0.1)", // Shadow-Level5
         lift: "0 8px 24px rgba(41,44,49,0.12)",
         sheet: "0 -8px 32px rgba(0,0,0,0.12)",
         red: "none",

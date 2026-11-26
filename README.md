@@ -19,6 +19,8 @@ The referrer journey is rebuilt around one connected flow:
 6. **Milestones** (`AchievementBadge.tsx`, `MilestoneCollection.tsx`): Bronze, Silver, Gold and Platinum collectible badges (metal rim, enamel, die-cut sticker edge). Tap one to flip it and see its status (earned / in progress / locked), reward, requirement and next tier. Each newly earned tier gets a one-time unlock celebration. Progress is capped at Platinum per month.
 7. Minimal **How it works**, separate **FAQ** and **Terms & conditions** accordions, and a **Refer more. Earn more.** footer.
 
+Visuals follow the **Gen4 Foundations** Figma library (decoded from the `.fig` export): semantic colour tokens (`refer.*` in `tailwind.config.js` map to `color/accent/heavy`, `color/primary/*`, `color/secondary/light`), the Inter type scale (Headline H5/H3 Black, Body SM/XS, Title SM/MD tracked caps), Shadow-Level2 (Default), and component specs for Top Nav (L1, 72px), Button · Primary · lg (56px, r16, Inter Bold 14), Card · Gradient (#FFF→#F5F5F5, #E6E9EF border, r16), Info Tag (pill, Bold Italic 11), Icon Action (64 ring / 60 cell), Carousel Dot and Link List.
+
 Motion respects `prefers-reduced-motion`. On phone-sized screens (≤ 520px) the prototype runs full-screen without the device frame, so it can be tried on a real phone (`npm run dev -- --host`, then open the Network URL).
 
 ### Business rules awaiting confirmation

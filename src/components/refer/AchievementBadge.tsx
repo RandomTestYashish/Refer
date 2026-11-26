@@ -191,9 +191,9 @@ export function TierBadge({ tier, status, size = 96, className }: { tier: TierId
 /* ───────────────────────── Flip card ───────────────────────── */
 
 const STATUS_COPY: Record<TierStatus, { label: string; cls: string }> = {
-  earned: { label: "Earned", cls: "bg-airtel-success-soft text-airtel-success" },
-  pending: { label: "In progress", cls: "bg-airtel-warning-soft text-airtel-warning-text" },
-  locked: { label: "Locked", cls: "bg-[#EEF0F3] text-airtel-sub" },
+  earned: { label: "Earned", cls: "border-airtel-success-line bg-airtel-success-soft text-airtel-success" }, // Info Tag · Success
+  pending: { label: "In progress", cls: "border-airtel-warning-line bg-airtel-warning-soft text-airtel-warning-text" }, // Info Tag · Warning
+  locked: { label: "Locked", cls: "border-gen4-bg-400 bg-gen4-bg-100 text-refer-ink" }, // Info Tag · Default
 };
 
 export function rewardLabel(m: Milestone) {
@@ -224,7 +224,8 @@ export function BadgeFlipCard({
   const [burst, setBurst] = useState(0);
   const reduce = useReducedMotion();
   const rot = useMotionValue(0);
-  const shadow = useTransform(rot, (r) => `0 ${8 - Math.abs(Math.sin((r * Math.PI) / 180)) * 5}px 22px rgba(20,20,20,${0.05 + Math.abs(Math.sin((r * Math.PI) / 180)) * 0.06})`);
+  // Gen4 Shadow-Level2 (Default) at rest; it lifts a little mid-flip.
+  const shadow = useTransform(rot, (r) => { const k = Math.abs(Math.sin((r * Math.PI) / 180)); return `0 ${5 + k * 7}px ${5.62 + k * 10}px rgba(180,180,180,${0.2 + k * 0.15})`; });
 
   useEffect(() => {
     const c = animate(rot, flipped ? 180 : 0, reduce ? { duration: 0 } : { type: "spring", stiffness: 190, damping: 21 });
@@ -260,28 +261,27 @@ export function BadgeFlipCard({
         data-side={flipped ? "back" : "front"}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 500, damping: 26 }}
-        className="relative size-full rounded-[18px] text-left outline-none focus-visible:ring-4 focus-visible:ring-[#075EE8]/40"
+        className="relative size-full rounded-[16px] text-left outline-none focus-visible:ring-4 focus-visible:ring-[#075EE8]/40"
         style={{ rotateY: rot, transformStyle: "preserve-3d", boxShadow: shadow }}
       >
         {/* front */}
         <div
           className={cn(
-            "absolute inset-0 flex flex-col items-center rounded-[18px] border bg-white px-3 pb-3 pt-3.5 [backface-visibility:hidden]",
-            "border-[#EDEDEF]",
+            "absolute inset-0 flex flex-col items-center rounded-[16px] border border-refer-line bg-gradient-to-b from-white to-[#F5F5F5] px-3 pb-3 pt-3.5 [backface-visibility:hidden]",
           )}
           aria-hidden={flipped}
         >
           <TierBadge tier={m.id} status={status} size={84} />
-          <p className="mt-2 text-[15px] font-bold leading-[20px] text-airtel-ink">{m.label}</p>
-          <p className="text-[11.5px] leading-[16px] text-airtel-sub tabular">
+          <p className="mt-2 text-[16px] font-bold leading-[18px] text-refer-ink">{m.label}</p>
+          <p className="mt-0.5 text-[12px] leading-[18px] text-refer-muted tabular">
             {m.target} {m.target === 1 ? "referral" : "referrals"}
           </p>
-          <span className={cn("mt-auto rounded-full px-2 py-[3px] text-[10.5px] font-bold uppercase tracking-[0.06em]", s.cls)}>{s.label}</span>
+          <span className={cn("mt-auto flex h-5 items-center rounded-[20px] border px-2 text-[11px] font-bold italic leading-[14px]", s.cls)}>{s.label}</span>
         </div>
 
         {/* back */}
         <div
-          className="absolute inset-0 flex flex-col rounded-[18px] border border-[#EDEDEF] bg-white p-3 [backface-visibility:hidden]"
+          className="absolute inset-0 flex flex-col rounded-[16px] border border-refer-line bg-gradient-to-b from-white to-[#F5F5F5] p-3 [backface-visibility:hidden]"
           style={{ transform: "rotateY(180deg)" }}
           aria-hidden={!flipped}
         >
@@ -295,7 +295,7 @@ export function BadgeFlipCard({
             </div>
           </div>
           <p className="mt-2 text-[13px] font-bold text-refer-accent">{rewardLabel(m)}</p>
-          <p className="mt-0.5 text-[11.5px] leading-[15px] text-airtel-sub">{explain}</p>
+          <p className="mt-0.5 text-[12px] leading-[16px] text-refer-muted">{explain}</p>
           <div className="mt-auto">
             <div className="flex justify-between text-[10.5px] font-semibold text-airtel-sub tabular">
               <span>This month</span>
@@ -345,7 +345,7 @@ export function UnlockCelebration({ m, onDone, onView }: { m: Milestone | null; 
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 20, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 24 }}
-            className="relative w-full overflow-hidden rounded-[24px] bg-white px-6 pb-6 pt-8 text-center shadow-[0_24px_60px_rgba(0,0,0,0.25)]"
+            className="relative w-full overflow-hidden rounded-[24px] bg-white px-6 pb-6 pt-8 text-center shadow-g4-5"
           >
             <Confetti originY="28%" />
             <motion.div
@@ -357,8 +357,8 @@ export function UnlockCelebration({ m, onDone, onView }: { m: Milestone | null; 
             >
               <TierBadge tier={m.id} status="earned" size={120} />
             </motion.div>
-            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-refer-accent">Achievement unlocked</p>
-            <h2 id="unlock-title" className="mt-1 text-[24px] font-bold leading-[30px] text-airtel-ink">
+            <p className="mt-4 text-[11px] font-bold uppercase leading-[14px] tracking-[1.76px] text-refer-accent">Achievement unlocked</p>
+            <h2 id="unlock-title" className="mt-1 text-[24px] font-bold leading-[32px] text-refer-ink">
               {m.label} badge earned
             </h2>
             <p className="mt-1.5 text-[14px] leading-[20px] text-airtel-sub">
