@@ -63,7 +63,7 @@ export function LandingScreen() {
     markCelebrated(ms.filter((_, i) => statuses[i] === "earned").map((m) => m.id));
   };
 
-  const cardW = Math.min(300, width - 76);
+  const cardW = Math.min(248, width - 110);
   const invite = () => navigate(granted ? "a_contacts" : "a_permission");
   const scrollTo = (el: HTMLElement | null) => el?.scrollIntoView({ behavior: "smooth", block: "start" });
   const flip = (v: boolean) => {

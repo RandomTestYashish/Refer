@@ -7,7 +7,7 @@ export type EnvelopeStage = "compose" | "sealing" | "flying";
 const W = 300; // envelope width
 const BODY_H = 200;
 const BODY_TOP = 132; // space above the body for the open flap + presented card
-const CARD_W = 236;
+const CARD_W = 164;
 const FLAP_H = 112;
 
 /**

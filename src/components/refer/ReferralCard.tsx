@@ -7,7 +7,7 @@ import { haptic } from "@/lib/device";
 import { cn, inr } from "@/lib/utils";
 
 /** Card proportions (credit-card-like) — every size inside the faces is in `em`, so the card scales from one number. */
-export const CARD_RATIO = 212 / 335;
+export const CARD_RATIO = 1; // square
 
 const FLIP_SPRING = { type: "spring", stiffness: 170, damping: 22, mass: 1 } as const;
 const TILT_SPRING = { stiffness: 220, damping: 22, mass: 0.6 };
@@ -111,7 +111,7 @@ export function CardFront({ width, shimmer = true, interactive = false, classNam
   const reduce = useReducedMotion();
   return (
     <div
-      className={cn("relative overflow-hidden rounded-[1.25em] text-refer-ink", className)}
+      className={cn("relative overflow-hidden rounded-[2em] text-refer-ink", className)}
       style={{
         width,
         height: width * CARD_RATIO,
@@ -137,7 +137,7 @@ export function CardFront({ width, shimmer = true, interactive = false, classNam
       )}
 
       <div className="relative flex h-full items-center justify-center pb-[0.6em]">
-        <LogoCoin size={width * 0.3} interactive={interactive} />
+        <LogoCoin size={width * 0.42} interactive={interactive} />
       </div>
       <div className="absolute inset-x-[1.1em] bottom-[0.9em] flex items-center justify-between text-[0.6em] font-semibold uppercase tracking-[0.16em] text-refer-muted">
         <span>Refer a App</span>
@@ -158,13 +158,13 @@ function CardBack({ width }: { width: number }) {
   ];
   return (
     <div
-      className="relative h-full overflow-hidden rounded-[1.25em] border border-[#ECEEF2] bg-white text-airtel-ink"
-      style={{ width, height: width * CARD_RATIO, fontSize: width / 21 }}
+      className="relative h-full overflow-hidden rounded-[1.65em] border border-[#ECEEF2] bg-white text-airtel-ink"
+      style={{ width, height: width * CARD_RATIO, fontSize: width / 17 }}
     >
       <span className="absolute inset-x-0 top-0 h-[0.25em] bg-gradient-to-r from-refer-accent to-refer-deep" aria-hidden />
       <div className="flex h-full flex-col px-[1.05em] pb-[0.8em] pt-[0.95em]">
         <p className="text-[0.62em] font-bold uppercase tracking-[0.16em] text-refer-accent">How it works</p>
-        <ol className="mt-[0.5em] grid flex-1 grid-cols-2 gap-x-[0.8em] gap-y-[0.55em]">
+        <ol className="mt-[0.55em] flex flex-1 flex-col justify-between py-[0.2em]">
           {rows.map(({ icon: Icon, title, body }, i) => (
             <li key={title} className="flex gap-[0.5em]">
               <span className="relative flex size-[1.9em] shrink-0 items-center justify-center rounded-[0.6em] bg-refer-soft text-refer-accent">
@@ -175,12 +175,12 @@ function CardBack({ width }: { width: number }) {
               </span>
               <span className="min-w-0">
                 <span className="block text-[0.7em] font-bold leading-[1.25em]">{title}</span>
-                <span className="mt-[0.1em] block text-[0.6em] leading-[1.3em] text-airtel-sub">{body}</span>
+                <span className="block text-[0.58em] leading-[1.3em] text-airtel-sub">{body}</span>
               </span>
             </li>
           ))}
         </ol>
-        <p className="text-[0.56em] leading-[1.35em] text-airtel-sub">
+        <p className="mt-[0.4em] text-[0.52em] leading-[1.35em] text-airtel-sub">
           Only friends new to Airtel qualify. Installing or signing up alone doesn't unlock the reward.
         </p>
       </div>
@@ -270,12 +270,12 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
         onPointerLeave={reset}
         onPointerUp={reset}
         whileTap={{ scale: 0.975 }}
-        className="relative size-full cursor-pointer rounded-[20px] outline-none [touch-action:pan-y] focus-visible:ring-4 focus-visible:ring-[#075EE8]/40"
+        className="relative size-full cursor-pointer rounded-[24px] outline-none [touch-action:pan-y] focus-visible:ring-4 focus-visible:ring-[#075EE8]/40"
         style={{ rotateX: rx, rotateY, y: lift, scale, transformStyle: "preserve-3d" }}
       >
         <div className="absolute inset-0 [backface-visibility:hidden]" style={{ transform: "translateZ(1px)" }} aria-hidden={flipped}>
           <CardFront width={width} interactive />
-          <motion.span className="pointer-events-none absolute inset-0 rounded-[20px] mix-blend-soft-light" style={{ background: glare }} aria-hidden />
+          <motion.span className="pointer-events-none absolute inset-0 rounded-[24px] mix-blend-soft-light" style={{ background: glare }} aria-hidden />
         </div>
         <div className="absolute inset-0 [backface-visibility:hidden]" style={{ transform: "rotateY(180deg) translateZ(1px)" }} aria-hidden={!flipped}>
           <CardBack width={width} />
