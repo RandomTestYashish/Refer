@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import { Copy, Mail, MessageCircle, MessageSquareText, MoreHorizontal, Pencil, Send, Share2, UserPlus, Users, X } from "lucide-react";
+import { Check, Copy, Link2, Mail, MessageCircle, MessageSquareText, MoreHorizontal, Pencil, Send, Share2, UserPlus, Users, X } from "lucide-react";
 import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter, SimNote } from "@/components/app/primitives";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -57,6 +57,213 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
     setSelected([]);
     useProto.getState().resetTo("a_landing");
   };
+
+  const overlays = (
+    <>
+      {/* Bulk confirmation */}
+      <Dialog open={!!confirmBulk} onOpenChange={(o) => !o && setConfirmBulk(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send {recipients.length} invites?</DialogTitle>
+            <DialogDescription>
+              {recipients.map((c) => firstName(c.name)).join(", ")} will each get a personal invite by {confirmBulk === "whatsapp" ? "WhatsApp" : confirmBulk === "sms" ? "SMS" : "link"}.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button block onClick={() => { const c = confirmBulk!; setConfirmBulk(null); go(c); }}>
+              Send {recipients.length} invites
+            </Button>
+            <Button block variant="ghost" onClick={() => setConfirmBulk(null)}>
+              Not yet
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel */}
+      <Dialog open={confirmCancel} onOpenChange={setConfirmCancel}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Discard this invite?</DialogTitle>
+            <DialogDescription>Nothing has been sent. Your selected friends will be cleared.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button block onClick={cancel}>
+              Discard invite
+            </Button>
+            <Button block variant="ghost" onClick={() => setConfirmCancel(false)}>
+              Keep editing
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* WhatsApp unavailable */}
+      <Dialog open={waMissing} onOpenChange={setWaMissing}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>WhatsApp isn't available</DialogTitle>
+            <DialogDescription>We couldn't find WhatsApp on this phone. Send your invite by SMS instead, or copy the link.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button block onClick={() => { setWaMissing(false); multi ? setConfirmBulk("sms") : go("sms"); }}>
+              Send by SMS
+            </Button>
+            <Button block variant="outline" onClick={() => { setWaMissing(false); void copy(); }}>
+              Copy link
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Copy failed */}
+      <Dialog open={copyFail} onOpenChange={setCopyFail}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Couldn't copy the link</DialogTitle>
+            <DialogDescription>Your phone blocked clipboard access. Press and hold the link below to copy it yourself.</DialogDescription>
+          </DialogHeader>
+          <div className="select-all break-all rounded-[12px] border border-dashed border-gen4-bg-200 bg-gen4-bg-50 px-3 py-3 text-center text-[14px] font-semibold">{link}</div>
+          <DialogFooter>
+            <Button
+              block
+              onClick={() => {
+                if (useProto.getState().scenario.share === "copy_fail") toast.error("Copy failed again", { description: "Set Share outcome to OK in the panel to recover." });
+                else {
+                  setCopyFail(false);
+                  void copy();
+                }
+              }}
+            >
+              Try again
+            </Button>
+            <Button block variant="outline" onClick={() => { setCopyFail(false); setMore(true); }}>
+              <Share2 /> Share another way
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Other apps */}
+      <Sheet open={more} onOpenChange={setMore}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Share invite</SheetTitle>
+            <SheetDescription>Pick an app to send your invite</SheetDescription>
+          </SheetHeader>
+          <div className="grid grid-cols-4 gap-y-5 px-5 pb-10 pt-5">
+            {[
+              { l: "WhatsApp", i: MessageCircle, ch: "whatsapp" as const },
+              { l: "Messages", i: MessageSquareText, ch: "sms" as const },
+              { l: "Gmail", i: Mail, ch: "link" as const },
+              { l: "Telegram", i: Send, ch: "link" as const },
+            ].map(({ l, i: Icon, ch }) => (
+              <button key={l} className="flex flex-col items-center gap-1.5" onClick={() => { setMore(false); send(ch); }}>
+                <span className="flex size-14 items-center justify-center rounded-[16px] bg-airtel-surface text-airtel-ink">
+                  <Icon className="size-6" />
+                </span>
+                <span className="text-[12px] font-medium">{l}</span>
+              </button>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+
+  // Step 3 of Pull · Aim · Invite: one friend — confirm and send.
+  if (!manual && recipients.length === 1) {
+    const c = recipients[0];
+    const first = firstName(c.name);
+    return (
+      <Screen>
+        <AppBar
+          title="Refer a Friend"
+          transparent
+          right={
+            <button onClick={() => setConfirmCancel(true)} className="rounded-md px-1.5 py-1 text-[15px] font-medium text-[#1D1D1F] active:bg-black/5">
+              Cancel
+            </button>
+          }
+        />
+        <ScreenBody className="px-6 pb-6">
+          <div className="flex flex-col items-center pt-6 text-center">
+            <div className="relative">
+              {[-160, -130, -50, -20, 20, 160].map((deg, i) => (
+                <span key={deg} aria-hidden className="absolute left-1/2 top-1/2" style={{ transform: `rotate(${deg}deg)` }}>
+                  <motion.span
+                    className="-mt-[1.5px] block h-[3px] w-3 rounded-full bg-[#34C759]"
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 70, opacity: 1 }}
+                    transition={{ delay: 0.2 + i * 0.03, duration: 0.4, ease: "easeOut" }}
+                  />
+                </span>
+              ))}
+              <motion.div initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 320, damping: 22 }}>
+                <ContactAvatar name={c.name} hue={c.hue} size={112} className="shadow-[0_12px_30px_rgba(29,29,31,0.12)] ring-4 ring-white" />
+              </motion.div>
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 420, damping: 18 }}
+                className="absolute bottom-0 right-0 flex size-9 items-center justify-center rounded-full bg-[#34C759] text-white ring-[3px] ring-white"
+              >
+                <Check className="size-5" strokeWidth={3} />
+              </motion.span>
+            </div>
+            <h1 className="mt-6 text-[30px] font-bold leading-[36px] tracking-[-0.03em] text-[#1D1D1F]">Invite {first}?</h1>
+            <p className="mt-1 text-[14px] text-[#3C3C43]/70 tabular">{c.phone}</p>
+          </div>
+
+          <motion.div
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.12 }}
+            className="mt-6 flex gap-3 rounded-[20px] border border-white p-4 text-left shadow-[0_6px_20px_rgba(29,29,31,0.06)]"
+            style={{ background: "linear-gradient(140deg, #FFFFFF 0%, #FFF3F7 55%, #F3F0FF 100%)" }}
+            data-testid="invite-message"
+          >
+            <svg viewBox="0 0 40 40" className="mt-0.5 size-8 shrink-0" aria-hidden>
+              <path d="M7 29c3-10.5 13.5-17.5 21-14.2 5.4 2.4 3.6 10.2-3.3 12.2-4.3 1.2-7.8-.8-7-3.8.8-2.8 4.7-3.6 7.6-2.1" fill="none" stroke="#E4002B" strokeWidth="5" strokeLinecap="round" />
+            </svg>
+            <p className="min-w-0 text-[15px] leading-[21px] text-[#1D1D1F]">
+              {inviteMessage(first, "\u0000")
+                .split("\n")
+                .map((line, i) =>
+                  line === "\u0000" ? (
+                    <span key={i} className="block break-all font-medium text-[#007AFF]">
+                      {link}
+                    </span>
+                  ) : (
+                    <span key={i} className="block min-h-[10px]">
+                      {line}
+                    </span>
+                  ),
+                )}
+            </p>
+          </motion.div>
+          <p className="mt-3 px-1 text-center text-[12.5px] leading-[18px] text-[#3C3C43]/70">
+            {first} gets a personal link valid for {rules.linkValidityHours} hours. You earn {inr(rules.referrerReward)} after their first {rules.qualifyingAction} of{" "}
+            {inr(rules.minTransaction)}+.
+          </p>
+          <div className="mt-4 flex justify-center gap-5 text-[14px] font-medium text-[#007AFF]">
+            <button onClick={back} className="rounded-md px-1">Choose someone else</button>
+            <button onClick={() => setMore(true)} className="rounded-md px-1">More ways to send</button>
+          </div>
+        </ScreenBody>
+        <div className="shrink-0 space-y-2.5 px-5 pb-[30px] pt-2">
+          <Button size="lg" block onClick={() => send("sms")} className="rounded-full">
+            <Send /> Send Invite (SMS)
+          </Button>
+          <Button size="lg" block variant="outline" onClick={copy} className="rounded-full">
+            <Link2 /> Copy Link
+          </Button>
+          <SimNote>Messages are simulated unless your phone's SMS app opens</SimNote>
+        </div>
+        {overlays}
+      </Screen>
+    );
+  }
 
   const title = manual ? "Share your link" : multi ? `Invite ${recipients.length} friends` : "Review invite";
 
@@ -201,114 +408,7 @@ export function PreviewScreen({ params }: { params?: Record<string, string> }) {
         </ScreenFooter>
       )}
 
-      {/* Bulk confirmation */}
-      <Dialog open={!!confirmBulk} onOpenChange={(o) => !o && setConfirmBulk(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Send {recipients.length} invites?</DialogTitle>
-            <DialogDescription>
-              {recipients.map((c) => firstName(c.name)).join(", ")} will each get a personal invite by {confirmBulk === "whatsapp" ? "WhatsApp" : confirmBulk === "sms" ? "SMS" : "link"}.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button block onClick={() => { const c = confirmBulk!; setConfirmBulk(null); go(c); }}>
-              Send {recipients.length} invites
-            </Button>
-            <Button block variant="ghost" onClick={() => setConfirmBulk(null)}>
-              Not yet
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Cancel */}
-      <Dialog open={confirmCancel} onOpenChange={setConfirmCancel}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Discard this invite?</DialogTitle>
-            <DialogDescription>Nothing has been sent. Your selected friends will be cleared.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button block onClick={cancel}>
-              Discard invite
-            </Button>
-            <Button block variant="ghost" onClick={() => setConfirmCancel(false)}>
-              Keep editing
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* WhatsApp unavailable */}
-      <Dialog open={waMissing} onOpenChange={setWaMissing}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>WhatsApp isn't available</DialogTitle>
-            <DialogDescription>We couldn't find WhatsApp on this phone. Send your invite by SMS instead, or copy the link.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button block onClick={() => { setWaMissing(false); multi ? setConfirmBulk("sms") : go("sms"); }}>
-              Send by SMS
-            </Button>
-            <Button block variant="outline" onClick={() => { setWaMissing(false); void copy(); }}>
-              Copy link
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Copy failed */}
-      <Dialog open={copyFail} onOpenChange={setCopyFail}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Couldn't copy the link</DialogTitle>
-            <DialogDescription>Your phone blocked clipboard access. Press and hold the link below to copy it yourself.</DialogDescription>
-          </DialogHeader>
-          <div className="select-all break-all rounded-[12px] border border-dashed border-gen4-bg-200 bg-gen4-bg-50 px-3 py-3 text-center text-[14px] font-semibold">{link}</div>
-          <DialogFooter>
-            <Button
-              block
-              onClick={() => {
-                if (useProto.getState().scenario.share === "copy_fail") toast.error("Copy failed again", { description: "Set Share outcome to OK in the panel to recover." });
-                else {
-                  setCopyFail(false);
-                  void copy();
-                }
-              }}
-            >
-              Try again
-            </Button>
-            <Button block variant="outline" onClick={() => { setCopyFail(false); setMore(true); }}>
-              <Share2 /> Share another way
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Other apps */}
-      <Sheet open={more} onOpenChange={setMore}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Share invite</SheetTitle>
-            <SheetDescription>Pick an app to send your invite</SheetDescription>
-          </SheetHeader>
-          <div className="grid grid-cols-4 gap-y-5 px-5 pb-10 pt-5">
-            {[
-              { l: "WhatsApp", i: MessageCircle, ch: "whatsapp" as const },
-              { l: "Messages", i: MessageSquareText, ch: "sms" as const },
-              { l: "Gmail", i: Mail, ch: "link" as const },
-              { l: "Telegram", i: Send, ch: "link" as const },
-            ].map(({ l, i: Icon, ch }) => (
-              <button key={l} className="flex flex-col items-center gap-1.5" onClick={() => { setMore(false); send(ch); }}>
-                <span className="flex size-14 items-center justify-center rounded-[16px] bg-airtel-surface text-airtel-ink">
-                  <Icon className="size-6" />
-                </span>
-                <span className="text-[12px] font-medium">{l}</span>
-              </button>
-            ))}
-          </div>
-        </SheetContent>
-      </Sheet>
+      {overlays}
     </Screen>
   );
 }

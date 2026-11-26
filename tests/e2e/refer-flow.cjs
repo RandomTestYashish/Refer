@@ -1,5 +1,5 @@
 /**
- * End-to-end checks for the Refer a App · Pull, Aim & Invite journey.
+ * End-to-end checks for the Refer a Friend · Pull, Aim & Invite journey.
  *
  * Uses the Playwright runtime (no test-runner dependency added to the project).
  *   npm run dev            # in one terminal (or set BASE_URL)
@@ -57,8 +57,8 @@ async function pull(page, dx, dy, { release = true } = {}) {
 }
 
 async function toContacts(page) {
-  await page.getByRole("button", { name: "Choose contacts" }).click();
-  await page.getByRole("button", { name: "Allow contacts" }).click();
+  await page.getByRole("button", { name: "Or choose from your contacts" }).click();
+  await page.getByRole("button", { name: "Allow contacts", exact: true }).click();
   await page.getByRole("button", { name: "Allow", exact: true }).click();
   await page.getByRole("checkbox", { name: /Rahul Sharma/ }).waitFor();
 }
@@ -79,127 +79,153 @@ async function test(name, fn, opts) {
   }
 }
 
+const handleCentre = async (page) => {
+  const b = await page.getByTestId("pull-handle").boundingBox();
+  return [b.x + b.width / 2, b.y + b.height / 2];
+};
+
 (async () => {
-  await test("landing shows proposition, pull affordance and alternative CTA", async (page) => {
+  const LANDING = "Refer a Friend — Pull to invite";
+  const GRANTED = { extra: { contactsGranted: true } };
+  const confirmHeading = (page) => page.getByRole("heading", { name: /^Invite .+\?$/ });
+
+  await test("landing shows proposition, invite card and alternative routes", async (page) => {
     await page.getByRole("heading", { name: /Earn up to ₹5,000 a year/ }).waitFor();
-    assert.equal(await page.getByTestId("pull-label").innerText().then((t) => t.split("\n")[0]), "Pull down to invite");
-    await page.getByRole("button", { name: "Choose contacts" }).waitFor();
-    await page.getByRole("button", { name: /Share your link instead/ }).waitFor();
-    await shot(page, "01-landing");
-    await page.getByRole("button", { name: /How referrals work/ }).click();
+    assert.match(await page.getByTestId("pull-label").innerText(), /^Pull to invite/);
+    await page.getByRole("button", { name: "Or choose from your contacts" }).waitFor();
+    await page.getByRole("button", { name: "Allow contacts to see your friends here" }).waitFor();
+    await shot(page, "01-landing-no-access");
+    await page.getByRole("button", { name: "How referrals work" }).click();
     await page.getByText("Sending an invite or your friend registering doesn't earn a reward on its own.").waitFor();
+    await page.waitForTimeout(400);
     await shot(page, "02-how-it-works");
   });
 
   await test("short pull is cancelled and snaps back", async (page) => {
-    await pull(page, 0, 60, { release: false });
+    await pull(page, 0, 30, { release: false });
     assert.equal(await phase(page), "pulling");
-    await shot(page, "03-pulling");
     await page.mouse.up();
     assert.equal(await phase(page), "cancelled");
     await page.getByText("Pull a little further to invite").waitFor();
     await page.waitForTimeout(700);
     const t = await page.getByTestId("pull-handle").evaluate((el) => new DOMMatrix(getComputedStyle(el).transform));
-    assert.ok(Math.abs(t.m41) < 1 && Math.abs(t.m42) < 1, `handle back at rest (${t.m41}, ${t.m42})`);
-    assert.equal(await screenName(page), "Refer a App — Pull to invite");
-  });
+    assert.ok(Math.abs(t.m41) < 1 && Math.abs(t.m42) < 1, `card back at rest (${t.m41}, ${t.m42})`);
+    assert.equal(await screenName(page), LANDING);
+  }, GRANTED);
 
-  await test("pulling off-target asks to aim, and does not trigger", async (page) => {
-    await pull(page, 260, 380, { release: false });
-    await page.getByText("Aim at your contacts").waitFor();
-    await page.mouse.up();
-    assert.equal(await phase(page), "cancelled");
-    assert.equal(await screenName(page), "Refer a App — Pull to invite");
-  });
-
-  await test("Escape cancels an in-progress pull", async (page) => {
-    await pull(page, 0, 380, { release: false });
+  await test("aiming: sideways movement moves the beam between friends; Esc cancels", async (page) => {
+    const [x, y] = await handleCentre(page);
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x - 60, y + 300, { steps: 10 });
+    await page.waitForTimeout(100);
+    const left = await page.getByTestId("pull-area").getAttribute("data-aim");
+    await page.mouse.move(x + 60, y + 300, { steps: 10 });
+    await page.waitForTimeout(100);
+    const right = await page.getByTestId("pull-area").getAttribute("data-aim");
+    assert.ok(left && right && left !== right, `aim changed (${left} → ${right})`);
     assert.equal(await phase(page), "armed");
+    await page.waitForTimeout(300);
+    await shot(page, "04-armed-aim");
     await page.keyboard.press("Escape");
     assert.equal(await phase(page), "cancelled");
     await page.mouse.up();
-    await page.waitForTimeout(500);
-    assert.equal(await screenName(page), "Refer a App — Pull to invite");
-  });
+    await page.waitForTimeout(400);
+    assert.equal(await screenName(page), LANDING);
+  }, GRANTED);
 
-  await test("full pull reaches threshold, releases and opens contact permission", async (page) => {
-    await pull(page, 0, 380, { release: false });
-    assert.equal(await phase(page), "armed");
-    await page.getByText("Release to choose contacts").waitFor();
-    await page.waitForTimeout(400); await shot(page, "04-armed");
-    await page.mouse.up();
-    await page.waitForTimeout(1200);
-    assert.equal(await screenName(page), "Contact Permission");
-    await shot(page, "05-permission");
-  });
-
-  await test("tap without dragging teaches the gesture", async (page) => {
-    await page.getByTestId("pull-handle").click();
-    await page.getByText("Drag the invite down to your contacts").waitFor();
-  });
-
-  await test("keyboard: Enter on the handle opens contacts", async (page) => {
-    await page.getByTestId("pull-handle").focus();
-    await page.keyboard.press("ArrowDown");
-    assert.equal(await phase(page), "pulling");
-    await page.keyboard.press("Enter");
-    await page.waitForTimeout(1000);
-    assert.equal(await screenName(page), "Contact Permission");
-  });
-
-  await test("touch input: pull and release works", async (page) => {
-    const b = await page.getByTestId("pull-handle").boundingBox();
-    const cdp = await page.context().newCDPSession(page);
-    const x = b.x + b.width / 2;
-    const y = b.y + b.height / 2;
-    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
-    for (let i = 1; i <= 12; i++) await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: y + i * 32 }] });
-    assert.equal(await phase(page), "armed");
-    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
-    await page.waitForTimeout(1200);
-    assert.equal(await screenName(page), "Contact Permission");
-  }, { ctx: { hasTouch: true } });
-
-  await test("scaled phone frame (small window): pull still reaches threshold", async (page) => {
+  await test("pull, aim and let go invites the aimed friend", async (page) => {
+    await shot(page, "03-landing-friends");
     await pull(page, 0, 300, { release: false });
     assert.equal(await phase(page), "armed");
+    const id = await page.getByTestId("pull-area").getAttribute("data-aim");
+    const name = (await page.getByTestId(`aim-${id}`).innerText()).split("\n").pop().trim();
+    assert.match(await page.getByTestId("pull-label").innerText(), new RegExp(`^Let go to invite ${name}`));
     await page.mouse.up();
+    await page.getByRole("heading", { name: `Invite ${name}?` }).waitFor({ timeout: 4000 });
+    assert.match(await page.getByTestId("invite-message").innerText(), new RegExp(`^Hey ${name},`));
+    await page.waitForTimeout(600);
+    await shot(page, "05-confirm");
+  }, GRANTED);
+
+  await test("without contact access, letting go asks for permission, then returns to aim", async (page) => {
+    await pull(page, 0, 300);
     await page.waitForTimeout(1200);
     assert.equal(await screenName(page), "Contact Permission");
-  }, { ctx: { viewport: { width: 390, height: 700 } } });
+    await page.getByRole("button", { name: "Allow contacts", exact: true }).click();
+    await page.getByRole("button", { name: "Allow", exact: true }).click();
+    await page.waitForTimeout(600);
+    assert.equal(await screenName(page), LANDING);
+    await page.getByTestId("aim-c_rahul").waitFor();
+  });
+
+  await test("tapping a friend is the non-gesture route", async (page) => {
+    await page.getByRole("button", { name: "Invite Priya Nair" }).click();
+    await page.getByRole("heading", { name: "Invite Priya?" }).waitFor();
+  }, GRANTED);
+
+  await test("tap on the card without dragging teaches the gesture", async (page) => {
+    await page.getByTestId("pull-handle").click();
+    await page.getByText("Pull the card down, aim, then let go").first().waitFor();
+  });
+
+  await test("keyboard: arrows aim, Enter invites", async (page) => {
+    await page.getByTestId("pull-handle").focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowRight");
+    await page.waitForTimeout(150);
+    assert.equal(await phase(page), "pulling");
+    const id = await page.getByTestId("pull-area").getAttribute("data-aim");
+    const name = (await page.getByTestId(`aim-${id}`).innerText()).split("\n").pop().trim();
+    await page.keyboard.press("Enter");
+    await page.getByRole("heading", { name: `Invite ${name}?` }).waitFor({ timeout: 4000 });
+  }, GRANTED);
+
+  await test("touch input: pull and release works", async (page) => {
+    const [x, y] = await handleCentre(page);
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+    for (let i = 1; i <= 12; i++) await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: y + i * 25 }] });
+    assert.equal(await phase(page), "armed");
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await confirmHeading(page).waitFor({ timeout: 4000 });
+  }, { ...GRANTED, ctx: { hasTouch: true } });
+
+  await test("scaled phone frame (small window): pull still arms", async (page) => {
+    await pull(page, 0, 200, { release: false });
+    assert.equal(await phase(page), "armed");
+    await page.mouse.up();
+    await confirmHeading(page).waitFor({ timeout: 4000 });
+  }, { ...GRANTED, ctx: { viewport: { width: 390, height: 700 } } });
 
   await test("reduced motion: gesture still works without spring animation", async (page) => {
-    await pull(page, 0, 380);
-    await page.waitForTimeout(600);
-    assert.equal(await screenName(page), "Contact Permission");
-  }, { ctx: { reducedMotion: "reduce" } });
+    await pull(page, 0, 300);
+    await confirmHeading(page).waitFor({ timeout: 2000 });
+  }, { ...GRANTED, ctx: { reducedMotion: "reduce" } });
 
   await test("permission denied shows recovery options", async (page) => {
-    await page.getByRole("button", { name: "Choose contacts" }).click();
-    await page.getByRole("button", { name: "Allow contacts" }).click();
+    await page.getByRole("button", { name: "Or choose from your contacts" }).click();
+    await page.getByRole("button", { name: "Allow contacts", exact: true }).click();
     await page.getByRole("button", { name: "Don't Allow" }).click();
     await page.getByText("Contacts access denied").waitFor();
     await page.getByRole("button", { name: "Share link manually" }).waitFor();
-    await shot(page, "06-permission-denied");
   });
 
-  await test("search, no-results and single selection with personalised preview", async (page) => {
+  await test("search, no-results and single selection with personalised confirm", async (page) => {
     await toContacts(page);
     await page.getByText("Sample contacts — not your phone's address book").waitFor();
     await page.getByLabel("Search contacts").fill("zzz");
     await page.getByText("Nothing matches “zzz”", { exact: false }).waitFor();
-    await shot(page, "07-no-results");
     await page.getByRole("button", { name: "Clear search" }).first().click();
     await page.getByLabel("Search contacts").fill("pri");
     await page.getByRole("checkbox", { name: /Priya Nair/ }).click();
     await page.getByLabel("Search contacts").fill("");
     await page.getByRole("button", { name: "Preview invite for Priya" }).click();
+    await page.getByRole("heading", { name: "Invite Priya?" }).waitFor();
     const msg = await page.getByTestId("invite-message").innerText();
     assert.match(msg, /^Hey Priya,/);
     assert.match(msg, /I thought you'd like Airtel\. Join using my referral link and enjoy the benefits!/);
-    await shot(page, "08-preview-single");
-    // back preserves the selection
-    await page.getByRole("button", { name: "Change" }).click();
+    await page.getByRole("button", { name: "Choose someone else" }).click();
     await page.getByText("1 friend selected").waitFor();
     assert.equal(await page.getByRole("checkbox", { name: /Priya Nair/ }).getAttribute("aria-checked"), "true");
   });
@@ -219,14 +245,21 @@ async function test(name, fn, opts) {
     await page.getByRole("button", { name: "Remove Ankit Verma" }).click();
     await page.getByRole("button", { name: "Send 2 invites by SMS" }).click();
     await page.getByRole("heading", { name: "Send 2 invites?" }).waitFor();
-    await page.waitForTimeout(400); await shot(page, "09-bulk-confirm");
     await page.getByRole("button", { name: "Send 2 invites", exact: true }).click();
     await page.locator('[data-phase="success"]').waitFor({ timeout: 6000 });
     await page.getByRole("heading", { name: "2 invites sent" }).waitFor();
     await page.getByText("Simulated", { exact: true }).waitFor();
     await page.getByText("Reward not earned yet.").waitFor();
-    await page.waitForTimeout(800); await shot(page, "10-success");
   });
+
+  await test("single friend: send from the confirm screen", async (page) => {
+    await page.getByRole("button", { name: "Invite Rahul Sharma" }).click();
+    await page.getByRole("button", { name: "Send Invite (SMS)" }).click();
+    await page.locator('[data-phase="success"]').waitFor({ timeout: 6000 });
+    await page.getByRole("heading", { name: "Invite sent" }).waitFor();
+    await page.waitForTimeout(800);
+    await shot(page, "06-sent");
+  }, GRANTED);
 
   await test("partial failure, then retry only the failed invite", async (page) => {
     await toContacts(page);
@@ -237,38 +270,32 @@ async function test(name, fn, opts) {
     await page.locator('[data-phase="partial"]').waitFor({ timeout: 6000 });
     await page.getByRole("heading", { name: "2 of 3 invites sent" }).waitFor();
     assert.equal(await page.getByTestId("send-row-c_ankit").getAttribute("data-state"), "failed");
-    await shot(page, "11-partial");
     await page.getByRole("button", { name: /Retry Ankit/ }).click();
     await page.locator('[data-phase="success"]').waitFor({ timeout: 6000 });
     await page.getByRole("heading", { name: "3 invites sent" }).waitFor();
   }, { scenario: { share: "partial" } });
 
   await test("network failure offers retry and copy-link fallback", async (page) => {
-    await toContacts(page);
-    await page.getByRole("checkbox", { name: /Rahul Sharma/ }).click();
-    await page.getByRole("button", { name: "Preview invite for Rahul" }).click();
-    await page.getByRole("button", { name: "Send invite to Rahul" }).click();
+    await page.getByRole("button", { name: "Invite Rahul Sharma" }).click();
+    await page.getByRole("button", { name: "Send Invite (SMS)" }).click();
     await page.locator('[data-phase="failure"]').waitFor({ timeout: 6000 });
-    await shot(page, "12-failure");
     await page.getByRole("button", { name: "Copy invite link" }).click();
     await page.getByText(/Link copied|Link ready to paste/).waitFor();
     await page.getByRole("button", { name: "Try again" }).click();
     await page.locator('[data-phase="failure"]').waitFor({ timeout: 6000 });
     await page.getByRole("button", { name: "Back to invite" }).click();
-    await page.getByRole("button", { name: "Send invite to Rahul" }).waitFor(); // selection kept
-  }, { scenario: { network: "failure" } });
+    await page.getByRole("heading", { name: "Invite Rahul?" }).waitFor(); // selection kept
+  }, { scenario: { network: "failure" }, extra: { contactsGranted: true } });
 
-  await test("cancel invite from preview clears selection and returns to landing", async (page) => {
-    await toContacts(page);
-    await page.getByRole("checkbox", { name: /Rahul Sharma/ }).click();
-    await page.getByRole("button", { name: "Preview invite for Rahul" }).click();
+  await test("cancel invite from the confirm screen returns to landing", async (page) => {
+    await page.getByRole("button", { name: "Invite Rahul Sharma" }).click();
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
     await page.getByRole("button", { name: "Discard invite" }).click();
     await page.waitForTimeout(600);
-    assert.equal(await screenName(page), "Refer a App — Pull to invite");
-  });
+    assert.equal(await screenName(page), LANDING);
+  }, GRANTED);
 
-  await test("empty and unavailable contact states", async (page) => {
+  await test("empty contacts state", async (page) => {
     await toContacts(page).catch(() => {});
     await page.getByText("No contacts found").first().waitFor();
   }, { scenario: { contacts: "empty" } });
@@ -279,7 +306,8 @@ async function test(name, fn, opts) {
   }, { scenario: { contacts: "unavailable" } });
 
   await test("share-link path works without contacts", async (page) => {
-    await page.getByRole("button", { name: /Share your link instead/ }).click();
+    await page.getByRole("button", { name: "How referrals work" }).click();
+    await page.getByRole("button", { name: "Share link" }).click();
     assert.match(await page.getByTestId("invite-message").innerText(), /^Hey,/);
     await page.getByRole("button", { name: "Send by SMS" }).click();
     await page.locator('[data-phase="success"]').waitFor({ timeout: 6000 });

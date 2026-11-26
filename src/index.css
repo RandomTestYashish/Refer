@@ -27,7 +27,7 @@
     --radius: 12px;
     /* Interaction accent for the Pull · Aim · Invite feedback. Neutral-first design:
        swap this one token to introduce Airtel's brand accent later. */
-    --invite: 217 94% 47%;            /* #075EE8 (gen4 action) */
+    --invite: 211 100% 50%;           /* #007AFF */
   }
   * { @apply border-border; }
   html, body, #root { height: 100%; }

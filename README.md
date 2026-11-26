@@ -16,9 +16,9 @@ npm run dev
 
 Production build: `npm run build` (output in `dist/`, relative base so it works on any sub-path).
 
-## Refer a App — Pull, Aim & Invite (A02)
+## Refer a Friend — Pull, Aim & Invite (A02)
 
-The referrer landing leads with **Earn up to ₹5,000 a year**. An invitation tile hangs from an elastic cord: pull it down, aim it at **Your contacts** and release to start inviting. A short pull, an off-target pull, `Esc` or a pointer cancel springs it back. It works with touch, mouse and pen. Keyboard users press `Enter` on the tile, and everyone can use the visible **Choose contacts** button.
+The referrer landing leads with **Earn up to ₹5,000 a year.** An "Invite a friend" card rests at the bottom on an elastic cord, with friends shown above it. Pull the card down like a slingshot and move it sideways: a beam aims at a friend. Let go to confirm on the "Invite Priya?" screen, then send by SMS or copy the link. A short pull, `Esc` or a pointer cancel springs it back. Without contact access, letting go asks for permission and then returns you to aim. Tapping a friend, arrow keys + `Enter`, and "Or choose from your contacts" are the non-gesture routes.
 
 - Gesture logic: `src/features/pull-invite/usePullGesture.ts` (rubber-band resistance, threshold + aim, haptics, keyboard, reduced motion)
 - Presentation: `src/features/pull-invite/PullToInvite.tsx`. The interaction accent is a single token, `--invite`, in `src/index.css`.

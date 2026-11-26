@@ -15,6 +15,9 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
   const [denied, setDenied] = useState(params?.state === "denied");
   const [opening, setOpening] = useState(false);
 
+  const fromLanding = params?.from === "landing";
+  /** After access: back to the landing to aim at a friend, or on to the full contact list. */
+  const proceed = () => (fromLanding ? useProto.getState().back() : replace("a_contacts"));
   const allow = () => {
     setDialog(false);
     if (scenario.contacts === "deny") {
@@ -22,13 +25,13 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
       return;
     }
     setGranted(true);
-    replace("a_contacts");
+    proceed();
   };
 
   if (denied)
     return (
       <Screen>
-        <AppBar title="Refer a App" />
+        <AppBar title="Refer a Friend" />
         <ErrorState
           icon={<UserX />}
           tone="warning"
@@ -47,7 +50,7 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
               setTimeout(() => {
                 setOpening(false);
                 setGranted(true);
-                replace("a_contacts");
+                proceed();
               }, 900);
             },
           }}
@@ -61,7 +64,7 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
 
   return (
     <Screen>
-      <AppBar title="Refer a App" />
+      <AppBar title="Refer a Friend" />
       <ScreenBody className="px-6">
         <div className="flex flex-col items-center pt-6 text-center">
           <motion.div
