@@ -16,6 +16,18 @@ npm run dev
 
 Production build: `npm run build` (output in `dist/`, relative base so it works on any sub-path).
 
+## Refer a App — Pull, Aim & Invite (A02)
+
+The referrer landing leads with **Earn up to ₹5,000 a year**. An invitation tile hangs from an elastic cord: pull it down, aim it at **Your contacts** and release to start inviting. A short pull, an off-target pull, `Esc` or a pointer cancel springs it back. It works with touch, mouse and pen. Keyboard users press `Enter` on the tile, and everyone can use the visible **Choose contacts** button.
+
+- Gesture logic: `src/features/pull-invite/usePullGesture.ts` (rubber-band resistance, threshold + aim, haptics, keyboard, reduced motion)
+- Presentation: `src/features/pull-invite/PullToInvite.tsx`. The interaction accent is a single token, `--invite`, in `src/index.css`.
+- Invite copy: `src/lib/invite.ts`. Device handoff (native SMS composer, clipboard, vibrate): `src/lib/share.ts`
+
+Simulated sends are always labelled. On a real phone, SMS opens the native composer and the user confirms whether they sent it.
+
+Tests: `npm run dev`, then `npm run test:e2e` (uses the Playwright runtime; set `SHOTS=<dir>` for screenshots).
+
 ## Preview controls (outside the phone)
 
 - Journey dropdown, current screen, Prev / Next, progress, Reset journey, Reset prototype.

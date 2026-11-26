@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookUser, EyeOff, Link2, Lock, Settings, ShieldCheck, UserX } from "lucide-react";
+import { BookUser, EyeOff, Link2, Lock, Settings, UserX } from "lucide-react";
 import { AppBar, Screen, ScreenBody, ScreenFooter, SimNote } from "@/components/app/primitives";
 import { ErrorState } from "@/components/app/ErrorState";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
   if (denied)
     return (
       <Screen>
-        <AppBar title="Invite friends" />
+        <AppBar title="Refer a App" />
         <ErrorState
           icon={<UserX />}
           tone="warning"
@@ -61,26 +61,19 @@ export function PermissionScreen({ params }: { params?: Record<string, string> }
 
   return (
     <Screen>
-      <AppBar title="Invite friends" />
+      <AppBar title="Refer a App" />
       <ScreenBody className="px-6">
         <div className="flex flex-col items-center pt-6 text-center">
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="relative mb-6 flex size-[120px] items-center justify-center rounded-[36px] bg-airtel-red-soft"
+            className="mb-6 flex size-[96px] items-center justify-center rounded-[30px] bg-airtel-surface"
           >
-            <BookUser className="size-14 text-airtel-red" strokeWidth={1.6} />
-            <motion.span
-              className="absolute -right-2 -top-2 flex size-10 items-center justify-center rounded-full bg-white shadow-card"
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 2.2, repeat: Infinity }}
-            >
-              <ShieldCheck className="size-5 text-airtel-success" />
-            </motion.span>
+            <BookUser className="size-11 text-airtel-ink" strokeWidth={1.6} />
           </motion.div>
-          <h2 className="text-title">Find friends faster</h2>
+          <h2 className="text-title">Choose who to invite</h2>
           <p className="mt-2 text-[14px] leading-[21px] text-airtel-sub">
-            Allow access to your contacts so you can pick who to invite. You choose exactly who receives an invitation.
+            Allow access to your contacts to pick friends to invite. Nothing is sent until you review and confirm.
           </p>
         </div>
         <ul className="mt-7 space-y-4">

@@ -4,10 +4,12 @@ import { Camera, ChevronLeft, Info, MessageSquareText, Mic, Plus, Video } from "
 import { AirtelMark } from "@/components/app/primitives";
 import { useFocusReferral, useProto } from "@/store/useProto";
 import { useStatusTone } from "@/components/device/statusTone";
+import { inviteMessage } from "@/lib/invite";
 import { cn, formatTime } from "@/lib/utils";
 import type { ReferralLink } from "@/domain/types";
 
-const SMS_TEXT = "Your friend is inviting you to Airtel! Join now and complete your first eligible recharge to unlock rewards for both of you.";
+/** Same predefined copy as the referrer's preview (without the link, which is rendered as a tappable URL). */
+const smsText = (name?: string) => inviteMessage(name ? name.split(" ")[0] : undefined, "").trim();
 
 /** B01 + B02 — native-style Messages app with incoming referral SMS and link tap. */
 export function SmsScreen() {
@@ -83,7 +85,7 @@ export function SmsScreen() {
                 <span className="ml-auto text-[12px] text-white/70">now</span>
               </div>
               <p className="mt-1.5 text-[15px] font-semibold">Your Friend</p>
-              <p className="line-clamp-2 text-[14px] leading-[19px] text-white/90">{SMS_TEXT}</p>
+              <p className="line-clamp-2 text-[14px] leading-[19px] text-white/90">{r ? smsText(r.name) : ""}</p>
             </motion.button>
             <motion.p
               className="mt-auto pb-12 text-[13px] text-white/70"
@@ -124,8 +126,9 @@ export function SmsScreen() {
                     transition={{ delay: 0.2 + i * 0.1, type: "spring", stiffness: 260, damping: 22 }}
                     className="max-w-[270px] overflow-hidden rounded-[18px] rounded-bl-[6px] bg-[#E9E9EB]"
                   >
-                    <p className="px-3 pt-2 text-[16px] leading-[21px] text-black">
-                      {SMS_TEXT}{" "}
+                    <p className="whitespace-pre-line px-3 pt-2 text-[16px] leading-[21px] text-black">
+                      {smsText(r?.name)}
+                      <br />
                       <button
                         onClick={() => onTapLink(l)}
                         className={cn(

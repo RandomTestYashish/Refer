@@ -193,7 +193,7 @@ export function ScenarioPanel() {
           <Pick k="network" options={[["success", "Success"], ["failure", "Failure"], ["slow", "Slow / pending"]]} />
         </Row>
         <Row label="Share outcome">
-          <Pick k="share" options={[["ok", "OK"], ["sms_fail", "SMS fails"], ["whatsapp_missing", "No WhatsApp"], ["copy_fail", "Copy fails"]]} />
+          <Pick k="share" options={[["ok", "OK"], ["partial", "Partly fails"], ["sms_fail", "SMS fails"], ["whatsapp_missing", "No WhatsApp"], ["copy_fail", "Copy fails"]]} />
         </Row>
         <Row label="Past successful referrals" hint="Simulated history for milestones">
           <Select value={String(s.pastSuccesses)} onValueChange={(v) => s.setPastSuccesses(Number(v))}>

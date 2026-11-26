@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useAnimationControls } from "framer-motion";
 import { toast } from "sonner";
-import { CloudOff, Link2, Search, SearchX, Users, X } from "lucide-react";
-import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primitives";
+import { Check, CloudOff, Link2, Search, SearchX, Users, X } from "lucide-react";
+import { AppBar, ContactAvatar, Screen, ScreenBody, ScreenFooter, SimNote } from "@/components/app/primitives";
 import { ErrorState } from "@/components/app/ErrorState";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +19,7 @@ export function ContactsScreen() {
   const referrals = useProto((s) => s.referrals);
   const selected = useProto((s) => s.selectedContactIds);
   const toggle = useProto((s) => s.toggleContact);
+  const setSelected = useProto((s) => s.setSelected);
   const navigate = useProto((s) => s.navigate);
   const remind = useProto((s) => s.remind);
   const [q, setQ] = useState("");
@@ -57,8 +57,20 @@ export function ContactsScreen() {
     }
     navigate("a_preview", { mode: "contacts" });
   };
+  const firstSel = CONTACTS.find((c) => c.id === selected[0]);
 
-  const header = <AppBar title="Select friends" subtitle={scenario.contacts === "unavailable" || scenario.contacts === "empty" ? undefined : `${CONTACTS.length} contacts`} />;
+  const header = (
+    <AppBar
+      title="Choose friends"
+      subtitle={
+        scenario.contacts === "unavailable" || scenario.contacts === "empty"
+          ? undefined
+          : selected.length
+            ? `${selected.length} selected`
+            : `${CONTACTS.length} sample contacts`
+      }
+    />
+  );
 
   if (scenario.contacts === "unavailable")
     return (
@@ -113,10 +125,19 @@ export function ContactsScreen() {
             </button>
           )}
         </div>
+        <SimNote className="mt-2 justify-start">Sample contacts — not your phone's address book</SimNote>
         <AnimatePresence initial={false}>
           {selected.length > 0 && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="no-scrollbar flex gap-2 overflow-x-auto pt-3">
+              <div className="flex items-center justify-between pt-3">
+                <p className="text-[12px] font-semibold text-airtel-sub" aria-live="polite">
+                  {selected.length} {selected.length === 1 ? "friend" : "friends"} selected
+                </p>
+                <button onClick={() => setSelected([])} className="rounded-md px-1 text-[12.5px] font-semibold text-airtel-ink underline underline-offset-2">
+                  Clear all
+                </button>
+              </div>
+              <div className="no-scrollbar flex gap-2 overflow-x-auto pt-2">
                 <AnimatePresence>
                   {selected.map((id) => {
                     const c = CONTACTS.find((x) => x.id === id)!;
@@ -128,7 +149,8 @@ export function ContactsScreen() {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.6, opacity: 0 }}
                         onClick={() => toggle(id)}
-                        className="flex shrink-0 items-center gap-1.5 rounded-full bg-airtel-red-soft py-1 pl-1 pr-2.5 text-[12.5px] font-semibold text-airtel-red"
+                        aria-label={`Remove ${c.name}`}
+                        className="flex shrink-0 items-center gap-1.5 rounded-full border border-airtel-line bg-white py-1 pl-1 pr-2.5 text-[12.5px] font-semibold text-airtel-ink active:bg-airtel-surface"
                       >
                         <ContactAvatar name={c.name} hue={c.hue} size={24} />
                         {c.name.split(" ")[0]}
@@ -186,9 +208,11 @@ export function ContactsScreen() {
                     <button
                       disabled={!!joined}
                       onClick={() => onPick(c.id)}
+                      role="checkbox"
+                      aria-checked={isSel}
                       className={cn(
                         "flex w-full items-center gap-3 px-5 py-2.5 text-left transition-colors active:bg-airtel-surface disabled:opacity-50",
-                        isSel && "bg-airtel-red-soft/40",
+                        isSel && "bg-gen4-bg-50",
                       )}
                     >
                       <ContactAvatar name={c.name} hue={c.hue} size={44} />
@@ -201,7 +225,15 @@ export function ContactsScreen() {
                         </span>
                         <span className="block text-[13px] text-airtel-sub tabular">{c.phone}</span>
                       </span>
-                      <Checkbox checked={isSel} tabIndex={-1} className="pointer-events-none" aria-label={`Select ${c.name}`} />
+                      <span
+                        aria-hidden
+                        className={cn(
+                          "flex size-5 shrink-0 items-center justify-center rounded-[4px] border transition-colors",
+                          isSel ? "border-gen4-action bg-gen4-action text-white" : "border-gen4-action bg-white",
+                        )}
+                      >
+                        {isSel && <Check className="size-4" strokeWidth={2.5} />}
+                      </span>
                     </button>
                   </li>
                 );
@@ -214,7 +246,11 @@ export function ContactsScreen() {
       <ScreenFooter>
         <motion.div animate={shake}>
           <Button size="lg" block onClick={onContinue} className={cn(selected.length === 0 && "bg-[#E5E5E5] text-[#9A9A9A] !shadow-none hover:bg-[#E5E5E5]")}>
-            {selected.length === 0 ? "Select friends to invite" : `Continue with ${selected.length} ${selected.length === 1 ? "friend" : "friends"}`}
+            {selected.length === 0
+              ? "Select friends to invite"
+              : selected.length === 1
+                ? `Preview invite for ${firstSel?.name.split(" ")[0] ?? "1 friend"}`
+                : `Preview ${selected.length} invites`}
           </Button>
         </motion.div>
       </ScreenFooter>

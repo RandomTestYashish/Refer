@@ -101,7 +101,7 @@ export interface Scenario {
   userType: "new" | "existing_no_txn" | "existing_active";
   contacts: "grant" | "deny" | "unavailable" | "empty";
   network: "success" | "failure" | "slow";
-  share: "ok" | "sms_fail" | "whatsapp_missing" | "copy_fail";
+  share: "ok" | "partial" | "sms_fail" | "whatsapp_missing" | "copy_fail";
   linkState: "valid" | "invalid";
   install: "success" | "cancelled" | "failed";
   contextRestore: "success" | "failed";

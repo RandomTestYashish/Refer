@@ -9,7 +9,8 @@
     "build:single": "tsc -b && vite build --mode single",
     "build:demo": "tsc -b && vite build --mode demo",
     "preview": "vite preview",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "test:e2e": "node tests/e2e/refer-flow.cjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.2",

@@ -9,6 +9,12 @@ export const CONTACTS: Contact[] = [
   { id: "c_neha", name: "Neha Kapoor", phone: "+91 90000 11223", hue: 280 },
   { id: "c_rohan", name: "Rohan Gupta", phone: "+91 97654 32109", hue: 150 },
   { id: "c_sneha", name: "Sneha Iyer", phone: "+91 93456 78123", hue: 40 },
+  { id: "c_aditi", name: "Aditi Rao", phone: "+91 98201 33445", hue: 190 },
+  { id: "c_farhan", name: "Farhan Qureshi", phone: "+91 99300 55821", hue: 100 },
+  { id: "c_kavya", name: "Kavya Menon", phone: "+91 94470 21987", hue: 340 },
+  { id: "c_manish", name: "Manish Joshi", phone: "+91 98290 66710", hue: 25 },
+  { id: "c_pooja", name: "Pooja Desai", phone: "+91 97240 13579", hue: 260 },
+  { id: "c_vikram", name: "Vikram Singh", phone: "+91 98110 90876", hue: 170 },
 ];
 
 export interface Plan {

@@ -18,6 +18,10 @@ export interface BusinessRules {
   firstTxnDeadlineDays: number; // time User B has to make the first qualifying recharge
   rewardValidationDays: number; // separate window before a reward is final (NOT the same as the deadline)
   existingNoTxnEligible: boolean; // segment 2 eligibility — final business rule pending
+  /** Headline yearly earning ceiling shown on the Refer a App landing. AWAITING BUSINESS CONFIRMATION. */
+  annualEarningCap: number;
+  /** What counts as the friend's qualifying first transaction. AWAITING BUSINESS CONFIRMATION. */
+  qualifyingAction: string;
   milestones: Milestone[];
 }
 
@@ -30,6 +34,8 @@ export const DEFAULT_RULES: BusinessRules = {
   firstTxnDeadlineDays: 10,
   rewardValidationDays: 30,
   existingNoTxnEligible: true,
+  annualEarningCap: 5000,
+  qualifyingAction: "recharge or bill payment",
   milestones: [
     { id: "first", label: "First referral", target: 1 },
     { id: "bronze", label: "Bronze", target: 5 },
@@ -45,4 +51,5 @@ export const RULE_LABELS: Record<string, string> = {
   linkValidityHours: "Link validity (hours)",
   firstTxnDeadlineDays: "First transaction deadline (days)",
   rewardValidationDays: "Reward validation period (days)",
+  annualEarningCap: "Yearly earning cap (₹) — to confirm",
 };

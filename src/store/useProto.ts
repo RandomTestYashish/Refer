@@ -65,6 +65,14 @@ const EMPTY_BRUN: BRun = {
   sheetSeen: false,
 };
 
+/** Outcome of one send attempt, keyed by screen nonce so a remount never re-sends. */
+export interface SendRecord {
+  phase: "success" | "pending" | "partial" | "confirmed";
+  created: string[];
+  failed?: string[];
+  simulated: boolean;
+}
+
 export interface Notice {
   id: string;
   text: string;
@@ -86,7 +94,7 @@ interface State {
   bRun: BRun;
   notices: Notice[];
   /** Completed send attempts keyed by the nonce of the a_sending screen (prevents re-sending on remount). */
-  sendResults: Record<string, { phase: "success" | "pending"; created: string[] }>;
+  sendResults: Record<string, SendRecord>;
 }
 
 interface Actions {
@@ -114,7 +122,7 @@ interface Actions {
   applyRewardOutcome: (id: string, outcome?: Scenario["reward"], force?: boolean) => void;
   rebuild: (id: string, upTo: ReferralStatus) => void;
   markNoticesRead: () => void;
-  recordSend: (nonce: string, phase: "success" | "pending", created: string[]) => void;
+  recordSend: (nonce: string, rec: SendRecord) => void;
   ensureReferral: () => string;
 
   // User B
@@ -379,7 +387,7 @@ export const useProto = create<Store>()(
             }),
           }));
         },
-        recordSend: (nonce, phase, created) => set((s) => ({ sendResults: { ...s.sendResults, [nonce]: { phase, created } } })),
+        recordSend: (nonce, rec) => set((s) => ({ sendResults: { ...s.sendResults, [nonce]: rec } })),
         markNoticesRead: () => set((s) => ({ notices: s.notices.map((n) => ({ ...n, read: true })) })),
         ensureReferral: () => {
           const s = get();

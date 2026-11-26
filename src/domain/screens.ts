@@ -2,7 +2,7 @@ import type { Journey, Scenario, ScreenId } from "./types";
 
 export const SCREEN_META: Record<ScreenId, { code: string; name: string; journey: Journey }> = {
   a_home: { code: "A01", name: "Airtel Homepage", journey: "A" },
-  a_landing: { code: "A02", name: "Refer & Earn", journey: "A" },
+  a_landing: { code: "A02", name: "Refer a App — Pull to invite", journey: "A" },
   a_milestones: { code: "A03", name: "Milestones", journey: "A" },
   a_permission: { code: "A04", name: "Contact Permission", journey: "A" },
   a_contacts: { code: "A05", name: "Contact Selection", journey: "A" },
