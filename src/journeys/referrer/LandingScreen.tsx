@@ -142,9 +142,9 @@ export function LandingScreen() {
 
         {/* Proposition */}
         <section className="mt-8 px-6 text-center">
-          <h2 className="text-[29px] font-extrabold leading-[35px] tracking-[-0.035em] text-refer-ink [text-wrap:balance]">
-            earn up to <span className="text-refer-accent tabular">{inr(rules.yearlyEarningCap)}</span>
-            <br />a year inviting <span className="text-refer-accent">friends</span>
+          <h2 className="text-[30px] font-black leading-[35px] tracking-[-0.04em] text-refer-ink [text-wrap:balance]">
+            earn up to <span className="italic text-refer-accent tabular">{inr(rules.yearlyEarningCap)}</span>
+            <br />a year inviting <span className="italic text-refer-accent">friends</span>
           </h2>
           <p className="mx-auto mt-5 w-fit rounded-full border border-refer-line bg-refer-soft px-4 py-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-refer-accent">
             {inr(rules.referrerReward)} for you · {inr(rules.friendReward)} + {rules.friendDataBenefit} for them
@@ -240,7 +240,7 @@ export function LandingScreen() {
 
         {/* Footer */}
         <footer className="mx-6 mb-6 mt-14">
-          <p className="text-[40px] font-extrabold leading-[42px] tracking-[-0.045em] text-[#E6E6E9]">
+          <p className="text-[42px] font-black italic leading-[42px] tracking-[-0.05em] text-[#E6E6E9]">
             Refer more.
             <br />
             Earn more.
