@@ -8,6 +8,7 @@ export default {
       fontFamily: {
         sans: ['"Inter"', "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
         script: ['"Caveat"', '"Segoe Script"', '"Bradley Hand"', "cursive"],
+        serif: ['"Fraunces"', "Georgia", '"Times New Roman"', "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -42,6 +43,15 @@ export default {
           error: "#981C20",
           "error-soft": "#FFD5D7",
           "error-line": "#FEACAF",
+        },
+        // Refer a App — calm, toned-down accent used on the referral screens.
+        refer: {
+          accent: "#A3313A", // muted crimson
+          deep: "#6E1D25",
+          soft: "#FBF6F5",
+          line: "#EEE3E2",
+          ink: "#151515",
+          muted: "#77777C",
         },
         gen4: {
           black: "#000000",

@@ -28,7 +28,7 @@ export function MilestoneCollection({ className }: { className?: string }) {
   const capped = rawCount >= ms[ms.length - 1].target;
   return (
     <div className={className} data-testid="milestones">
-      <div className="flex items-center gap-3 rounded-[18px] border border-[#ECEEF2] bg-white p-3.5">
+      <div className="flex items-center gap-3 rounded-[20px] border border-[#EDEDEF] bg-white p-3.5">
         <div className="flex -space-x-2.5" aria-hidden>
           {ms.map((m, i) => (
             <TierBadge key={m.id} tier={m.id} status={statuses[i]} size={30} className={cn(statuses[i] !== "earned" && "opacity-70")} />

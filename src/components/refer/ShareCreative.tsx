@@ -15,9 +15,9 @@ export interface CreativeData {
 }
 
 export const THEMES: Record<CreativeTheme, { label: string; bg: [string, string]; fg: string; sub: string; accent: string; chip: string; chipFg: string; swatch: string }> = {
-  red: { label: "Red", bg: ["#EE2A41", "#A10C1E"], fg: "#FFFFFF", sub: "rgba(255,255,255,0.8)", accent: "#FFE3E7", chip: "rgba(255,255,255,0.16)", chipFg: "#FFFFFF", swatch: "#D3132B" },
+  red: { label: "Red", bg: ["#B23D47", "#5A161D"], fg: "#FFFFFF", sub: "rgba(255,255,255,0.8)", accent: "#FFE3E7", chip: "rgba(255,255,255,0.16)", chipFg: "#FFFFFF", swatch: "#8F2731" },
   midnight: { label: "Midnight", bg: ["#24262E", "#0D0E12"], fg: "#FFFFFF", sub: "rgba(255,255,255,0.72)", accent: "#FF5A6E", chip: "rgba(255,255,255,0.1)", chipFg: "#FFFFFF", swatch: "#17181D" },
-  blush: { label: "Light", bg: ["#FFF6F6", "#FFE4E7"], fg: "#2A1013", sub: "#6B4A4E", accent: "#C8102E", chip: "#FFFFFF", chipFg: "#C8102E", swatch: "#FFE4E7" },
+  blush: { label: "Light", bg: ["#FFF6F6", "#FFE4E7"], fg: "#2A1013", sub: "#6B4A4E", accent: "#A3313A", chip: "#FFFFFF", chipFg: "#A3313A", swatch: "#FFE4E7" },
 };
 
 export const greeting = (name: string) => (name.trim() ? `Hi ${name.trim().split(" ")[0]},` : "Hi there,");

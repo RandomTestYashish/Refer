@@ -224,7 +224,7 @@ export function BadgeFlipCard({
   const [burst, setBurst] = useState(0);
   const reduce = useReducedMotion();
   const rot = useMotionValue(0);
-  const shadow = useTransform(rot, (r) => `0 ${10 - Math.abs(Math.sin((r * Math.PI) / 180)) * 6}px 24px rgba(41,44,49,${0.08 + Math.abs(Math.sin((r * Math.PI) / 180)) * 0.06})`);
+  const shadow = useTransform(rot, (r) => `0 ${8 - Math.abs(Math.sin((r * Math.PI) / 180)) * 5}px 22px rgba(20,20,20,${0.05 + Math.abs(Math.sin((r * Math.PI) / 180)) * 0.06})`);
 
   useEffect(() => {
     const c = animate(rot, flipped ? 180 : 0, reduce ? { duration: 0 } : { type: "spring", stiffness: 190, damping: 21 });
@@ -267,7 +267,7 @@ export function BadgeFlipCard({
         <div
           className={cn(
             "absolute inset-0 flex flex-col items-center rounded-[18px] border bg-white px-3 pb-3 pt-3.5 [backface-visibility:hidden]",
-            status === "earned" ? "border-[#F0E2C8] bg-gradient-to-b from-[#FFFBF3] to-white" : "border-[#ECEEF2]",
+            "border-[#EDEDEF]",
           )}
           aria-hidden={flipped}
         >
@@ -281,7 +281,7 @@ export function BadgeFlipCard({
 
         {/* back */}
         <div
-          className="absolute inset-0 flex flex-col rounded-[18px] border border-[#ECEEF2] bg-white p-3 [backface-visibility:hidden]"
+          className="absolute inset-0 flex flex-col rounded-[18px] border border-[#EDEDEF] bg-white p-3 [backface-visibility:hidden]"
           style={{ transform: "rotateY(180deg)" }}
           aria-hidden={!flipped}
         >
@@ -294,7 +294,7 @@ export function BadgeFlipCard({
               </p>
             </div>
           </div>
-          <p className="mt-2 text-[13px] font-bold text-airtel-red">{rewardLabel(m)}</p>
+          <p className="mt-2 text-[13px] font-bold text-refer-accent">{rewardLabel(m)}</p>
           <p className="mt-0.5 text-[11.5px] leading-[15px] text-airtel-sub">{explain}</p>
           <div className="mt-auto">
             <div className="flex justify-between text-[10.5px] font-semibold text-airtel-sub tabular">
@@ -304,7 +304,7 @@ export function BadgeFlipCard({
               </span>
             </div>
             <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#EEF0F3]">
-              <div className={cn("h-full rounded-full", status === "earned" ? "bg-airtel-success" : "bg-gradient-to-r from-[#FF4D5E] to-airtel-red")} style={{ width: `${pct * 100}%` }} />
+              <div className={cn("h-full rounded-full", status === "earned" ? "bg-airtel-success" : "bg-refer-accent")} style={{ width: `${pct * 100}%` }} />
             </div>
             <p className="mt-1.5 flex items-center gap-1 text-[10.5px] leading-[13px] text-airtel-ink">
               <RotateCcw className="size-3 shrink-0 text-airtel-sub" />
@@ -357,7 +357,7 @@ export function UnlockCelebration({ m, onDone, onView }: { m: Milestone | null; 
             >
               <TierBadge tier={m.id} status="earned" size={120} />
             </motion.div>
-            <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.16em] text-airtel-red">Achievement unlocked</p>
+            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-refer-accent">Achievement unlocked</p>
             <h2 id="unlock-title" className="mt-1 text-[24px] font-bold leading-[30px] text-airtel-ink">
               {m.label} badge earned
             </h2>

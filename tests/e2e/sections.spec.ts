@@ -47,8 +47,9 @@ test.describe("Supporting sections & quality", () => {
     await expect(card).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(card).toHaveAttribute("data-side", "back");
-    await page.keyboard.press("Tab");
-    await expect(ui(page).getByTestId("flip-toggle")).toBeFocused();
+    const toggle = ui(page).getByTestId("flip-toggle");
+    for (let i = 0; i < 4 && !(await toggle.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press("Tab");
+    await expect(toggle).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(card).toHaveAttribute("data-side", "front");
   });

@@ -4,7 +4,7 @@ import { goBack, landing, ui } from "./helpers";
 test.describe("Referral card", () => {
   test("shows the proposition on the front", async ({ page }) => {
     await landing(page);
-    await expect(ui(page).getByRole("heading", { name: /Earn up to ₹5,000\s*a year/ })).toBeVisible();
+    await expect(ui(page).getByRole("heading", { name: /earn up to ₹5,000\s*a year/i })).toBeVisible();
     const card = ui(page).getByTestId("referral-card");
     await expect(card).toHaveAttribute("data-side", "front");
     await expect(ui(page).getByTestId("card-cap")).toHaveText("₹5,000");

@@ -68,7 +68,7 @@ export function InviteEnvelope({
         >
           <div
             className="absolute inset-x-0 top-0 h-[120px]"
-            style={{ background: "repeating-linear-gradient(135deg,#C8102E 0 8px,#B00D27 8px 16px)", clipPath: `polygon(0 0, 100% 0, 100% 40px, 50% 100px, 0 40px)` }}
+            style={{ background: "repeating-linear-gradient(135deg,#8F2A33 0 8px,#80232C 8px 16px)", clipPath: `polygon(0 0, 100% 0, 100% 40px, 50% 100px, 0 40px)` }}
             aria-hidden
           />
         </div>
@@ -88,8 +88,8 @@ export function InviteEnvelope({
             <svg viewBox={`0 0 ${W} ${FLAP_H}`} className="absolute inset-0 size-full [backface-visibility:hidden]" style={{ transform: "rotateX(180deg)" }} aria-hidden>
               <defs>
                 <pattern id="liner" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                  <rect width="16" height="16" fill="#B00D27" />
-                  <rect width="8" height="16" fill="#C8102E" />
+                  <rect width="16" height="16" fill="#80232C" />
+                  <rect width="8" height="16" fill="#8F2A33" />
                 </pattern>
               </defs>
               {/* drawn mirrored: after both rotations the wide edge sits on the hinge and the point faces up */}
@@ -106,7 +106,7 @@ export function InviteEnvelope({
           animate={{ y: cardY, opacity: step === 0 ? 0 : 1, rotate: step === 1 ? -2 : 0 }}
           transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 120, damping: 17 }}
         >
-          <div className="rounded-[14px] shadow-[0_12px_28px_rgba(120,10,25,0.28)]">
+          <div className="rounded-[14px] shadow-[0_12px_28px_rgba(30,15,17,0.22)]">
             <CardFront width={CARD_W} shimmer={false} />
           </div>
         </motion.div>
@@ -152,7 +152,7 @@ export function InviteEnvelope({
                 left: W / 2 - 21,
                 top: BODY_TOP + FLAP_H - 40,
                 zIndex: 40,
-                background: "radial-gradient(circle at 35% 30%,#F0475B,#B30E25 60%,#7E0716)",
+                background: "radial-gradient(circle at 35% 30%,#C25A63,#8F2731 60%,#5A161D)",
                 boxShadow: "0 4px 10px rgba(110,8,20,0.35), inset 0 -3px 0 rgba(0,0,0,0.15)",
               }}
               initial={reduce ? false : { scale: 1.8, opacity: 0 }}
@@ -175,7 +175,7 @@ export function InviteEnvelope({
             {[0, 1, 2].map((i) => (
               <motion.span
                 key={i}
-                className="absolute h-[2px] rounded-full bg-gradient-to-r from-transparent to-airtel-red/50"
+                className="absolute h-[2px] rounded-full bg-gradient-to-r from-transparent to-refer-accent/40"
                 style={{ left: 40 + i * 30, top: BODY_TOP + 60 + i * 26, width: 90 }}
                 initial={{ x: 0, opacity: 0 }}
                 animate={{ x: 160, y: -160, opacity: [0, 1, 0] }}

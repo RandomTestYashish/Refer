@@ -153,7 +153,7 @@ function EnvelopeInvite() {
     );
 
   return (
-    <Screen className="bg-gradient-to-b from-[#FFF5F5] to-white">
+    <Screen className="bg-white">
       <AppBar title="Your invitation" transparent />
       <ScreenBody className="px-5 pb-4">
         {recipients.length > 1 && (
@@ -169,7 +169,7 @@ function EnvelopeInvite() {
                   onClick={() => setActive(i)}
                   className={cn(
                     "flex shrink-0 items-center gap-1.5 rounded-full border py-1 pl-1 pr-3 text-[13px] font-semibold transition",
-                    i === active ? "border-airtel-red bg-white text-airtel-red shadow-sm" : "border-transparent bg-white/70 text-airtel-ink",
+                    i === active ? "border-refer-ink bg-white text-refer-ink" : "border-[#ECECEE] bg-white text-refer-muted",
                   )}
                 >
                   <ContactAvatar name={c.name} hue={c.hue} size={24} />

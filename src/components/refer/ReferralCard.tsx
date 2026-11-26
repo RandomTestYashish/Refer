@@ -27,23 +27,23 @@ export function CardFront({ width, shimmer = true, className }: { width: number;
         width,
         height: width * CARD_RATIO,
         fontSize: width / 21,
-        background: "linear-gradient(140deg,#F2263F 0%,#D3132B 38%,#A10C1E 100%)",
+        background: "linear-gradient(150deg,#B23D47 0%,#8F2731 46%,#5A161D 100%)",
       }}
     >
       {/* material: fine engraved lines + soft top-left light */}
       <span
-        className="absolute inset-0 opacity-[0.10]"
+        className="absolute inset-0 opacity-[0.07]"
         style={{ background: "repeating-linear-gradient(115deg,#fff 0 1px,transparent 1px 7px)" }}
         aria-hidden
       />
-      <span className="absolute -left-[20%] -top-[60%] h-[140%] w-[90%] rounded-full bg-white/15 blur-2xl" aria-hidden />
+      <span className="absolute -left-[20%] -top-[60%] h-[140%] w-[90%] rounded-full bg-white/10 blur-2xl" aria-hidden />
       <span className="absolute -bottom-[45%] -right-[15%] size-[18em] rounded-full border-[0.12em] border-white/15" aria-hidden />
       <span className="absolute -bottom-[30%] right-[2%] size-[12em] rounded-full border-[0.12em] border-white/10" aria-hidden />
 
       {shimmer && !reduce && (
         <motion.span
           aria-hidden
-          className="pointer-events-none absolute inset-y-[-30%] w-[35%] rotate-[18deg] bg-gradient-to-r from-transparent via-white/35 to-transparent mix-blend-soft-light"
+          className="pointer-events-none absolute inset-y-[-30%] w-[35%] rotate-[18deg] bg-gradient-to-r from-transparent via-white/25 to-transparent mix-blend-soft-light"
           initial={{ left: "-45%" }}
           animate={{ left: ["-45%", "130%"] }}
           transition={{ duration: 1.6, ease: [0.4, 0, 0.2, 1], repeat: Infinity, repeatDelay: 3.2, delay: 0.8 }}
@@ -65,7 +65,7 @@ export function CardFront({ width, shimmer = true, className }: { width: number;
         <div>
           <p className="text-[0.72em] font-semibold uppercase tracking-[0.18em] text-white/80">Earn up to</p>
           <p
-            className="mt-[0.05em] bg-gradient-to-b from-white via-white to-[#FFD9DE] bg-clip-text text-[2.9em] font-extrabold leading-[1em] tracking-[-0.04em] text-transparent tabular"
+            className="mt-[0.05em] bg-gradient-to-b from-white via-white to-[#EFDCD8] bg-clip-text text-[2.9em] font-extrabold leading-[1em] tracking-[-0.04em] text-transparent tabular"
             data-testid="card-cap"
           >
             {inr(cap)}
@@ -99,15 +99,15 @@ function CardBack({ width }: { width: number }) {
       className="relative h-full overflow-hidden rounded-[1.25em] border border-[#ECEEF2] bg-white text-airtel-ink"
       style={{ width, height: width * CARD_RATIO, fontSize: width / 21 }}
     >
-      <span className="absolute inset-x-0 top-0 h-[0.25em] bg-gradient-to-r from-[#F2263F] to-[#A10C1E]" aria-hidden />
+      <span className="absolute inset-x-0 top-0 h-[0.25em] bg-gradient-to-r from-refer-accent to-refer-deep" aria-hidden />
       <div className="flex h-full flex-col px-[1.05em] pb-[0.8em] pt-[0.95em]">
-        <p className="text-[0.62em] font-bold uppercase tracking-[0.16em] text-airtel-red">How it works</p>
+        <p className="text-[0.62em] font-bold uppercase tracking-[0.16em] text-refer-accent">How it works</p>
         <ol className="mt-[0.5em] grid flex-1 grid-cols-2 gap-x-[0.8em] gap-y-[0.55em]">
           {rows.map(({ icon: Icon, title, body }, i) => (
             <li key={title} className="flex gap-[0.5em]">
-              <span className="relative flex size-[1.9em] shrink-0 items-center justify-center rounded-[0.6em] bg-[#FFF0F1] text-airtel-red">
+              <span className="relative flex size-[1.9em] shrink-0 items-center justify-center rounded-[0.6em] bg-refer-soft text-refer-accent">
                 <Icon className="size-[1em]" strokeWidth={2} />
-                <span className="absolute -right-[0.3em] -top-[0.3em] flex size-[1em] items-center justify-center rounded-full bg-airtel-ink text-[0.55em] font-bold text-white">
+                <span className="absolute -right-[0.3em] -top-[0.3em] flex size-[1em] items-center justify-center rounded-full bg-refer-ink text-[0.55em] font-bold text-white">
                   {i + 1}
                 </span>
               </span>
@@ -155,7 +155,7 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
   const shadowX = useTransform(ry, (v) => -v * 1.4);
   const shadowY = useTransform(rx, (v) => 22 + v * 0.9);
   const shadowScale = useTransform(edgeOn, (e) => 0.62 + e * 0.3);
-  const shadowOpacity = useTransform(edgeOn, (e) => 0.28 + e * 0.22);
+  const shadowOpacity = useTransform(edgeOn, (e) => 0.16 + e * 0.16);
   // Lift: the card rises slightly mid-flip
   const lift = useTransform(edgeOn, (e) => (1 - e) * -10);
   const scale = useTransform(edgeOn, (e) => 1 + (1 - e) * 0.04);
@@ -163,7 +163,7 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
   // Specular glare that follows the pointer on the front face
   const gx = useTransform(tx, [-0.5, 0.5], [10, 90]);
   const gy = useTransform(ty, [-0.5, 0.5], [0, 100]);
-  const glare = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.32), rgba(255,255,255,0) 55%)`;
+  const glare = useMotionTemplate`radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.22), rgba(255,255,255,0) 55%)`;
 
   const onMove = (e: PointerEvent) => {
     if (reduce || !ref.current) return;
@@ -191,7 +191,7 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
       {/* ground shadow */}
       <motion.span
         aria-hidden
-        className="absolute inset-x-[8%] bottom-0 h-[38%] rounded-[50%] bg-[#7A0A16] blur-[18px]"
+        className="absolute inset-x-[8%] bottom-0 h-[38%] rounded-[50%] bg-[#1E1213] blur-[20px]"
         style={{ x: shadowX, y: shadowY, scaleX: shadowScale, opacity: shadowOpacity }}
       />
       <motion.div
