@@ -66,7 +66,9 @@ export function LandingScreen() {
       {/* Gen4 Top Nav · L1 · heading centred */}
       {/* Pink wash behind the header and hero */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[linear-gradient(180deg,#FCE9E9_0%,#FDF3F3_45%,#FFFFFF_100%)]" aria-hidden />
-      <header className={cn("relative z-20 grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 border-b px-4 transition-colors", scrolled ? "border-gen4-bg-200 bg-white" : "border-transparent bg-transparent")}>
+      {/* Header floats over the hero so the ring can run up behind it */}
+      <div className="absolute inset-x-0 top-[var(--sb,44px)] z-20">
+      <header className={cn("grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 border-b px-4 transition-colors", scrolled ? "border-gen4-bg-200 bg-white" : "border-transparent bg-transparent")}>
         <button onClick={back} aria-label="Back" className="flex size-10 items-center justify-center rounded-full text-refer-ink active:scale-90 active:bg-black/5">
           <ChevronLeft className="size-6" strokeWidth={1.8} />
         </button>
@@ -84,34 +86,34 @@ export function LandingScreen() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
 
       <ScreenBody ref={bodyRef} className="pb-4">
-        {/* Hero: app icon inside a slowly animating dotted radial */}
-        <section className="relative" aria-label="Airtel app">
+        {/* Hero: app icon inside a large, partly off-screen dotted radial */}
+        <section aria-label="Airtel app">
           <HeroRadial syncRef={amountRef} />
         </section>
 
         {/* Proposition */}
         <section className="relative px-6 pt-1 text-center">
-          <h2 className="whitespace-pre-line text-[26px] font-black italic leading-[35px] text-[#151515] [text-wrap:balance]">
-            Earn up to{" "}
+          <h2 className="font-black italic text-[#151515]">
+            <span className="block text-[20px] leading-[26px]">Earn up to</span>
             <span
               ref={amountRef}
-              className="bg-clip-text text-transparent tabular"
+              className="mx-auto block w-fit bg-clip-text px-1.5 text-[52px] leading-[62px] tracking-[-0.5px] text-transparent tabular"
               style={{
-                // Title red gradient with a soft light band; HeroRadial moves it (--sheen) when the glow passes below.
+                // Title red gradient with a light band; HeroRadial moves it (--sheen) right after the icon shine.
+                filter: "drop-shadow(0 8px 18px rgba(227,33,33,0.22))",
                 backgroundImage:
-                  "linear-gradient(105deg, transparent 42%, rgba(255,190,190,0.85) 50%, transparent 58%), linear-gradient(101.6deg, #E32121 40.65%, #7D1212 54.6%, #7D1212 68.5%)",
+                  "linear-gradient(105deg, transparent 42%, rgba(255,210,210,0.9) 50%, transparent 58%), linear-gradient(101.6deg, #F02424 25%, #C41A1A 60%, #8E1414 100%)",
                 backgroundSize: "300% 100%, 100% 100%",
                 backgroundPosition: "var(--sheen, 100%) 0, 0 0",
                 backgroundRepeat: "no-repeat",
               }}
             >
               {inr(rules.yearlyEarningCap)}
-            </span>{" "}
-            a year
-            <br />
-            by inviting friends
+            </span>
+            <span className="block text-[20px] leading-[26px]">a year by inviting friends</span>
           </h2>
           <p className="mx-auto mt-5 w-fit rounded-full border border-[#EEE3E2] bg-[#FBF6F5] px-4 py-2 text-[10.5px] font-semibold italic uppercase leading-[15.75px] tracking-[1px] text-[#A3313A]">
             {inr(rules.referrerReward)} for you · {inr(rules.friendReward)} + {rules.friendDataBenefit} for them
