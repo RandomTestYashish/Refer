@@ -7,22 +7,19 @@ test.describe("Referral card", () => {
     await expect(ui(page).getByRole("heading", { name: /earn up to ₹5,000\s*a year/i })).toBeVisible();
     const card = ui(page).getByTestId("referral-card");
     await expect(card).toHaveAttribute("data-side", "front");
-    await expect(ui(page).getByTestId("logo-coin")).toHaveAttribute("data-face", "logo");
+    await expect(ui(page).getByTestId("logo-coin").locator("img")).toHaveCount(2);
   });
 
-  test("logo coin tosses between faces without flipping the card", async ({ page }) => {
+  test("logo coin flips in place with the Airtel logo on both faces, without flipping the card", async ({ page }) => {
     await landing(page);
     const card = ui(page).getByTestId("referral-card");
     const coin = ui(page).getByTestId("logo-coin");
+    await expect(coin.locator("img")).toHaveCount(2);
+    await expect(coin).not.toContainText("₹");
     await coin.click();
-    await expect(coin).toHaveAttribute("data-face", "reward");
-    await expect(coin).toContainText("₹25");
     await expect(card).toHaveAttribute("data-side", "front");
-    await coin.click();
-    await expect(coin).toHaveAttribute("data-face", "logo");
     await coin.focus();
     await page.keyboard.press("Enter");
-    await expect(coin).toHaveAttribute("data-face", "reward");
     await expect(card).toHaveAttribute("data-side", "front");
   });
 
@@ -32,8 +29,9 @@ test.describe("Referral card", () => {
     await card.click({ position: { x: 20, y: 20 } });
     await expect(card).toHaveAttribute("data-side", "back");
     await expect(card.getByText("How it works")).toBeVisible();
-    await expect(card.getByText(/Your friend gets ₹25 \+ 2 GB/)).toBeVisible();
-    await expect(card.getByText(/They recharge ₹100 or more/)).toBeVisible();
+    await expect(card.getByText("You share your link.")).toBeVisible();
+    await expect(card.getByText(/They recharge ₹100\+ within 10 days/)).toBeVisible();
+    await expect(card.getByText(/You get ₹25\. They get ₹25 \+ 2 GB/)).toBeVisible();
 
     await ui(page).getByTestId("flip-toggle").click();
     await expect(card).toHaveAttribute("data-side", "front");
