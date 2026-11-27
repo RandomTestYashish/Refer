@@ -516,9 +516,23 @@ export const useProto = create<Store>()(
       }),
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<State>;
+        // Opening the link in a new tab always starts on the Refer story, whatever screen was open last time.
+        // Reloads in the same tab keep their place; automated test runs keep the screen they seed.
+        let nav = p.nav;
+        let journey = p.journey;
+        try {
+          if (!navigator.webdriver && !sessionStorage.getItem("refer-story-opened")) {
+            sessionStorage.setItem("refer-story-opened", "1");
+            journey = "A";
+            nav = { ...(p.nav ?? current.nav), A: [{ id: "a_home", key: "boot-home" }, { id: "a_intro", key: "boot-intro" }] };
+          }
+        } catch {
+          /* storage unavailable: keep the saved place */
+        }
         return {
           ...current,
           ...p,
+          ...(nav ? { nav, journey: journey ?? "A" } : {}),
           rules: {
             ...DEFAULT_RULES,
             ...(p.rules ?? {}),

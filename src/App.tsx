@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MotionConfig } from "framer-motion";
 import { X } from "lucide-react";
 import { PhoneFrame } from "@/components/device/PhoneFrame";
@@ -20,7 +20,12 @@ export default function App() {
   // Phone only by default. Add ?controls to the URL for the prototype header and scenario panel.
   const controls = !device && new URLSearchParams(window.location.search).has("controls");
 
-  useEffect(() => setTone("dark"), [journey]);
+  // Reset the status bar when the journey switches (not on first load, so the first screen keeps its own tone).
+  const firstJourney = useRef(journey);
+  useEffect(() => {
+    if (journey !== firstJourney.current) setTone("dark");
+    firstJourney.current = journey;
+  }, [journey]);
 
   return (
     <MotionConfig reducedMotion="user">
