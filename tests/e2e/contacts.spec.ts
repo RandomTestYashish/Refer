@@ -2,11 +2,11 @@ import { expect, test } from "@playwright/test";
 import { expectScreen, goBack, landing, openAt, ui } from "./helpers";
 
 test.describe("Contact selection", () => {
-  test("permission → search → select, deselect, multi-select → continue → back", async ({ page }) => {
+  test("native permission prompt → search → select, deselect, multi-select → continue → back", async ({ page }) => {
     await landing(page);
     await ui(page).getByTestId("invite-friends").click();
-    await expectScreen(page, "a_permission");
-    await ui(page).getByRole("button", { name: "Allow contacts" }).click();
+    await expect(ui(page).getByTestId("contacts-prompt")).toBeVisible();
+    await expectScreen(page, "a_landing");
     await ui(page).getByRole("button", { name: "Allow", exact: true }).click();
     await expectScreen(page, "a_contacts");
 
@@ -17,7 +17,8 @@ test.describe("Contact selection", () => {
 
     await ui(page).getByRole("button", { name: /Priya Nair/ }).click();
     await expect(ui(page).getByRole("button", { name: "Continue with 1 friend" })).toBeVisible();
-    await ui(page).getByRole("button", { name: /Priya Nair/ }).first().click(); // deselect
+    await expect(ui(page).getByRole("button", { name: "Remove Priya Nair" })).toBeVisible(); // avatar-only chip
+    await ui(page).getByRole("button", { name: "Remove Priya Nair" }).click(); // deselect
     await expect(ui(page).getByRole("button", { name: "Select friends to invite" })).toBeVisible();
 
     await search.fill("");
@@ -35,7 +36,6 @@ test.describe("Contact selection", () => {
   test("permission denied offers settings and a manual share", async ({ page }) => {
     await landing(page, { scenario: { contacts: "deny" } });
     await ui(page).getByTestId("invite-friends").click();
-    await ui(page).getByRole("button", { name: "Allow contacts" }).click();
     await ui(page).getByRole("button", { name: "Allow", exact: true }).click();
     await expect(ui(page).getByText("Contacts access denied")).toBeVisible();
     await ui(page).getByRole("button", { name: "Share link manually" }).click();

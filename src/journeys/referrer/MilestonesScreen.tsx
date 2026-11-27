@@ -3,12 +3,11 @@ import { AppBar, Screen, ScreenBody, ScreenFooter } from "@/components/app/primi
 import { MilestoneCollection, monthName, useMilestones } from "@/components/refer/MilestoneCollection";
 import { rewardLabel } from "@/components/refer/AchievementBadge";
 import { Button } from "@/components/ui/button";
-import { useProto } from "@/store/useProto";
+import { useStartInvite } from "@/components/refer/ContactsPrompt";
 
 /** A03 — Milestones: this month's collectible badges with tier details. */
 export function MilestonesScreen() {
-  const granted = useProto((s) => s.contactsGranted);
-  const navigate = useProto((s) => s.navigate);
+  const startInvite = useStartInvite();
   const { ms, count } = useMilestones();
   const next = ms.find((m) => count < m.target);
 
@@ -29,7 +28,7 @@ export function MilestonesScreen() {
         <MilestoneCollection className="mt-5" />
       </ScreenBody>
       <ScreenFooter>
-        <Button size="lg" block onClick={() => navigate(granted ? "a_contacts" : "a_permission")}>
+        <Button size="lg" block onClick={startInvite}>
           Invite Friends
         </Button>
       </ScreenFooter>

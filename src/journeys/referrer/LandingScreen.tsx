@@ -14,6 +14,7 @@ import iaCopy from "@/assets/refer/ia-copy.svg";
 import iaWhatsapp from "@/assets/refer/ia-whatsapp.svg";
 import iaMail from "@/assets/refer/ia-mail.svg";
 import { useProto } from "@/store/useProto";
+import { useStartInvite } from "@/components/refer/ContactsPrompt";
 import { haptic, useOnline } from "@/lib/device";
 import { cn, inr } from "@/lib/utils";
 
@@ -24,7 +25,6 @@ import { cn, inr } from "@/lib/utils";
  */
 export function LandingScreen() {
   const rules = useProto((s) => s.rules);
-  const granted = useProto((s) => s.contactsGranted);
   const navigate = useProto((s) => s.navigate);
   const back = useProto((s) => s.back);
   const celebrated = useProto((s) => s.celebrated);
@@ -66,7 +66,7 @@ export function LandingScreen() {
   };
 
   const cardW = Math.min(304, width - 71);
-  const invite = () => navigate(granted ? "a_contacts" : "a_permission");
+  const invite = useStartInvite();
   const scrollTo = (el: HTMLElement | null) => el?.scrollIntoView({ behavior: "smooth", block: "start" });
   const flip = (v: boolean) => {
     haptic(8);

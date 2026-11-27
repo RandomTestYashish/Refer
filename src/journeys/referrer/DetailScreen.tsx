@@ -29,7 +29,7 @@ export function DetailScreen({ params }: { params?: Record<string, string> }) {
   return (
     <Screen className="bg-airtel-surface">
       <AppBar title="Referral details" className="bg-airtel-surface" />
-      <ScreenBody className="px-4 pb-6">
+      <ScreenBody className="px-4 pb-6 pt-4">
         <div className="rounded-[20px] bg-white p-4 shadow-card">
           <div className="flex items-center gap-3">
             <ContactAvatar name={r.name} hue={c?.hue ?? 200} size={52} />

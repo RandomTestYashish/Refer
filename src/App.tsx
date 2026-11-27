@@ -3,6 +3,7 @@ import { MotionConfig } from "framer-motion";
 import { X } from "lucide-react";
 import { PhoneFrame } from "@/components/device/PhoneFrame";
 import { ScreenStage } from "@/components/device/ScreenStage";
+import { ContactsPrompt } from "@/components/refer/ContactsPrompt";
 import { StatusToneContext } from "@/components/device/statusTone";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -31,6 +32,7 @@ export default function App() {
               <StatusToneContext.Provider value={setTone}>
                 <PhoneFrame statusTone={tone} overlay={<Toaster />}>
                   <ScreenStage />
+                  <ContactsPrompt />
                 </PhoneFrame>
               </StatusToneContext.Provider>
             </main>

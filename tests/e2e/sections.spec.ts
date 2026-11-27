@@ -51,6 +51,8 @@ test.describe("Supporting sections & quality", () => {
     await goBack(page);
     await expectScreen(page, "a_landing");
     await ui(page).getByRole("button", { name: "Start inviting" }).click();
+    await expect(ui(page).getByTestId("contacts-prompt")).toBeVisible();
+    await ui(page).getByRole("button", { name: "Don't Allow", exact: true }).click();
     await expectScreen(page, "a_permission");
     await goBack(page);
     await goBack(page);

@@ -74,23 +74,23 @@ export function AppBar({
   return (
     <header
       className={cn(
-        "relative z-10 grid h-14 shrink-0 grid-cols-[auto_1fr_auto] items-center gap-2 px-3",
-        !transparent && "border-b border-gen4-bg-200 bg-white",
+        "relative z-10 grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 px-4",
+        !transparent && "bg-white",
         className,
       )}
     >
       <button
         onClick={onBack ?? back}
-        className="flex size-8 items-center justify-center rounded-full text-black transition active:scale-90 active:bg-black/5"
+        className="flex size-10 items-center justify-center rounded-full text-refer-ink transition active:scale-90 active:bg-black/5"
         aria-label="Back"
       >
-        <ChevronLeft className="size-6" />
+        <ChevronLeft className="size-6" strokeWidth={1.8} />
       </button>
       <div className="min-w-0 text-center">
         {title && <div className="truncate text-[20px] font-bold leading-[22px] text-airtel-ink">{title}</div>}
         {subtitle && <div className="truncate text-[12px] leading-[18px] text-gen4-black-800">{subtitle}</div>}
       </div>
-      <div className="flex min-w-8 items-center justify-end gap-1">{right}</div>
+      <div className="flex items-center justify-end gap-1">{right}</div>
     </header>
   );
 }

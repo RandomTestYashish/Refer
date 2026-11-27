@@ -116,7 +116,7 @@ export function ContactsScreen() {
         <AnimatePresence initial={false}>
           {selected.length > 0 && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-              <div className="no-scrollbar flex gap-2 overflow-x-auto pt-3">
+              <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 pl-0.5 pt-3.5">
                 <AnimatePresence>
                   {selected.map((id) => {
                     const c = CONTACTS.find((x) => x.id === id)!;
@@ -128,11 +128,13 @@ export function ContactsScreen() {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.6, opacity: 0 }}
                         onClick={() => toggle(id)}
-                        className="flex shrink-0 items-center gap-1.5 rounded-full bg-airtel-red-soft py-1 pl-1 pr-2.5 text-[12.5px] font-semibold text-airtel-red"
+                        aria-label={`Remove ${c.name}`}
+                        className="relative shrink-0 rounded-full"
                       >
-                        <ContactAvatar name={c.name} hue={c.hue} size={24} />
-                        {c.name.split(" ")[0]}
-                        <X className="size-3.5" />
+                        <ContactAvatar name={c.name} hue={c.hue} size={44} />
+                        <span className="absolute -right-0.5 -top-0.5 flex size-[18px] items-center justify-center rounded-full bg-refer-ink text-white ring-2 ring-white" aria-hidden>
+                          <X className="size-3" strokeWidth={3} />
+                        </span>
                       </motion.button>
                     );
                   })}

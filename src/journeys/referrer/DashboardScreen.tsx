@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CONTACTS } from "@/domain/data";
 import { activeLink, referralStats, useProto } from "@/store/useProto";
+import { useStartInvite } from "@/components/refer/ContactsPrompt";
 import { cn, formatDate, inr, timeLeft } from "@/lib/utils";
 import type { Referral } from "@/domain/types";
 
@@ -51,13 +52,12 @@ export function DashboardScreen() {
   const notices = useProto((s) => s.notices);
   const markRead = useProto((s) => s.markNoticesRead);
   const navigate = useProto((s) => s.navigate);
-  const granted = useProto((s) => s.contactsGranted);
   const [tab, setTab] = useState<keyof typeof FILTERS>("all");
   const stats = referralStats(referrals, past, rules.referrerReward);
   const list = useMemo(() => referrals.filter(FILTERS[tab]), [referrals, tab]);
   const unread = notices.filter((n) => !n.read);
 
-  const invite = () => navigate(granted ? "a_contacts" : "a_permission");
+  const invite = useStartInvite();
   const remindable = referrals.filter((r) => canRemind(r) && r.rewardA === "locked");
   const lockedTotal = referrals.filter((r) => ["locked", "validating", "delayed"].includes(r.rewardA) && !["expired", "not_eligible", "failed"].includes(r.status)).length * rules.referrerReward;
   const remind = useProto((s) => s.remind);
@@ -69,7 +69,7 @@ export function DashboardScreen() {
   return (
     <Screen className="bg-airtel-surface">
       <AppBar title="My Referrals" className="bg-airtel-surface" />
-      <ScreenBody className="pb-6">
+      <ScreenBody className="pb-6 pt-4">
         {referrals.length === 0 ? (
           <div className="flex h-full flex-col px-5 pb-10 pt-6">
             <AvatarStack size={56} />
