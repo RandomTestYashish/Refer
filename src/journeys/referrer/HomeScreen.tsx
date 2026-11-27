@@ -232,7 +232,7 @@ export function HomeScreen() {
   const openRefer = (entry: "home_creative" | "menu") => {
     haptic(8);
     setMenu(false);
-    setTimeout(() => navigate("a_landing", { entry }), entry === "menu" ? 180 : 0);
+    setTimeout(() => navigate("a_intro", { entry }), entry === "menu" ? 180 : 0);
   };
 
   return (

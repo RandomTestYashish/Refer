@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import type { ScreenId } from "@/domain/types";
 import { HomeScreen } from "./referrer/HomeScreen";
 import { LandingScreen } from "./referrer/LandingScreen";
+import { IntroScreen } from "./referrer/IntroScreen";
 import { MilestonesScreen } from "./referrer/MilestonesScreen";
 import { PermissionScreen } from "./referrer/PermissionScreen";
 import { ContactsScreen } from "./referrer/ContactsScreen";
@@ -27,6 +28,7 @@ export type ScreenProps = { params?: Record<string, string> };
 
 export const SCREENS: Record<ScreenId, ComponentType<ScreenProps>> = {
   a_home: HomeScreen,
+  a_intro: IntroScreen,
   a_landing: LandingScreen,
   a_milestones: MilestonesScreen,
   a_permission: PermissionScreen,

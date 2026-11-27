@@ -66,6 +66,7 @@ export type Journey = "A" | "B";
 
 export type ScreenId =
   | "a_home"
+  | "a_intro"
   | "a_landing"
   | "a_milestones"
   | "a_permission"

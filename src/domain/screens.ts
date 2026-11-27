@@ -2,6 +2,7 @@ import type { Journey, Scenario, ScreenId } from "./types";
 
 export const SCREEN_META: Record<ScreenId, { code: string; name: string; journey: Journey }> = {
   a_home: { code: "A01", name: "Airtel Homepage", journey: "A" },
+  a_intro: { code: "A02a", name: "Refer story", journey: "A" },
   a_landing: { code: "A02", name: "Refer & Earn", journey: "A" },
   a_milestones: { code: "A03", name: "Milestones", journey: "A" },
   a_permission: { code: "A04", name: "Contact Permission", journey: "A" },
@@ -30,6 +31,7 @@ export function journeyPath(j: Journey, s: Scenario): ScreenId[] {
   if (j === "A")
     return [
       "a_home",
+      "a_intro",
       "a_landing",
       "a_milestones",
       "a_permission",
