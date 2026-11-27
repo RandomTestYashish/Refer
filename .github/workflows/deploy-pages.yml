@@ -2,7 +2,7 @@ name: Deploy prototype to GitHub Pages
 
 on:
   push:
-    branches: ["main", "claude/wizardly-fermat-rj353i", "refer-card"]
+    branches: ["main", "claude/wizardly-fermat-rj353i"]
   workflow_dispatch:
 
 permissions:
