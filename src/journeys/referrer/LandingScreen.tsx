@@ -2,8 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { BadgeIndianRupee, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ListChecks, Phone, Receipt, RotateCw, ScrollText, Smartphone, UserPlus, WifiOff } from "lucide-react";
-import { ContactAvatar, Screen, ScreenBody } from "@/components/app/primitives";
-import { CONTACTS } from "@/domain/data";
+import { Screen, ScreenBody } from "@/components/app/primitives";
 import { copyInviteLink } from "@/components/app/InviteKit";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { HeroRadial } from "@/components/refer/HeroRadial";
@@ -121,25 +120,6 @@ export function LandingScreen() {
 
         {/* Primary action */}
         <section className="mt-6 px-4" aria-label="Invite a friend">
-          {rules.socialProof.trim() && (
-            <div className="mb-4 flex items-center justify-center gap-2" data-testid="social-proof">
-              <div className="flex shrink-0 -space-x-1.5" aria-hidden>
-                {CONTACTS.slice(0, 3).map((c) => (
-                  <ContactAvatar key={c.id} name={c.name} hue={c.hue} size={26} className="ring-2 ring-white" />
-                ))}
-              </div>
-              <p className="min-w-0 text-[12px] leading-[18px] text-refer-muted">
-                {(() => {
-                  const [first, ...rest] = rules.socialProof.trim().split(" ");
-                  return (
-                    <>
-                      <span className="font-bold text-refer-ink">{first}</span> {rest.join(" ")}
-                    </>
-                  );
-                })()}
-              </p>
-            </div>
-          )}
           <motion.button
             whileTap={{ scale: 0.985 }}
             onClick={() => {
