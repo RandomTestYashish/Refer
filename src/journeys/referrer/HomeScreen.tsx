@@ -59,7 +59,10 @@ import exPrepaidE1 from "@/assets/home/explore-prepaid-e1.svg";
 import exPrepaidE2 from "@/assets/home/explore-prepaid-e2.svg";
 import arrowWhite from "@/assets/home/arrow-white.svg";
 import arrowWhite16 from "@/assets/home/arrow-white-16.svg";
-import curatedRefer from "@/assets/home/curated-refer.png";
+import curatedReferBg from "@/assets/home/curated-refer-bg.png";
+import curatedReferPhone from "@/assets/home/curated-refer-phone.png";
+import curatedReferGlow from "@/assets/home/curated-refer-glow.svg";
+import curatedReferLogo from "@/assets/home/curated-refer-logo.svg";
 import curated2 from "@/assets/home/curated-2.png";
 import gridCall from "@/assets/home/grid-call.png";
 import gridRewards from "@/assets/home/grid-rewards.png";
@@ -171,6 +174,54 @@ const TABS = [
   { label: "Wi-Fi", icon: tabWifi },
   { label: "Digital TV", icon: tabDtv },
 ];
+
+/**
+ * Curated for you · Refer a App ingress (Figma refer_2, frame 81784:17004).
+ * Built from the frame's layers so the copy and the Invite Friends button are live.
+ */
+function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => void }) {
+  return (
+    <motion.div
+      whileTap={{ scale: 0.98 }}
+      onClick={onOpen}
+      data-testid="home-refer-banner"
+      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] bg-white"
+    >
+      <img src={curatedReferBg} alt="" className="pointer-events-none absolute left-0 top-0 h-[182px] w-[352px] max-w-none object-cover" />
+      <div className="pointer-events-none absolute left-[-43px] top-[105px] h-[141px] w-[369px]" aria-hidden>
+        <img src={curatedReferGlow} alt="" className="absolute inset-[-73.76%_-28.18%] block size-auto max-w-none" />
+      </div>
+      <img src={curatedReferPhone} alt="" className="pointer-events-none absolute left-[111px] top-[143px] h-[156px] w-[234px] max-w-none -scale-y-100 object-cover opacity-10" />
+      <img src={curatedReferPhone} alt="" className="pointer-events-none absolute left-[111px] top-[21px] h-[156px] w-[234px] max-w-none object-cover" />
+      <img src={curatedReferLogo} alt="" width={35.0653} height={35.0653} className="pointer-events-none absolute left-[215px] top-[80px]" />
+      <p className="absolute left-5 top-[21px] whitespace-pre text-[14px] font-semibold uppercase leading-[10.628px] tracking-[2px] text-black">Earn upto</p>
+      <p aria-hidden className="absolute left-[21px] top-[34.3px] w-[139px] whitespace-nowrap text-[41.09px] font-black uppercase italic leading-[50px] tracking-[-1px] text-black">
+        ₹{yearly}
+      </p>
+      <p
+        className="absolute left-5 top-[34.3px] w-[139px] whitespace-nowrap bg-clip-text text-[41.09px] font-black uppercase italic leading-[50px] tracking-[-1px] text-transparent"
+        style={{ backgroundImage: "linear-gradient(111.32deg, #930509 0.64%, #F9080F 106.72%)" }}
+      >
+        ₹{yearly}
+      </p>
+      <p className="absolute left-5 top-[84px] text-[14px] font-semibold text-black">
+        a year by inviting
+        <br />
+        friends
+      </p>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen();
+        }}
+        aria-label={`Invite friends and earn up to ₹${yearly} a year`}
+        className="absolute left-5 top-[132px] flex h-9 w-[127px] items-center justify-center rounded-[50.8px] border-[0.9px] border-[#E3EAF3] bg-[#F6F6F6] px-[10.8px] text-[12.6px] font-medium leading-[14.4px] text-[#292C31] active:bg-[#ECEDEF]"
+      >
+        Invite Friends
+      </button>
+    </motion.div>
+  );
+}
 
 export function HomeScreen() {
   const [menu, setMenu] = useState(false);
@@ -355,15 +406,7 @@ export function HomeScreen() {
         <section className="mt-8">
           <SectionTitle className="mx-4">curated for you</SectionTitle>
           <div className="no-scrollbar mt-4 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-pl-4 px-4">
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={() => openRefer("home_creative")}
-              aria-label="Invite a Friend"
-              data-testid="home-refer-banner"
-              className="relative h-[182px] w-[303px] shrink-0 snap-start overflow-hidden rounded-[16px]"
-            >
-              <img src={curatedRefer} alt="Earn up to ₹5000 a year by inviting friends" className="size-full object-cover" />
-            </motion.button>
+            <CuratedReferCard yearly={rules.yearlyEarningCap} onOpen={() => openRefer("home_creative")} />
             <button onClick={() => outOfScope("Offer")} className="relative h-[182px] w-[303px] shrink-0 snap-start overflow-hidden rounded-[16px]">
               <img src={curated2} alt="" className="size-full object-cover" />
             </button>
@@ -375,7 +418,7 @@ export function HomeScreen() {
         <section className="mt-8 flex gap-4 px-4">
           <GridTile label="Call Manager" img={gridCall} />
           <GridTile label="Rewards & OTTs" img={gridRewards} />
-          <GridTile label="Refer & Get ₹300" img={gridRefer} />
+          <GridTile label="Refer & Get ₹300" img={gridRefer} onClick={() => openRefer("home_creative")} />
         </section>
 
         {/* Recharge for others */}
