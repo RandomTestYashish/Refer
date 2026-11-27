@@ -35,6 +35,7 @@ export function LandingScreen() {
   const milestonesRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
   const howRef = useRef<HTMLElement>(null);
+  const amountRef = useRef<HTMLSpanElement>(null);
   const [help, setHelp] = useState(false);
   const [faqOpen, setFaqOpen] = useState<string>("");
   const [tncOpen, setTncOpen] = useState<string>("");
@@ -88,7 +89,7 @@ export function LandingScreen() {
       <ScreenBody ref={bodyRef} className="pb-4">
         {/* Hero: app icon inside a slowly animating dotted radial */}
         <section className="relative" aria-label="Airtel app">
-          <HeroRadial />
+          <HeroRadial syncRef={amountRef} />
         </section>
 
         {/* Proposition */}
@@ -96,8 +97,16 @@ export function LandingScreen() {
           <h2 className="whitespace-pre-line text-[26px] font-black italic leading-[35px] text-[#151515] [text-wrap:balance]">
             Earn up to{" "}
             <span
+              ref={amountRef}
               className="bg-clip-text text-transparent tabular"
-              style={{ backgroundImage: "linear-gradient(101.6deg, #E32121 40.65%, #7D1212 54.6%, #7D1212 68.5%)" }}
+              style={{
+                // Title red gradient with a soft light band; HeroRadial moves it (--sheen) when the glow passes below.
+                backgroundImage:
+                  "linear-gradient(105deg, transparent 42%, rgba(255,190,190,0.85) 50%, transparent 58%), linear-gradient(101.6deg, #E32121 40.65%, #7D1212 54.6%, #7D1212 68.5%)",
+                backgroundSize: "300% 100%, 100% 100%",
+                backgroundPosition: "var(--sheen, 100%) 0, 0 0",
+                backgroundRepeat: "no-repeat",
+              }}
             >
               {inr(rules.yearlyEarningCap)}
             </span>{" "}
