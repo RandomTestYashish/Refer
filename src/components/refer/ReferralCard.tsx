@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { animate, motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { BadgeIndianRupee, Gift, Smartphone, UserPlus } from "lucide-react";
-import appIcon from "@/assets/refer/airtel-app-icon.png";
+import airtelLogo from "@/assets/refer/airtel-logo.svg";
 import { useProto } from "@/store/useProto";
 import { haptic } from "@/lib/device";
 import { cn, inr } from "@/lib/utils";
 
 /** Card proportions (credit-card-like) — every size inside the faces is in `em`, so the card scales from one number. */
-export const CARD_RATIO = 1; // square
+export const CARD_RATIO = 180 / 304; // Figma refer_2 hero card
 
 const FLIP_SPRING = { type: "spring", stiffness: 170, damping: 22, mass: 1 } as const;
 const TILT_SPRING = { stiffness: 220, damping: 22, mass: 0.6 };
@@ -54,9 +54,8 @@ function LogoCoin({ size, interactive }: { size: number; interactive: boolean })
   const coin = (
     <motion.div className="relative size-full" style={{ rotateY: spin, y, transformStyle: "preserve-3d" }}>
       {/* logo face */}
-      <div className={cn(face, "overflow-hidden shadow-[0_0.45em_0.9em_rgba(20,20,24,0.22)]")}>
-        <img src={appIcon} alt="" className="size-full scale-[1.2]" draggable={false} />
-        <span className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 via-transparent to-transparent" aria-hidden />
+      <div className={cn(face, "drop-shadow-[0_0.35em_0.6em_rgba(160,20,26,0.22)]")}>
+        <img src={airtelLogo} alt="" className="size-full" draggable={false} />
       </div>
       {/* reward face */}
       <div
@@ -106,43 +105,55 @@ function LogoCoin({ size, interactive }: { size: number; interactive: boolean })
   );
 }
 
-/** Front: the logo is the hero (the proposition itself lives in the page headline). */
+/** Front (Figma "refer_2"): soft pink radial wash, concentric rings, the Airtel logo coin and "Airtel App". */
 export function CardFront({ width, shimmer = true, interactive = false, className }: { width: number; shimmer?: boolean; interactive?: boolean; className?: string }) {
   const reduce = useReducedMotion();
+  const k = width / 304; // design scale
+  const px = (n: number) => n * k;
+  const ring = (l: number, t: number, size: number) => (
+    <span className="absolute rounded-full border border-[#FFEDED]" style={{ left: px(l), top: px(t), width: px(size), height: px(size) }} aria-hidden />
+  );
   return (
     <div
-      className={cn("relative overflow-hidden rounded-[2em] text-refer-ink", className)}
+      className={cn("relative overflow-hidden border border-[#E6E9EF]", className)}
       style={{
         width,
         height: width * CARD_RATIO,
-        fontSize: width / 21,
-        background: "linear-gradient(155deg,#FFFFFF 0%,#F4F4F6 38%,#E2E3E7 78%,#D3D5DA 100%)",
-        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)",
+        borderRadius: px(24),
+        background: `radial-gradient(${px(181)}px ${px(117)}px at 50% 45%, #FFDEDE 0%, #FFFFFF 100%)`,
       }}
     >
-      {/* material: fine engraved lines + soft light */}
-      <span className="absolute inset-0 opacity-[0.05]" style={{ background: "repeating-linear-gradient(115deg,#000 0 1px,transparent 1px 7px)" }} aria-hidden />
-      <span className="absolute left-1/2 top-1/2 size-[13em] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.95),rgba(255,255,255,0)_65%)]" aria-hidden />
-      <span className="absolute left-1/2 top-1/2 size-[11em] -translate-x-1/2 -translate-y-1/2 rounded-full border-[0.08em] border-black/[0.06]" aria-hidden />
-      <span className="absolute left-1/2 top-1/2 size-[15em] -translate-x-1/2 -translate-y-1/2 rounded-full border-[0.08em] border-black/[0.04]" aria-hidden />
+      {ring(162, -109, 177)}
+      {ring(-38, 101, 177)}
+      {ring(136, -135, 229)}
+      {ring(-64, 75, 229)}
+      {ring(111, -160, 281)}
+      {ring(-89, 50, 281)}
+      <span
+        className="absolute rounded-full"
+        style={{ left: px(62), top: px(-13), width: px(90), height: px(90), background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 65%)" }}
+        aria-hidden
+      />
 
       {shimmer && !reduce && (
         <motion.span
           aria-hidden
-          className="pointer-events-none absolute inset-y-[-30%] w-[35%] rotate-[18deg] bg-gradient-to-r from-transparent via-white/80 to-transparent"
+          className="pointer-events-none absolute inset-y-[-30%] w-[35%] rotate-[18deg] bg-gradient-to-r from-transparent via-white/70 to-transparent"
           initial={{ left: "-45%" }}
           animate={{ left: ["-45%", "130%"] }}
           transition={{ duration: 1.6, ease: [0.4, 0, 0.2, 1], repeat: Infinity, repeatDelay: 3.2, delay: 0.8 }}
         />
       )}
 
-      <div className="relative flex h-full items-center justify-center pb-[0.6em]">
-        <LogoCoin size={width * 0.42} interactive={interactive} />
+      <div className="absolute left-1/2 -translate-x-1/2" style={{ top: px(90 - 12.47 - 50.5) }}>
+        <LogoCoin size={px(101)} interactive={interactive} />
       </div>
-      <div className="absolute inset-x-[1.1em] bottom-[0.9em] flex items-center justify-between text-[0.6em] font-semibold uppercase tracking-[0.16em] text-refer-muted">
-        <span>Refer a App</span>
-        {interactive && <span className="normal-case tracking-normal text-refer-muted/80">Tap the logo</span>}
-      </div>
+      <p
+        className="absolute inset-x-0 text-center font-extrabold italic text-black"
+        style={{ top: px(90 + 57.57 - 5.5), fontSize: px(14.29), lineHeight: `${px(11)}px`, letterSpacing: px(0.14) }}
+      >
+        Airtel App
+      </p>
     </div>
   );
 }
@@ -158,13 +169,13 @@ function CardBack({ width }: { width: number }) {
   ];
   return (
     <div
-      className="relative h-full overflow-hidden rounded-[1.65em] border border-[#ECEEF2] bg-white text-airtel-ink"
-      style={{ width, height: width * CARD_RATIO, fontSize: width / 17 }}
+      className="relative h-full overflow-hidden border border-[#E6E9EF] bg-white text-airtel-ink"
+      style={{ width, height: width * CARD_RATIO, fontSize: width / 21, borderRadius: (24 * width) / 304 }}
     >
       <span className="absolute inset-x-0 top-0 h-[0.25em] bg-gradient-to-r from-refer-accent to-refer-deep" aria-hidden />
       <div className="flex h-full flex-col px-[1.05em] pb-[0.8em] pt-[0.95em]">
         <p className="text-[0.62em] font-bold uppercase tracking-[0.16em] text-refer-accent">How it works</p>
-        <ol className="mt-[0.55em] flex flex-1 flex-col justify-between py-[0.2em]">
+        <ol className="mt-[0.5em] grid flex-1 grid-cols-2 gap-x-[0.8em] gap-y-[0.5em]">
           {rows.map(({ icon: Icon, title, body }, i) => (
             <li key={title} className="flex gap-[0.5em]">
               <span className="relative flex size-[1.9em] shrink-0 items-center justify-center rounded-[0.6em] bg-refer-soft text-refer-accent">
@@ -175,12 +186,12 @@ function CardBack({ width }: { width: number }) {
               </span>
               <span className="min-w-0">
                 <span className="block text-[0.7em] font-bold leading-[1.25em]">{title}</span>
-                <span className="block text-[0.58em] leading-[1.3em] text-airtel-sub">{body}</span>
+                <span className="mt-[0.1em] block text-[0.6em] leading-[1.3em] text-airtel-sub">{body}</span>
               </span>
             </li>
           ))}
         </ol>
-        <p className="mt-[0.4em] text-[0.52em] leading-[1.35em] text-airtel-sub">
+        <p className="text-[0.56em] leading-[1.35em] text-airtel-sub">
           Only friends new to Airtel qualify. Installing or signing up alone doesn't unlock the reward.
         </p>
       </div>
@@ -215,9 +226,9 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
   // Shadow reacts to tilt (slides away from the light) and to the flip (narrows at 90°).
   const edgeOn = useTransform(flip, (f) => Math.abs(Math.cos((f * Math.PI) / 180)));
   const shadowX = useTransform(ry, (v) => -v * 1.4);
-  const shadowY = useTransform(rx, (v) => 22 + v * 0.9);
+  const shadowY = useTransform(rx, (v) => v * 0.9);
   const shadowScale = useTransform(edgeOn, (e) => 0.62 + e * 0.3);
-  const shadowOpacity = useTransform(edgeOn, (e) => 0.16 + e * 0.16);
+  const shadowOpacity = useTransform(edgeOn, (e) => 0.45 + e * 0.55);
   // Lift: the card rises slightly mid-flip
   const lift = useTransform(edgeOn, (e) => (1 - e) * -10);
   const scale = useTransform(edgeOn, (e) => 1 + (1 - e) * 0.04);
@@ -253,7 +264,7 @@ export function ReferralCard({ width, flipped, onFlippedChange }: { width: numbe
       {/* ground shadow */}
       <motion.span
         aria-hidden
-        className="absolute inset-x-[8%] bottom-0 h-[38%] rounded-[50%] bg-[#1A1B1F] blur-[20px]"
+        className="absolute inset-x-[17.6%] -bottom-[6%] h-[16%] rounded-[20px] bg-[rgba(202,199,199,0.9)] blur-[17px]"
         style={{ x: shadowX, y: shadowY, scaleX: shadowScale, opacity: shadowOpacity }}
       />
       <motion.div

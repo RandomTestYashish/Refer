@@ -4,6 +4,10 @@ import { expectScreen, goBack, landing, openAt, ui } from "./helpers";
 test.describe("Supporting sections & quality", () => {
   test("FAQ and Terms are separate, working accordions; footer present", async ({ page }) => {
     await landing(page);
+    const faqs = ui(page).getByRole("button", { name: "FAQs", exact: true });
+    await faqs.scrollIntoViewIfNeeded();
+    await faqs.click();
+    await expect(faqs).toHaveAttribute("aria-expanded", "true");
     const q = ui(page).getByRole("button", { name: "Does downloading the app count?" });
     await q.scrollIntoViewIfNeeded();
     await expect(q).toHaveAttribute("aria-expanded", "false");
@@ -31,8 +35,17 @@ test.describe("Supporting sections & quality", () => {
     await expect(ui(page).getByRole("button", { name: "Who can I invite?" })).toHaveAttribute("aria-expanded", "true");
   });
 
+  test("home banner opens Refer a App", async ({ page }) => {
+    await openAt(page, [{ id: "a_home" }]);
+    const banner = ui(page).getByTestId("home-refer-banner");
+    await banner.scrollIntoViewIfNeeded();
+    await banner.click();
+    await expectScreen(page, "a_landing");
+  });
+
   test("every landing CTA leads somewhere", async ({ page }) => {
     await landing(page);
+    await ui(page).getByRole("button", { name: "Help" }).click();
     await ui(page).getByRole("button", { name: "My referrals" }).click();
     await expectScreen(page, "a_dashboard");
     await goBack(page);
