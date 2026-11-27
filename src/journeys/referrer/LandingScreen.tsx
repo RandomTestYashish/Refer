@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { BadgeIndianRupee, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ListChecks, Phone, Receipt, RotateCw, ScrollText, Smartphone, UserPlus, WifiOff } from "lucide-react";
@@ -6,7 +6,7 @@ import { ContactAvatar, Screen, ScreenBody } from "@/components/app/primitives";
 import { CONTACTS } from "@/domain/data";
 import { copyInviteLink } from "@/components/app/InviteKit";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { ReferralCard } from "@/components/refer/ReferralCard";
+import { HeroRadial } from "@/components/refer/HeroRadial";
 import { MilestoneCollection, useMilestones } from "@/components/refer/MilestoneCollection";
 import { UnlockCelebration } from "@/components/refer/AchievementBadge";
 import iconSearch from "@/assets/refer/icon-search.svg";
@@ -34,20 +34,12 @@ export function LandingScreen() {
   const bodyRef = useRef<HTMLDivElement>(null);
   const milestonesRef = useRef<HTMLDivElement>(null);
   const faqRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(375);
-  const [flipped, setFlipped] = useState(false);
+  const howRef = useRef<HTMLElement>(null);
   const [help, setHelp] = useState(false);
   const [faqOpen, setFaqOpen] = useState<string>("");
   const [tncOpen, setTncOpen] = useState<string>("");
   const [scrolled, setScrolled] = useState(false);
 
-  useLayoutEffect(() => {
-    const el = bodyRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
   const { scrollY } = useScroll({ container: bodyRef });
   useMotionValueEvent(scrollY, "change", (y) => setScrolled(y > 8));
 
@@ -65,19 +57,16 @@ export function LandingScreen() {
     markCelebrated(ms.filter((_, i) => statuses[i] === "earned").map((m) => m.id));
   };
 
-  const cardW = Math.min(304, width - 71);
   const invite = useStartInvite();
   const scrollTo = (el: HTMLElement | null) => el?.scrollIntoView({ behavior: "smooth", block: "start" });
-  const flip = (v: boolean) => {
-    haptic(8);
-    setFlipped(v);
-  };
 
   return (
     <Screen className="relative">
       {/* Header */}
       {/* Gen4 Top Nav · L1 · heading centred */}
-      <header className={cn("relative z-20 grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 border-b bg-white px-4", scrolled ? "border-gen4-bg-200" : "border-transparent")}>
+      {/* Pink wash behind the header and hero */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[linear-gradient(180deg,#FCE9E9_0%,#FDF3F3_45%,#FFFFFF_100%)]" aria-hidden />
+      <header className={cn("relative z-20 grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 border-b px-4 transition-colors", scrolled ? "border-gen4-bg-200 bg-white" : "border-transparent bg-transparent")}>
         <button onClick={back} aria-label="Back" className="flex size-10 items-center justify-center rounded-full text-refer-ink active:scale-90 active:bg-black/5">
           <ChevronLeft className="size-6" strokeWidth={1.8} />
         </button>
@@ -97,24 +86,13 @@ export function LandingScreen() {
       </AnimatePresence>
 
       <ScreenBody ref={bodyRef} className="pb-4">
-        {/* Hero card (Figma refer_2) */}
-        <section className="pt-4" aria-label="Referral card">
-          <ReferralCard width={cardW} flipped={flipped} onFlippedChange={setFlipped} />
-          <div className="mt-[27px] flex justify-center">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => flip(!flipped)}
-              aria-pressed={flipped}
-              className="rounded-full border border-[#E6E9EF] bg-white px-4 py-2 text-[10.5px] font-semibold uppercase leading-[15.75px] tracking-[1px] text-[#292C31]"
-              data-testid="flip-toggle"
-            >
-              {flipped ? "Show reward" : "How it works"}
-            </motion.button>
-          </div>
+        {/* Hero: app icon inside a slowly animating dotted radial */}
+        <section className="relative" aria-label="Airtel app">
+          <HeroRadial />
         </section>
 
         {/* Proposition */}
-        <section className="px-6 pt-[25px] text-center">
+        <section className="relative px-6 pt-1 text-center">
           <h2 className="whitespace-pre-line text-[26px] font-black italic leading-[35px] text-[#151515] [text-wrap:balance]">
             Earn up to{" "}
             <span
@@ -182,7 +160,7 @@ export function LandingScreen() {
         </section>
 
         {/* How it works — Gen4 Growth Inventory carousel */}
-        <section className="mt-8" aria-labelledby="hiw-title">
+        <section ref={howRef} className="mt-8 scroll-mt-4" aria-labelledby="hiw-title">
           <h3 id="hiw-title" className="mx-4 text-[11px] font-bold uppercase leading-[14px] tracking-[1.76px] text-[#3E4146]">
             How it works
           </h3>
@@ -285,8 +263,7 @@ export function LandingScreen() {
               title="How referrals work"
               onClick={() => {
                 setHelp(false);
-                setFlipped(true);
-                bodyRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+                scrollTo(howRef.current);
               }}
             />
             <HelpRow
