@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { BadgeIndianRupee, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ListChecks, Phone, Receipt, RotateCw, ScrollText, Smartphone, UserPlus, WifiOff } from "lucide-react";
+import { BadgeIndianRupee, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Gift, ListChecks, Phone, Receipt, RotateCw, ScrollText, Smartphone, UserPlus, WifiOff } from "lucide-react";
 import { Screen, ScreenBody } from "@/components/app/primitives";
 import { copyInviteLink } from "@/components/app/InviteKit";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -65,7 +65,7 @@ export function LandingScreen() {
       {/* Header */}
       {/* Gen4 Top Nav · L1 · heading centred */}
       {/* Pink wash behind the header and hero */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[linear-gradient(180deg,#FCE9E9_0%,#FDF3F3_45%,#FFFFFF_100%)]" aria-hidden />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[linear-gradient(180deg,#FFE6E7_0%,#FFF3F3_45%,#FFFFFF_100%)]" aria-hidden />
       {/* Header floats over the hero so the ring can run up behind it */}
       <div className="absolute inset-x-0 top-[var(--sb,44px)] z-20">
       <header className={cn("grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 border-b px-4 transition-colors", scrolled ? "border-gen4-bg-200 bg-white" : "border-transparent bg-transparent")}>
@@ -103,9 +103,9 @@ export function LandingScreen() {
               className="mx-auto block w-fit bg-clip-text px-1.5 text-[52px] leading-[62px] tracking-[-0.5px] text-transparent tabular"
               style={{
                 // Title red gradient with a light band; HeroRadial moves it (--sheen) right after the icon shine.
-                filter: "drop-shadow(0 8px 18px rgba(227,33,33,0.22))",
+                filter: "drop-shadow(0 8px 18px rgba(202,38,43,0.22))",
                 backgroundImage:
-                  "linear-gradient(105deg, transparent 42%, rgba(255,210,210,0.9) 50%, transparent 58%), linear-gradient(101.6deg, #F02424 25%, #C41A1A 60%, #8E1414 100%)",
+                  "linear-gradient(105deg, transparent 42%, rgba(255,213,215,0.95) 50%, transparent 58%), linear-gradient(101.6deg, #CA262B 30%, #981C20 100%)",
                 backgroundSize: "300% 100%, 100% 100%",
                 backgroundPosition: "var(--sheen, 100%) 0, 0 0",
                 backgroundRepeat: "no-repeat",
@@ -115,8 +115,23 @@ export function LandingScreen() {
             </span>
             <span className="block text-[20px] leading-[26px]">a year by inviting friends</span>
           </h2>
-          <p className="mx-auto mt-5 w-fit rounded-full border border-[#EEE3E2] bg-[#FBF6F5] px-4 py-2 text-[10.5px] font-semibold italic uppercase leading-[15.75px] tracking-[1px] text-[#A3313A]">
-            {inr(rules.referrerReward)} for you · {inr(rules.friendReward)} + {rules.friendDataBenefit} for them
+          {/* Reward split: what you get (brand-filled) + what your friend gets */}
+          <p
+            className="mx-auto mt-5 flex w-fit items-center gap-2.5 rounded-full border border-[#FFD5D7] bg-white p-1 pr-4 text-[13px] leading-[18px] shadow-[0_6px_18px_rgba(202,38,43,0.14)]"
+            data-testid="reward-split"
+          >
+            <span className="flex items-center gap-1.5 rounded-full bg-[linear-gradient(180deg,#D8343A_0%,#CA262B_55%,#B32126_100%)] py-1.5 pl-2 pr-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]">
+              <Gift className="size-4" strokeWidth={2} aria-hidden />
+              <span>
+                <b className="font-bold">{inr(rules.referrerReward)}</b> for you
+              </span>
+            </span>
+            <span className="text-[#292C31]">
+              <b className="font-bold text-[#981C20]">
+                {inr(rules.friendReward)} + {rules.friendDataBenefit}
+              </b>{" "}
+              for them
+            </span>
           </p>
         </section>
 

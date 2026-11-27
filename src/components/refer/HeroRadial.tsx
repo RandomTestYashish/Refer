@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
-import appIcon from "@/assets/refer/airtel-app-icon.png";
+import appIcon from "@/assets/refer/airtel-app-icon-brand.svg";
 
 /**
  * Hero for the Refer screen.
@@ -23,9 +23,9 @@ const SPIN_MS = 160000;
 const BEAT = 6000;
 const SPREAD = 1.0;
 
-// Title colours (₹5,000): #E32121 → #7D1212
-const RED = [227, 33, 33];
-const DEEP = [125, 18, 18];
+// Airtel brand reds (Gen4): red/600 #CA262B → red/700 #981C20
+const RED = [202, 38, 43];
+const DEEP = [152, 28, 32];
 
 type Dot = { a: number; r: number; s: number; tw: number };
 
@@ -119,7 +119,7 @@ export function HeroRadial({ syncRef }: { syncRef?: RefObject<HTMLElement | null
           const col = RED.map((v, i) => Math.round(v + (DEEP[i] - v) * mix));
           fill = `rgba(${col.join(",")},${(0.2 + 0.6 * glow * twinkle) * fade})`;
         } else {
-          fill = `rgba(205,140,144,${0.36 * twinkle * fade})`;
+          fill = `rgba(202,38,43,${0.2 * twinkle * fade})`;
         }
         ctx.fillStyle = fill;
         ctx.beginPath();
@@ -174,15 +174,15 @@ export function HeroRadial({ syncRef }: { syncRef?: RefObject<HTMLElement | null
       {/* Light behind the icon */}
       <div
         ref={haloRef}
-        className="pointer-events-none absolute left-1/2 size-[230px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,1)_0%,rgba(255,236,236,0.85)_32%,rgba(255,220,220,0)_70%)]"
+        className="pointer-events-none absolute left-1/2 size-[230px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,1)_0%,rgba(255,236,236,0.85)_32%,rgba(255,213,215,0)_70%)]"
         style={{ top: HERO_TOP + ICON_CY, transform: "translate(-50%, -50%)" }}
         aria-hidden
       />
       <div className="absolute left-1/2 -translate-x-1/2" style={{ top: HERO_TOP + ICON_CY - ICON / 2, width: ICON, height: ICON }}>
         {/* Ground shadow that tightens as the icon lands */}
-        <div className="absolute inset-x-4 -bottom-3 h-5 rounded-[50%] bg-[rgba(227,33,33,0.22)] blur-[10px]" aria-hidden />
+        <div className="absolute inset-x-4 -bottom-3 h-5 rounded-[50%] bg-[rgba(202,38,43,0.22)] blur-[10px]" aria-hidden />
         <div ref={logoRef} className="relative size-full origin-bottom will-change-transform">
-          <img src={appIcon} alt="Airtel app" className="size-full drop-shadow-[0_16px_24px_rgba(227,33,33,0.3)]" draggable={false} data-testid="hero-logo" />
+          <img src={appIcon} alt="Airtel app" className="size-full drop-shadow-[0_16px_24px_rgba(202,38,43,0.3)]" draggable={false} data-testid="hero-logo" />
           {/* Shine, clipped to the icon's own shape */}
           <div
             className="pointer-events-none absolute inset-0 overflow-hidden"
