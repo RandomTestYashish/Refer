@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BadgeIndianRupee, Check, MailOpen, Send, Smartphone, UserCheck } from "lucide-react";
 import { ContactAvatar } from "@/components/app/primitives";
 import { LogoTile } from "@/components/refer/LogoTile";
+import { LogoFamily } from "@/components/refer/LogoFamily";
 import { TierBadge } from "@/components/refer/AchievementBadge";
 import { useStartInvite } from "@/components/refer/ContactsPrompt";
 import { useStatusTone } from "@/components/device/statusTone";
@@ -217,35 +218,25 @@ function Float({ children, d = 4, a = 8, delay = 0 }: { children: React.ReactNod
   );
 }
 
-/** Small glowing Airtel logo chips. */
-function Chip({ size = 34 }: { size?: number }) {
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <div className="absolute inset-[-60%] rounded-full bg-[radial-gradient(circle,rgba(255,120,100,0.55),transparent_65%)] blur-md" />
-      <img src={airtelLogo} alt="" className="relative size-full drop-shadow-[0_0_10px_rgba(255,140,120,0.8)]" draggable={false} />
-    </div>
-  );
-}
-
 /* ───────────────────────────── heroes ───────────────────────────── */
 
-/** 1 · A light flare, then the Airtel tile drops in with chips orbiting it. */
+/** 1 · A light flare, then the Airtel tile drops in, framed by the Airtel family of small logos. */
 function WelcomeHero() {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 650);
     return () => clearTimeout(t);
   }, []);
-  const chips = [
-    { x: -112, y: -52, s: 34, r: -14, d: 3.6 },
-    { x: 104, y: -70, s: 30, r: 12, d: 4.2 },
-    { x: -92, y: 44, s: 26, r: 10, d: 3.9 },
-    { x: 96, y: 34, s: 32, r: -10, d: 4.6 },
-    { x: -150, y: -6, s: 18, r: 0, d: 5.1 },
-    { x: 146, y: -12, s: 16, r: 0, d: 4.8 },
-  ];
+  const W = 375;
+  const H = 360;
   return (
-    <div className="relative flex size-[320px] items-center justify-center">
+    <div className="relative flex items-center justify-center" style={{ width: W, height: H }}>
+      {/* The Airtel family: the same logo repeated small around the one big logo, fading into the dark */}
+      {ready && (
+        <div className="absolute inset-0 [mask-image:radial-gradient(closest-side,#000_55%,transparent_100%)]">
+          <LogoFamily width={W} height={H} gap={40} icon={22} hole={96} tone="dark" />
+        </div>
+      )}
       {/* Flare */}
       <motion.div className="absolute" initial={{ scale: 0, opacity: 0, rotate: -20 }} animate={{ scale: [0, 1.2, 0.2], opacity: [0, 1, 0], rotate: 20 }} transition={{ duration: 1.1, ease: "easeOut" }} aria-hidden>
         <div className="absolute left-1/2 top-1/2 h-[2px] w-[220px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(90deg,transparent,#fff,transparent)]" />
@@ -253,26 +244,11 @@ function WelcomeHero() {
         <div className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white blur-md" />
       </motion.div>
       {ready && (
-        <>
-          {chips.map((c, k) => (
-            <motion.div
-              key={k}
-              className="absolute"
-              initial={{ opacity: 0, x: 0, y: 0, scale: 0.3 }}
-              animate={{ opacity: 1, x: c.x, y: c.y, scale: 1, rotate: c.r }}
-              transition={{ type: "spring", stiffness: 120, damping: 14, delay: 0.15 + k * 0.06 }}
-            >
-              <Float d={c.d} a={10} delay={k * 0.3}>
-                <Chip size={c.s} />
-              </Float>
-            </motion.div>
-          ))}
-          <motion.div initial={{ opacity: 0, scale: 0.5, y: -30, filter: "blur(10px)" }} animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }} transition={{ type: "spring", stiffness: 140, damping: 13 }}>
-            <Float d={4} a={12}>
-              <LogoTile size={132} depth={12} />
-            </Float>
-          </motion.div>
-        </>
+        <motion.div initial={{ opacity: 0, scale: 0.5, y: -30, filter: "blur(10px)" }} animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }} transition={{ type: "spring", stiffness: 140, damping: 13 }}>
+          <Float d={4} a={12}>
+            <LogoTile size={132} depth={12} />
+          </Float>
+        </motion.div>
       )}
     </div>
   );

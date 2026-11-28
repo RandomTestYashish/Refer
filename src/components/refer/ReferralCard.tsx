@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { animate, motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import airtelLogo from "@/assets/refer/airtel-logo.svg";
+import { LogoFamily } from "./LogoFamily";
 import { useProto } from "@/store/useProto";
 import { haptic } from "@/lib/device";
 import { cn, inr } from "@/lib/utils";
@@ -91,9 +92,6 @@ export function CardFront({ width, shimmer = true, interactive = false, classNam
   const reduce = useReducedMotion();
   const k = width / 304; // design scale
   const px = (n: number) => n * k;
-  const ring = (l: number, t: number, size: number) => (
-    <span className="absolute rounded-full border border-[#FFEDED]" style={{ left: px(l), top: px(t), width: px(size), height: px(size) }} aria-hidden />
-  );
   return (
     <div
       className={cn("relative overflow-hidden border border-[#E6E9EF]", className)}
@@ -104,12 +102,10 @@ export function CardFront({ width, shimmer = true, interactive = false, classNam
         background: `radial-gradient(${px(181)}px ${px(117)}px at 50% 45%, #FFDEDE 0%, #FFFFFF 100%)`,
       }}
     >
-      {ring(162, -109, 177)}
-      {ring(-38, 101, 177)}
-      {ring(136, -135, 229)}
-      {ring(-64, 75, 229)}
-      {ring(111, -160, 281)}
-      {ring(-89, 50, 281)}
+      {/* The Airtel family: many small logos around the one large logo */}
+      <LogoFamily width={width} height={width * CARD_RATIO} cy={px(80)} gap={px(32)} icon={px(15)} hole={px(84)} strength={0.26} below={0.62} />
+      {/* Soft light so the big logo and its label sit clear of the small ones */}
+      <span className="absolute left-1/2 -translate-x-1/2 rounded-full" style={{ top: px(4), width: px(210), height: px(176), background: "radial-gradient(closest-side, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 55%, rgba(255,255,255,0) 100%)" }} aria-hidden />
       <span
         className="absolute rounded-full"
         style={{ left: px(62), top: px(-13), width: px(90), height: px(90), background: "radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 65%)" }}
