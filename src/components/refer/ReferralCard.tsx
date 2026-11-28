@@ -20,7 +20,7 @@ const clamp = (v: number) => Math.max(-0.5, Math.min(0.5, v));
  * Logo coin: the Airtel logo on both faces. It flips in place like a tossed coin,
  * on tap and every few seconds on its own. The ground shadow narrows as the coin turns edge-on.
  */
-function LogoCoin({ size, interactive }: { size: number; interactive: boolean }) {
+export function LogoCoin({ size, interactive }: { size: number; interactive: boolean }) {
   const reduce = useReducedMotion();
   const [spins, setSpins] = useState(0);
   const spin = useMotionValue(0);

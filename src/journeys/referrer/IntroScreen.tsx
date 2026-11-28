@@ -15,7 +15,7 @@ import airtelLogo from "@/assets/refer/airtel-logo.svg";
 
 /**
  * A02a — Refer story.
- * A six-step, dark onboarding for Refer a App: each step has its own animated hero built around the
+ * Opens with the prize (win up to ₹5,000 a year), then explains how. A six-step, dark onboarding for Refer a App: each step has its own animated hero built around the
  * Airtel logo, an eyebrow, a title, one line of copy, page dots and a single white button.
  * Swipe or tap Continue to move on; Skip opens the full Refer a App page.
  */
@@ -27,13 +27,22 @@ export function IntroScreen() {
   const [i, setI] = useState(0);
   const [dir, setDir] = useState(1);
 
+  // Story: the prize first (₹5,000 a year), then how you win it, step by step.
   const steps = [
     {
-      key: "welcome",
+      key: "earn",
       eyebrow: "Welcome",
-      title: `Refer a friend, both get ${inr(rules.referrerReward)}`,
-      body: `Invite friends to the Airtel Thanks app. You get ${inr(rules.referrerReward)}, they get ${inr(rules.friendReward)} + ${rules.friendDataBenefit}.`,
-      cta: "Get started",
+      title: `Win up to ${inr(rules.yearlyEarningCap)} a year`,
+      body: "Just by inviting your friends to the Airtel Thanks app. Here's how it works.",
+      cta: "Show me how",
+      hero: <VaultHero amount={rules.yearlyEarningCap} />,
+    },
+    {
+      key: "welcome",
+      eyebrow: "How you earn",
+      title: `Every friend gets you ${inr(rules.referrerReward)}`,
+      body: `Bring a friend into the Airtel family. You get ${inr(rules.referrerReward)}, they get ${inr(rules.friendReward)} + ${rules.friendDataBenefit}.`,
+      cta: "Continue",
       hero: <WelcomeHero />,
     },
     {
@@ -51,14 +60,6 @@ export function IntroScreen() {
       body: `When your friend recharges ${inr(rules.minTransaction)} or more within ${rules.firstTxnDeadlineDays} days, you both get paid.`,
       cta: "Continue",
       hero: <ChainHero reward={rules.referrerReward} />,
-    },
-    {
-      key: "earn",
-      eyebrow: "Yearly earnings",
-      title: `Earn up to ${inr(rules.yearlyEarningCap)} a year`,
-      body: `${inr(rules.referrerReward)} for every friend who qualifies. Keep inviting all year round.`,
-      cta: "Continue",
-      hero: <VaultHero amount={rules.yearlyEarningCap} />,
     },
     {
       key: "badges",
