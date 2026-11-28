@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { BadgeIndianRupee, Bell, Check, Copy, Gift, Link2, Mail, MailOpen, MessageSquare, Send, Smartphone, User, UserCheck, Wifi } from "lucide-react";
 import { ContactAvatar } from "@/components/app/primitives";
 import { RupeeCoin } from "@/components/refer/RupeeCoin";
+import { Vault } from "@/components/refer/Vault";
+import { MoneyTitle } from "@/components/refer/MoneyTitle";
 import { TierBadge } from "@/components/refer/AchievementBadge";
 import { useStartInvite } from "@/components/refer/ContactsPrompt";
 import { CONTACTS } from "@/domain/data";
@@ -39,7 +41,8 @@ export function IntroScreen() {
       title: `Win up to ${inr(rules.yearlyEarningCap)} a year`,
       body: "Just by inviting your friends to the Airtel Thanks app. Here's how it works.",
       cta: "Show me how",
-      hero: <VaultHero amount={rules.yearlyEarningCap} />,
+      hero: <VaultHero />,
+      money: true,
     },
     {
       key: "welcome",
@@ -113,7 +116,7 @@ export function IntroScreen() {
 
   return (
     <div
-      className="relative flex h-full flex-col overflow-hidden bg-white pt-[var(--sb,44px)] text-[#1B1C1F]"
+      className="relative flex h-full flex-col overflow-hidden bg-[#FAF7F3] pt-[var(--sb,44px)] text-[#262421]"
       data-testid="refer-intro"
       onPointerDown={() => setPaused(true)}
       onPointerUp={() => setPaused(false)}
@@ -125,7 +128,7 @@ export function IntroScreen() {
       {/* Skip */}
       <div className="relative z-10 flex h-11 shrink-0 items-center justify-end px-5">
         {!last && (
-          <button onClick={skip} className="rounded-full px-2 py-1 text-[15px] text-[#5B5E66] active:text-[#1B1C1F]" data-testid="intro-skip">
+          <button onClick={skip} className="rounded-full px-2 py-1 text-[15px] text-[#5E5A54] active:text-[#262421]" data-testid="intro-skip">
             Skip
           </button>
         )}
@@ -169,9 +172,18 @@ export function IntroScreen() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="text-[11px] font-semibold uppercase leading-[14px] tracking-[3px] text-[#C2424A]">{step.eyebrow}</p>
-              <h1 className="mt-2.5 text-[28px] font-bold leading-[34px] tracking-[-0.3px] [text-wrap:balance]">{step.title}</h1>
-              <p className="mx-auto mt-2.5 max-w-[300px] text-[15px] leading-[21px] text-[#5B5E66]">{step.body}</p>
+              {"money" in step && step.money ? (
+                <>
+                  <h1 className="sr-only">{step.title}</h1>
+                  <MoneyTitle amount={rules.yearlyEarningCap} />
+                </>
+              ) : (
+                <>
+                  <p className="text-[11px] font-semibold uppercase leading-[14px] tracking-[3px] text-[#8C7A45]">{step.eyebrow}</p>
+                  <h1 className="mt-2.5 text-[28px] font-bold leading-[34px] tracking-[-0.4px] [text-wrap:balance]">{step.title}</h1>
+                  <p className="mx-auto mt-2.5 max-w-[300px] text-[15px] leading-[21px] text-[#5E5A54]">{step.body}</p>
+                </>
+              )}
             </motion.div>
           </AnimatePresence>
 
@@ -179,12 +191,12 @@ export function IntroScreen() {
           <div className="mt-6 flex items-center justify-center gap-1.5" role="tablist" aria-label="Story steps">
             {steps.map((s, n) => (
               <button key={s.key} onClick={() => go(n)} role="tab" aria-selected={n === i} aria-label={`Step ${n + 1}`} className="flex h-4 items-center">
-                <motion.span className="relative block h-[5px] overflow-hidden rounded-full bg-[#1B1C1F]/15" animate={{ width: n === i ? 26 : 5 }} transition={{ type: "spring", stiffness: 400, damping: 30 }}>
-                  {n < i && <span className="absolute inset-0 bg-[#CA262B]" />}
+                <motion.span className="relative block h-[5px] overflow-hidden rounded-full bg-[#262421]/15" animate={{ width: n === i ? 26 : 5 }} transition={{ type: "spring", stiffness: 400, damping: 30 }}>
+                  {n < i && <span className="absolute inset-0 bg-[#5E9A31]" />}
                   {n === i && (
                     <motion.span
                       key={`${i}-${paused}`}
-                      className="absolute inset-y-0 left-0 bg-[#CA262B]"
+                      className="absolute inset-y-0 left-0 bg-[#5E9A31]"
                       initial={{ width: "0%" }}
                       animate={{ width: paused ? undefined : "100%" }}
                       transition={{ duration: hold / 1000, ease: "linear" }}
@@ -201,14 +213,14 @@ export function IntroScreen() {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={next}
-          className="h-[52px] w-full rounded-full bg-[#1B1C1F] text-[16px] font-medium text-white shadow-[0_12px_28px_rgba(27,28,31,0.18)]"
+          className="h-[52px] w-full rounded-full bg-[#262421] text-[16px] font-medium text-white shadow-[0_12px_28px_rgba(38,36,33,0.18)]"
           data-testid="intro-next"
         >
           {step.cta}
         </motion.button>
         <div className="flex h-9 items-end justify-center">
           {last && (
-            <button onClick={skip} className="text-[14px] text-[#5B5E66] active:text-[#1B1C1F]" data-testid="intro-details">
+            <button onClick={skip} className="text-[14px] text-[#5E5A54] active:text-[#262421]" data-testid="intro-details">
               See how it works
             </button>
           )}
@@ -220,13 +232,13 @@ export function IntroScreen() {
 
 /* ───────────────────────────── shared bits ───────────────────────────── */
 
-/** Soft pastel light (blush, peach, lilac) drifting slowly behind the hero. */
+/** Warm, soft light (cream, champagne, a touch of gold) drifting slowly behind the hero. */
 function Aurora() {
   const blobs = [
-    { c: "#FFD6DA", x: "-18%", y: "-6%", s: 300, d: 14 },
-    { c: "#FFE7D6", x: "48%", y: "4%", s: 280, d: 17 },
-    { c: "#ECE5FF", x: "18%", y: "30%", s: 260, d: 19 },
-    { c: "#FFE0E9", x: "-10%", y: "62%", s: 320, d: 21 },
+    { c: "#F3E8D8", x: "-18%", y: "-6%", s: 300, d: 14 },
+    { c: "#FBEFDD", x: "48%", y: "4%", s: 280, d: 17 },
+    { c: "#EEE8DF", x: "18%", y: "30%", s: 260, d: 19 },
+    { c: "#F6ECDF", x: "-10%", y: "62%", s: 320, d: 21 },
   ];
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden>
@@ -239,7 +251,7 @@ function Aurora() {
           transition={{ duration: b.d, repeat: Infinity, ease: "easeInOut" }}
         />
       ))}
-      <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,#FFFFFF_55%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(180deg,rgba(250,247,243,0)_0%,#FAF7F3_55%)]" />
     </div>
   );
 }
@@ -252,7 +264,7 @@ function Dust() {
       {specks.map((p, k) => (
         <motion.span
           key={k}
-          className="absolute rounded-full bg-[#F4A9AE]"
+          className="absolute rounded-full bg-[#E2C99A]"
           style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.s, height: p.s }}
           animate={{ y: [0, -24, 0], opacity: [0, 0.8, 0] }}
           transition={{ duration: p.d, repeat: Infinity, delay: k * 0.37, ease: "easeInOut" }}
@@ -275,18 +287,18 @@ function Float({ children, d = 4, a = 8, delay = 0 }: { children: React.ReactNod
 /** 2 · You and your friend, each with their reward; coins arc from the gift to both of you. */
 function PairHero({ reward, friendReward, data }: { reward: number; friendReward: number; data: string }) {
   const friend = CONTACTS[0];
-  const card = "flex w-[128px] flex-col items-center rounded-[22px] border border-[#F1E4E6] bg-white/90 px-3 pb-3.5 pt-4 shadow-[0_14px_30px_rgba(140,60,70,0.12)] backdrop-blur";
+  const card = "flex w-[128px] flex-col items-center rounded-[22px] border border-[#ECE5DA] bg-white/90 px-3 pb-3.5 pt-4 shadow-[0_14px_30px_rgba(90,70,45,0.12)] backdrop-blur";
   return (
     <div className="relative flex w-full flex-col items-center">
       {/* Gift in the middle, coins flying out to each side */}
       <div className="relative h-[92px] w-[300px]">
         <motion.div className="absolute left-1/2 top-2 -translate-x-1/2" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200, damping: 12 }}>
           <motion.div
-            className="flex size-[64px] items-center justify-center rounded-[20px] bg-[linear-gradient(160deg,#FFE3E6,#FFC9CF)] shadow-[0_10px_22px_rgba(202,38,43,0.2),inset_0_1px_0_#fff]"
+            className="flex size-[64px] items-center justify-center rounded-[20px] bg-[linear-gradient(160deg,#F1ECE4,#E4DCD0)] shadow-[0_10px_22px_rgba(94,154,49,0.2),inset_0_1px_0_#fff]"
             animate={{ rotate: [0, -8, 8, -4, 0], scale: [1, 1.06, 1] }}
             transition={{ duration: 1, repeat: Infinity, repeatDelay: 1.6 }}
           >
-            <Gift className="size-8 text-[#CA262B]" strokeWidth={1.8} />
+            <Gift className="size-8 text-[#5E9A31]" strokeWidth={1.8} />
           </motion.div>
         </motion.div>
         {[-1, 1].map((side) => (
@@ -303,17 +315,17 @@ function PairHero({ reward, friendReward, data }: { reward: number; friendReward
       </div>
       <div className="mt-1 flex items-stretch gap-4">
         <motion.div className={card} initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 140, damping: 15, delay: 0.1 }}>
-          <span className="flex size-12 items-center justify-center rounded-full bg-[#FFE3E6]">
-            <User className="size-6 text-[#CA262B]" strokeWidth={2} />
+          <span className="flex size-12 items-center justify-center rounded-full bg-[#F1ECE4]">
+            <User className="size-6 text-[#5E9A31]" strokeWidth={2} />
           </span>
-          <p className="mt-2 text-[12px] text-[#5B5E66]">You get</p>
+          <p className="mt-2 text-[12px] text-[#5E5A54]">You get</p>
           <p className="mt-0.5 flex items-center gap-1.5 text-[22px] font-bold leading-[26px]">
             <RupeeCoin size={18} /> {inr(reward)}
           </p>
         </motion.div>
         <motion.div className={card} initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 140, damping: 15, delay: 0.18 }}>
           <ContactAvatar name={friend.name} hue={friend.hue} size={48} />
-          <p className="mt-2 text-[12px] text-[#5B5E66]">{friend.name.split(" ")[0]} gets</p>
+          <p className="mt-2 text-[12px] text-[#5E5A54]">{friend.name.split(" ")[0]} gets</p>
           <p className="mt-0.5 flex items-center gap-1.5 text-[22px] font-bold leading-[26px]">
             <RupeeCoin size={18} /> {inr(friendReward)}
           </p>
@@ -337,11 +349,11 @@ function InviteHero({ reward }: { reward: number }) {
   return (
     <div className="flex w-full flex-col items-center px-6">
       <Float d={4} a={6}>
-        <div className="w-[260px] rounded-[20px] border border-[#F1E4E6] bg-white/90 p-3 shadow-[0_14px_30px_rgba(140,60,70,0.12)] backdrop-blur">
+        <div className="w-[260px] rounded-[20px] border border-[#ECE5DA] bg-white/90 p-3 shadow-[0_14px_30px_rgba(90,70,45,0.12)] backdrop-blur">
           <div className="flex items-center gap-2 rounded-[12px] bg-[#F6F6F8] px-3 py-2">
-            <Link2 className="size-4 shrink-0 text-[#CA262B]" strokeWidth={2.2} />
+            <Link2 className="size-4 shrink-0 text-[#5E9A31]" strokeWidth={2.2} />
             <span className="min-w-0 flex-1 truncate text-left text-[13px] font-medium">airtel.in/r/K7Q2</span>
-            <span className="flex items-center gap-1 rounded-full bg-[#1B1C1F] px-2 py-0.5 text-[11px] font-medium text-white">
+            <span className="flex items-center gap-1 rounded-full bg-[#262421] px-2 py-0.5 text-[11px] font-medium text-white">
               <Copy className="size-3" /> Copy
             </span>
           </div>
@@ -349,7 +361,7 @@ function InviteHero({ reward }: { reward: number }) {
             {[
               { k: "wa", el: <img src={iaWhatsapp} alt="" className="size-5" />, bg: "#E7F8EE" },
               { k: "sms", el: <MessageSquare className="size-5 text-[#2F6FE4]" strokeWidth={2} />, bg: "#EAF1FF" },
-              { k: "mail", el: <Mail className="size-5 text-[#CA262B]" strokeWidth={2} />, bg: "#FFECEE" },
+              { k: "mail", el: <Mail className="size-5 text-[#5E9A31]" strokeWidth={2} />, bg: "#F4EFE8" },
             ].map((c, k) => (
               <motion.span
                 key={c.k}
@@ -373,17 +385,17 @@ function InviteHero({ reward }: { reward: number }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + k * 0.08 }}
-              className="flex items-center gap-3 border-t border-dashed border-[#1B1C1F]/12 py-3 last:border-b"
+              className="flex items-center gap-3 border-t border-dashed border-[#262421]/12 py-3 last:border-b"
             >
               <motion.span
                 className="flex size-6 shrink-0 items-center justify-center rounded-[7px] border"
-                animate={{ backgroundColor: on ? "#CA262B" : "rgba(255,255,255,0.8)", borderColor: on ? "#CA262B" : "rgba(27,28,31,0.25)" }}
+                animate={{ backgroundColor: on ? "#5E9A31" : "rgba(255,255,255,0.8)", borderColor: on ? "#5E9A31" : "rgba(38,36,33,0.25)" }}
               >
                 <AnimatePresence>{on && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}><Check className="size-4 text-white" strokeWidth={3} /></motion.span>}</AnimatePresence>
               </motion.span>
               <ContactAvatar name={c.name} hue={c.hue} size={26} />
-              <span className={cn("min-w-0 flex-1 truncate text-left text-[15px] transition-colors", on ? "text-[#1B1C1F]/40 line-through" : "text-[#1B1C1F]")}>{c.name}</span>
-              <span className="flex items-center gap-1.5 text-[14px] font-semibold text-[#CA262B]">
+              <span className={cn("min-w-0 flex-1 truncate text-left text-[15px] transition-colors", on ? "text-[#262421]/40 line-through" : "text-[#262421]")}>{c.name}</span>
+              <span className="flex items-center gap-1.5 text-[14px] font-semibold text-[#5E9A31]">
                 <RupeeCoin size={16} />+{inr(reward)}
               </span>
             </motion.li>
@@ -413,24 +425,24 @@ function ChainHero({ reward }: { reward: number }) {
     <div className="flex w-full flex-col items-center px-5">
       <div className="relative flex h-[120px] w-full items-center justify-center">
         <motion.div className="absolute left-2" initial={{ x: -40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 120, damping: 14 }}>
-          <span className="flex size-[58px] items-center justify-center rounded-full bg-[#FFE3E6] ring-2 ring-white shadow-[0_8px_18px_rgba(202,38,43,0.18)]">
-            <User className="size-7 text-[#CA262B]" strokeWidth={2} />
+          <span className="flex size-[58px] items-center justify-center rounded-full bg-[#F1ECE4] ring-2 ring-white shadow-[0_8px_18px_rgba(94,154,49,0.18)]">
+            <User className="size-7 text-[#5E9A31]" strokeWidth={2} />
           </span>
-          <p className="mt-1.5 text-center text-[11px] text-[#5B5E66]">You</p>
+          <p className="mt-1.5 text-center text-[11px] text-[#5E5A54]">You</p>
         </motion.div>
         <motion.div className="absolute right-2 flex flex-col items-center" initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 120, damping: 14 }}>
-          <div className="rounded-full p-[3px] ring-2 ring-[#F28A92] bg-white">
+          <div className="rounded-full p-[3px] ring-2 ring-[#CFC6B9] bg-white">
             <ContactAvatar name={CONTACTS[0].name} hue={CONTACTS[0].hue} size={52} />
           </div>
-          <p className="mt-1.5 text-[11px] text-[#5B5E66]">{CONTACTS[0].name.split(" ")[0]}</p>
+          <p className="mt-1.5 text-[11px] text-[#5E5A54]">{CONTACTS[0].name.split(" ")[0]}</p>
         </motion.div>
         {/* Chain */}
         <motion.svg width="150" height="60" viewBox="0 0 150 60" className="overflow-visible" animate={{ y: [-3, 3] }} transition={{ duration: 2.8, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}>
           <defs>
             <linearGradient id="chainMetal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#FFE3E5" />
-              <stop offset="0.45" stopColor="#F07A82" />
-              <stop offset="1" stopColor="#B8262C" />
+              <stop offset="0" stopColor="#FFFFFF" />
+              <stop offset="0.45" stopColor="#D3CBC0" />
+              <stop offset="1" stopColor="#9F968A" />
             </linearGradient>
           </defs>
           {Array.from({ length: links }, (_, k) => {
@@ -451,7 +463,7 @@ function ChainHero({ reward }: { reward: number }) {
                 initial={{ opacity: 0, scale: 0.4 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 + k * 0.08, type: "spring", stiffness: 260, damping: 16 }}
-                style={{ transformOrigin: `${x}px ${y}px`, filter: "drop-shadow(0 3px 4px rgba(202,38,43,0.25))" }}
+                style={{ transformOrigin: `${x}px ${y}px`, filter: "drop-shadow(0 3px 4px rgba(94,154,49,0.25))" }}
               />
             );
           })}
@@ -467,15 +479,15 @@ function ChainHero({ reward }: { reward: number }) {
               <motion.span
                 className="flex size-9 items-center justify-center rounded-full"
                 animate={{
-                  backgroundColor: on ? "#CA262B" : "#F1F2F5",
-                  boxShadow: on ? "0 6px 16px rgba(202,38,43,0.35)" : "0 0 0 rgba(0,0,0,0)",
+                  backgroundColor: on ? "#5E9A31" : "#EFEAE3",
+                  boxShadow: on ? "0 6px 16px rgba(94,154,49,0.35)" : "0 0 0 rgba(0,0,0,0)",
                   scale: k === lit - 1 ? [1, 1.18, 1] : 1,
                 }}
                 transition={{ duration: 0.4 }}
               >
-                <Icon className={cn("size-[18px]", on ? "text-white" : "text-[#9A9DA5]")} strokeWidth={2} />
+                <Icon className={cn("size-[18px]", on ? "text-white" : "text-[#A39C92]")} strokeWidth={2} />
               </motion.span>
-              <span className={cn("text-center text-[10.5px] leading-[13px]", on ? "text-[#1B1C1F]" : "text-[#9A9DA5]")}>{s.label}</span>
+              <span className={cn("text-center text-[10.5px] leading-[13px]", on ? "text-[#262421]" : "text-[#A39C92]")}>{s.label}</span>
             </div>
           );
         })}
@@ -484,72 +496,12 @@ function ChainHero({ reward }: { reward: number }) {
   );
 }
 
-/** 4 · A vault-style dial turns and the digits roll to the yearly cap. */
-function VaultHero({ amount }: { amount: number }) {
-  const digits = String(amount).split("");
-  const [turn, setTurn] = useState(0);
-  useEffect(() => {
-    const seq = [140, -80, 220, 0];
-    let k = 0;
-    const t = setInterval(() => setTurn(seq[k++ % seq.length]), 1300);
-    return () => clearInterval(t);
-  }, []);
+/** 1 · The vault: its door swings open on the money inside, then closes again. */
+function VaultHero() {
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative size-[176px]">
-        <div className="absolute inset-[-30%] rounded-full bg-[radial-gradient(circle,rgba(255,170,178,0.55),transparent_62%)] blur-xl" />
-        {/* Outer ring */}
-        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,#d9dce2,#ffffff,#c8ccd4,#f4f5f7,#d9dce2,#ffffff,#d9dce2)] p-[7px] shadow-[0_18px_36px_rgba(140,60,70,0.18),inset_0_1px_0_#fff]">
-          <div className="size-full rounded-full bg-[radial-gradient(circle_at_50%_35%,#FFFFFF,#F1F2F5_70%)] shadow-[inset_0_3px_10px_rgba(27,28,31,0.12)]" />
-        </div>
-        {/* Turning dial with ticks */}
-        <motion.svg viewBox="0 0 176 176" className="absolute inset-0" animate={{ rotate: turn }} transition={{ type: "spring", stiffness: 40, damping: 10 }}>
-          {Array.from({ length: 60 }, (_, k) => {
-            const a = (k / 60) * Math.PI * 2;
-            const long = k % 5 === 0;
-            const r1 = 76, r2 = long ? 64 : 69;
-            return <line key={k} x1={88 + Math.cos(a) * r1} y1={88 + Math.sin(a) * r1} x2={88 + Math.cos(a) * r2} y2={88 + Math.sin(a) * r2} stroke={k === 45 ? "#CA262B" : "rgba(27,28,31,0.3)"} strokeWidth={long ? 2 : 1} strokeLinecap="round" />;
-          })}
-          <circle cx="88" cy="88" r="52" fill="none" stroke="rgba(202,38,43,0.08)" strokeWidth="10" />
-        </motion.svg>
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <RupeeCoin size={66} spin />
-        </div>
-      </div>
-      {/* Rolling digits */}
-      <div className="mt-7 flex items-center gap-1.5">
-        <DigitBox>₹</DigitBox>
-        {digits.map((d, k) => (
-          <DigitBox key={k}>
-            <RollingDigit to={+d} delay={0.35 + k * 0.18} />
-          </DigitBox>
-        ))}
-      </div>
-      <p className="mt-2 text-[10px] font-semibold uppercase tracking-[2.5px] text-[#5B5E66]">a year</p>
-    </div>
-  );
-}
-
-function DigitBox({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="relative flex h-[46px] w-[36px] items-center justify-center overflow-hidden rounded-[10px] border border-[#ECEDF1] bg-white text-[26px] font-bold tabular text-[#1B1C1F] shadow-[0_6px_14px_rgba(140,60,70,0.10),inset_0_-2px_0_#F1F2F5]">
-      {children}
-    </span>
-  );
-}
-
-function RollingDigit({ to, delay }: { to: number; delay: number }) {
-  const spins = 10 + to; // roll through a full set before landing
-  return (
-    <span className="absolute inset-0 overflow-hidden">
-      <motion.span className="absolute inset-x-0 top-0 flex flex-col" initial={{ y: 0 }} animate={{ y: -46 * spins }} transition={{ duration: 1.4, delay, ease: [0.2, 0.8, 0.2, 1] }}>
-        {Array.from({ length: spins + 1 }, (_, k) => (
-          <span key={k} className="flex h-[46px] items-center justify-center">
-            {k % 10}
-          </span>
-        ))}
-      </motion.span>
-    </span>
+    <Float d={4.4} a={8}>
+      <Vault scale={1.2} />
+    </Float>
   );
 }
 
@@ -586,7 +538,7 @@ function BadgesHero() {
       <AnimatePresence mode="wait">
         <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="mt-3 text-center">
           <p className="text-[16px] font-semibold">{m.label}</p>
-          <p className="mt-0.5 text-[12px] text-[#5B5E66]">
+          <p className="mt-0.5 text-[12px] text-[#5E5A54]">
             {m.target} {m.target === 1 ? "referral" : "referrals"} a month{m.reward ? ` · ${inr(m.reward)} bonus` : ""}
           </p>
         </motion.div>
@@ -612,9 +564,9 @@ function NotifyHero({ reward }: { reward: number }) {
     <div className="flex w-full flex-col items-center px-5">
       <div className="relative">
         <Float d={4} a={10}>
-          <div className="flex size-[104px] items-center justify-center rounded-[30px] border border-[#F1E4E6] bg-[linear-gradient(160deg,#FFFFFF,#FFF1F2)] shadow-[0_18px_36px_rgba(140,60,70,0.16),inset_0_1px_0_#fff]">
+          <div className="flex size-[104px] items-center justify-center rounded-[30px] border border-[#ECE5DA] bg-[linear-gradient(160deg,#FFFFFF,#F6F1EA)] shadow-[0_18px_36px_rgba(90,70,45,0.16),inset_0_1px_0_#fff]">
             <motion.span key={n} className="block origin-top" animate={{ rotate: [0, 16, -14, 10, -6, 0] }} transition={{ duration: 0.9, ease: "easeOut" }}>
-              <Bell className="size-12 text-[#CA262B]" strokeWidth={1.8} />
+              <Bell className="size-12 text-[#5E9A31]" strokeWidth={1.8} />
             </motion.span>
           </div>
         </Float>
@@ -625,7 +577,7 @@ function NotifyHero({ reward }: { reward: number }) {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             transition={{ type: "spring", stiffness: 500, damping: 18 }}
-            className="absolute -right-2.5 -top-2.5 flex size-7 items-center justify-center rounded-full bg-[#CA262B] text-[13px] font-bold text-white shadow-[0_6px_14px_rgba(202,38,43,0.45)] ring-2 ring-white"
+            className="absolute -right-2.5 -top-2.5 flex size-7 items-center justify-center rounded-full bg-[#5E9A31] text-[13px] font-bold text-white shadow-[0_6px_14px_rgba(94,154,49,0.45)] ring-2 ring-white"
           >
             {(n % 9) + 1}
           </motion.span>
@@ -639,15 +591,15 @@ function NotifyHero({ reward }: { reward: number }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 14, scale: 0.94, filter: "blur(4px)" }}
             transition={{ type: "spring", stiffness: 220, damping: 22 }}
-            className="absolute inset-x-0 flex items-start gap-2.5 rounded-[18px] border border-[#EEF0F3] bg-white/90 p-3 text-left shadow-[0_12px_30px_rgba(140,60,70,0.12)] backdrop-blur-md"
+            className="absolute inset-x-0 flex items-start gap-2.5 rounded-[18px] border border-[#ECE5DA] bg-white/90 p-3 text-left shadow-[0_12px_30px_rgba(90,70,45,0.12)] backdrop-blur-md"
           >
             <img src={airtelLogo} alt="" className="size-[22px] shrink-0 rounded-[6px]" />
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-2">
                 <p className="truncate text-[13px] font-semibold">{note.title}</p>
-                <span className="shrink-0 text-[11px] text-[#9A9DA5]">now</span>
+                <span className="shrink-0 text-[11px] text-[#A39C92]">now</span>
               </div>
-              <p className="mt-0.5 line-clamp-2 text-[12px] leading-[16px] text-[#5B5E66]">{note.body}</p>
+              <p className="mt-0.5 line-clamp-2 text-[12px] leading-[16px] text-[#5E5A54]">{note.body}</p>
             </div>
           </motion.div>
         </AnimatePresence>

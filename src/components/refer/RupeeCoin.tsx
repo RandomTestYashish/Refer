@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /**
- * A soft-gold ₹ coin with real thickness (stacked edge layers) and a passing shine.
+ * A brushed-silver ₹ coin with real thickness (stacked edge layers) and a passing shine.
  * Used wherever the copy talks about money: the yearly prize, per-friend rewards, the home banner.
  */
 export function RupeeCoin({ size = 56, spin = false, className }: { size?: number; spin?: boolean; className?: string }) {
@@ -16,7 +16,7 @@ export function RupeeCoin({ size = 56, spin = false, className }: { size?: numbe
         transition={spin ? { duration: 6, ease: "linear", repeat: Infinity } : { duration: 4.5, ease: "easeInOut", repeat: Infinity, repeatType: "mirror" }}
       >
         {Array.from({ length: depth }, (_, i) => (
-          <div key={i} className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(180deg,#E7B04A,#B9801F)", transform: `translateZ(${-(i + 1)}px)` }} />
+          <div key={i} className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(180deg,#D9D2C8,#A99F92)", transform: `translateZ(${-(i + 1)}px)` }} />
         ))}
         {[0, 180].map((r) => (
           <div
@@ -25,12 +25,12 @@ export function RupeeCoin({ size = 56, spin = false, className }: { size?: numbe
             style={{
               transform: r ? `translateZ(${-depth - 1}px) rotateY(180deg)` : undefined,
               backfaceVisibility: "hidden",
-              background: "radial-gradient(circle at 35% 30%, #FFF6D8 0%, #FFE08A 38%, #F3C14F 70%, #D99A2B 100%)",
-              boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.55), inset 0 -3px 6px rgba(150,90,10,0.35)",
+              background: "radial-gradient(circle at 35% 30%, #FFFFFF 0%, #ECE7E0 40%, #CFC7BC 75%, #AFA699 100%)",
+              boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.55), inset 0 -3px 6px rgba(90,75,60,0.3)",
             }}
           >
-            <span className="absolute rounded-full border border-[#C98A22]/40" style={{ inset: size * 0.1 }} />
-            <span className="relative font-bold text-[#A86A12] [text-shadow:0_1px_0_rgba(255,255,255,0.7)]" style={{ fontSize: size * 0.48, lineHeight: 1 }}>
+            <span className="absolute rounded-full border border-[#B8AFA3]" style={{ inset: size * 0.1 }} />
+            <span className="relative font-bold text-[#8F8578] [text-shadow:0_1px_0_rgba(255,255,255,0.7)]" style={{ fontSize: size * 0.48, lineHeight: 1 }}>
               ₹
             </span>
             <motion.span

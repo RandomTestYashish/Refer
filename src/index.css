@@ -55,6 +55,16 @@
   25% { transform: scale(1.22); opacity: calc(var(--o) * 2.2); }
 }
 
+/* Vault (money theme): door, glow, cash and sparkle share one 6.4s timeline. */
+@keyframes vault-door { 0%, 14% { transform: rotateY(0deg); } 38%, 80% { transform: rotateY(112deg); } 100% { transform: rotateY(0deg); } }
+@keyframes vault-glow { 0%, 16% { opacity: 0; } 36%, 80% { opacity: 1; } 96%, 100% { opacity: 0; } }
+@keyframes vault-cash { 0%, 18% { transform: translateY(6px); } 40%, 80% { transform: translateY(0); } 100% { transform: translateY(6px); } }
+@keyframes vault-spark { 0%, 30% { opacity: 0; transform: scale(0.6); } 42% { opacity: 1; transform: scale(1); } 70%, 100% { opacity: 0; transform: scale(1.1); } }
+@keyframes vault-door-ajar { from { transform: rotateY(100deg); } to { transform: rotateY(116deg); } }
+@keyframes vault-glow-ajar { from { opacity: 0.85; } to { opacity: 1; } }
+@keyframes vault-cash-ajar { from { transform: translateY(1px); } to { transform: translateY(0); } }
+@keyframes vault-spark-ajar { from { opacity: 0.4; transform: scale(0.95); } to { opacity: 1; transform: scale(1.05); } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

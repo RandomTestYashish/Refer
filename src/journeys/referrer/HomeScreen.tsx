@@ -78,8 +78,8 @@ import bnManage from "@/assets/home/bn-manage.svg";
 import bnFinance from "@/assets/home/bn-finance.svg";
 import bnFamily from "@/assets/home/bn-family.svg";
 import bnAskUs from "@/assets/home/bn-askus.svg";
-import { LogoTile } from "@/components/refer/LogoTile";
-import { RupeeCoin } from "@/components/refer/RupeeCoin";
+import { Vault } from "@/components/refer/Vault";
+import { MoneyTitle } from "@/components/refer/MoneyTitle";
 
 /**
  * A01 — Airtel home (Gen4 "Refresh" home page from Figma).
@@ -178,8 +178,8 @@ const TABS = [
  * Built from the frame's layers so the copy and the Invite Friends button are live.
  */
 /**
- * Curated for you · Refer banner. Same world as the Refer story it opens: white pastel card, soft blush glow,
- * the 3D Airtel logo with ₹ coins floating around it, and the prize up front.
+ * Curated for you · Refer banner, in the money theme: warm off-white card, the silver vault opening
+ * on the money inside, and the "Earn up to ₹5,000" headline with its green underline.
  */
 function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => void }) {
   return (
@@ -187,52 +187,19 @@ function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => vo
       whileTap={{ scale: 0.98 }}
       onClick={onOpen}
       data-testid="home-refer-banner"
-      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] border border-[#F3E6E8] bg-[linear-gradient(135deg,#FFFFFF_0%,#FFF3F0_45%,#FCEBF1_75%,#F1ECFF_100%)] text-[#1B1C1F]"
+      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] border border-[#ECE5DA] bg-[radial-gradient(120%_120%_at_80%_20%,#FFFDF9_0%,#F7F1E8_55%,#EFE6D9_100%)] text-[#262421]"
     >
-      {/* Ember glow, rising behind the logo */}
-      <motion.div
-        className="pointer-events-none absolute -bottom-16 -right-10 h-[220px] w-[300px]"
-        style={{ background: "radial-gradient(closest-side, #FFC9CE 0%, #FFDCDF 40%, rgba(255,230,233,0.5) 65%, rgba(255,255,255,0) 100%)" }}
-        animate={{ opacity: [0.75, 1, 0.75], scale: [1, 1.06, 1] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-        aria-hidden
-      />
-      {/* ₹ coins floating around the one logo */}
-      {[
-        { x: 180, y: 26, s: 26, d: 3.4 },
-        { x: 262, y: 40, s: 20, d: 4.1 },
-        { x: 268, y: 118, s: 28, d: 3.8 },
-        { x: 176, y: 128, s: 18, d: 4.6 },
-      ].map((c, k) => (
-        <motion.div
-          key={k}
-          className="pointer-events-none absolute"
-          style={{ left: c.x, top: c.y }}
-          animate={{ y: [-4, 4] }}
-          transition={{ duration: c.d, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: k * 0.4 }}
-          aria-hidden
-        >
-          <RupeeCoin size={c.s} />
-        </motion.div>
-      ))}
-      <div className="absolute left-[191px] top-[48px]">
-        <LogoTile size={76} depth={8} glow={false} />
+      <div className="absolute -right-[18px] top-[34px]">        <Vault scale={0.55} />
       </div>
-
       <div className="relative flex h-full flex-col justify-between p-5 pr-0">
-        <div>
-          <p className="text-[10.5px] font-semibold uppercase leading-[12px] tracking-[2.5px] text-[#C2424A]">Refer &amp; win</p>
-          <p className="mt-2 text-[14px] font-medium leading-[16px] text-[#3A3C42]">Win up to</p>
-          <p className="mt-0.5 w-fit bg-[linear-gradient(100deg,#E0353B_0%,#CA262B_45%,#981C20_100%)] bg-clip-text text-[38px] font-bold leading-[42px] tracking-[-0.8px] text-transparent tabular">{inr(yearly)}</p>
-          <p className="text-[13px] leading-[16px] text-[#5B5E66]">a year</p>
-        </div>
+        <MoneyTitle amount={yearly} size="sm" align="left" sub="a year by inviting friends" className="w-[150px]" />
         <button
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
           }}
-          aria-label={`Invite friends and win up to ${inr(yearly)} a year`}
-          className="flex h-9 w-fit items-center justify-center rounded-full bg-[#1B1C1F] px-4 text-[12.6px] font-medium leading-[14.4px] text-white shadow-[0_6px_14px_rgba(27,28,31,0.18)] active:bg-black"
+          aria-label={`Invite friends and earn up to ${inr(yearly)} a year`}
+          className="flex h-9 w-fit items-center justify-center rounded-full bg-[#262421] px-4 text-[12.6px] font-medium leading-[14.4px] text-white shadow-[0_6px_14px_rgba(38,36,33,0.18)] active:bg-black"
         >
           Invite friends
         </button>

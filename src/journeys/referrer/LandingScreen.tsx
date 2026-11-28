@@ -6,7 +6,8 @@ import { ContactAvatar, Screen, ScreenBody } from "@/components/app/primitives";
 import { CONTACTS } from "@/domain/data";
 import { copyInviteLink } from "@/components/app/InviteKit";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { LogoCoin } from "@/components/refer/ReferralCard";
+import { Vault } from "@/components/refer/Vault";
+import { MoneyTitle } from "@/components/refer/MoneyTitle";
 import { MilestoneCollection, useMilestones } from "@/components/refer/MilestoneCollection";
 import { UnlockCelebration } from "@/components/refer/AchievementBadge";
 import iconSearch from "@/assets/refer/icon-search.svg";
@@ -64,7 +65,7 @@ export function LandingScreen() {
     <Screen className="relative">
       {/* Header */}
       {/* Gen4 Top Nav · L1 · heading centred */}
-      <header className={cn("relative z-20 grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 border-b bg-white px-4", scrolled ? "border-gen4-bg-200" : "border-transparent")}>
+      <header className={cn("relative z-20 grid h-[72px] shrink-0 grid-cols-[40px_1fr_40px] items-center gap-3 border-b px-4 transition-colors", scrolled ? "bg-white" : "bg-[#FAF7F3]", scrolled ? "border-gen4-bg-200" : "border-transparent")}>
         <button onClick={back} aria-label="Back" className="flex size-10 items-center justify-center rounded-full text-refer-ink active:scale-90 active:bg-black/5">
           <ChevronLeft className="size-6" strokeWidth={1.8} />
         </button>
@@ -84,28 +85,15 @@ export function LandingScreen() {
       </AnimatePresence>
 
       <ScreenBody ref={bodyRef} className="pb-4">
-        {/* Hero: just the Airtel logo, large. It flips like a coin on its own and on tap. */}
-        <section className="relative flex justify-center pb-2 pt-6" aria-label="Airtel app">
-          <span className="pointer-events-none absolute left-1/2 top-[56%] size-[220px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,213,215,0.9)_0%,rgba(255,236,237,0.5)_40%,rgba(255,255,255,0)_70%)]" aria-hidden />
-          <LogoCoin size={124} interactive />
-        </section>
-
-        {/* Proposition */}
-        <section className="px-6 pt-[25px] text-center">
-          <h2 className="whitespace-pre-line text-[26px] font-black italic leading-[35px] text-[#151515] [text-wrap:balance]">
-            Earn up to{" "}
-            <span
-              className="bg-clip-text text-transparent tabular"
-              style={{ backgroundImage: "linear-gradient(101.6deg, #E32121 40.65%, #7D1212 54.6%, #7D1212 68.5%)" }}
-            >
-              {inr(rules.yearlyEarningCap)}
-            </span>{" "}
-            a year
-            <br />
-            by inviting friends
-          </h2>
-          <p className="mx-auto mt-5 w-fit rounded-full border border-[#EEE3E2] bg-[#FBF6F5] px-4 py-2 text-[10.5px] font-semibold italic uppercase leading-[15.75px] tracking-[1px] text-[#A3313A]">
-            {inr(rules.referrerReward)} for you · {inr(rules.friendReward)} + {rules.friendDataBenefit} for them
+        {/* Hero (money theme): the vault opens on the money, then the headline */}
+        <section className="relative bg-[linear-gradient(180deg,#FAF7F3_0%,#FAF7F3_70%,#FFFFFF_100%)] pb-2 pt-4" aria-label={`Earn up to ${inr(rules.yearlyEarningCap)} a year`}>
+          <div className="flex justify-center">
+            <Vault scale={1.05} />
+          </div>
+          <MoneyTitle amount={rules.yearlyEarningCap} className="mt-3 px-6" />
+          <p className="mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-[#E8E1D6] bg-white px-3.5 py-1.5 text-[12.5px] leading-[18px] text-[#4A4743] shadow-[0_4px_12px_rgba(90,70,45,0.08)]" data-testid="reward-split">
+            <span className="size-1.5 rounded-full bg-[#6FAE3E]" aria-hidden />
+            <b className="font-bold text-[#262421]">{inr(rules.referrerReward)}</b> for you · <b className="font-bold text-[#262421]">{inr(rules.friendReward)} + {rules.friendDataBenefit}</b> for them
           </p>
         </section>
 
