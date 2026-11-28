@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useProto } from "@/store/useProto";
 import { REFERRER } from "@/domain/data";
 import { haptic } from "@/lib/device";
-import { cn } from "@/lib/utils";
+import { cn, inr } from "@/lib/utils";
 
 import navMenu from "@/assets/home/nav-menu.svg";
 import navSearch from "@/assets/home/nav-search.svg";
@@ -59,10 +59,6 @@ import exPrepaidE1 from "@/assets/home/explore-prepaid-e1.svg";
 import exPrepaidE2 from "@/assets/home/explore-prepaid-e2.svg";
 import arrowWhite from "@/assets/home/arrow-white.svg";
 import arrowWhite16 from "@/assets/home/arrow-white-16.svg";
-import curatedReferBg from "@/assets/home/curated-refer-bg.png";
-import curatedReferPhone from "@/assets/home/curated-refer-phone.png";
-import curatedReferGlow from "@/assets/home/curated-refer-glow.svg";
-import curatedReferLogo from "@/assets/home/curated-refer-logo.svg";
 import curated2 from "@/assets/home/curated-2.png";
 import gridCall from "@/assets/home/grid-call.png";
 import gridRewards from "@/assets/home/grid-rewards.png";
@@ -82,6 +78,8 @@ import bnManage from "@/assets/home/bn-manage.svg";
 import bnFinance from "@/assets/home/bn-finance.svg";
 import bnFamily from "@/assets/home/bn-family.svg";
 import bnAskUs from "@/assets/home/bn-askus.svg";
+import { LogoTile } from "@/components/refer/LogoTile";
+import { LogoFamily } from "@/components/refer/LogoFamily";
 
 /**
  * A01 — Airtel home (Gen4 "Refresh" home page from Figma).
@@ -179,46 +177,52 @@ const TABS = [
  * Curated for you · Refer a App ingress (Figma refer_2, frame 81784:17004).
  * Built from the frame's layers so the copy and the Invite Friends button are live.
  */
+/**
+ * Curated for you · Refer banner. Same world as the Refer story it opens: black card, Airtel-red glow,
+ * the 3D Airtel logo framed by the "Airtel family" of small logos, and the prize up front.
+ */
 function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => void }) {
   return (
     <motion.div
       whileTap={{ scale: 0.98 }}
       onClick={onOpen}
       data-testid="home-refer-banner"
-      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] bg-white"
+      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] bg-black text-white"
     >
-      <img src={curatedReferBg} alt="" className="pointer-events-none absolute left-0 top-0 h-[182px] w-[352px] max-w-none object-cover" />
-      <div className="pointer-events-none absolute left-[-43px] top-[105px] h-[141px] w-[369px]" aria-hidden>
-        <img src={curatedReferGlow} alt="" className="absolute inset-[-73.76%_-28.18%] block size-auto max-w-none" />
+      {/* Ember glow, rising behind the logo */}
+      <motion.div
+        className="pointer-events-none absolute -bottom-16 -right-10 h-[220px] w-[300px]"
+        style={{ background: "radial-gradient(closest-side, #FF4A2E 0%, #E2262C 30%, #A3161C 55%, rgba(0,0,0,0) 100%)" }}
+        animate={{ opacity: [0.75, 1, 0.75], scale: [1, 1.06, 1] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        aria-hidden
+      />
+      {/* The Airtel family around the big logo */}
+      <div className="absolute inset-y-0 right-0 w-[170px] [mask-image:radial-gradient(closest-side,#000_45%,transparent_100%)]">
+        <LogoFamily width={170} height={182} cx={92} cy={86} gap={27} icon={14} hole={50} tone="dark" />
       </div>
-      <img src={curatedReferPhone} alt="" className="pointer-events-none absolute left-[111px] top-[143px] h-[156px] w-[234px] max-w-none -scale-y-100 object-cover opacity-10" />
-      <img src={curatedReferPhone} alt="" className="pointer-events-none absolute left-[111px] top-[21px] h-[156px] w-[234px] max-w-none object-cover" />
-      <img src={curatedReferLogo} alt="" width={35.0653} height={35.0653} className="pointer-events-none absolute left-[215px] top-[80px]" />
-      <p className="absolute left-5 top-[21px] whitespace-pre text-[14px] font-semibold uppercase leading-[10.628px] tracking-[2px] text-black">Earn upto</p>
-      <p aria-hidden className="absolute left-[21px] top-[34.3px] w-[139px] whitespace-nowrap text-[41.09px] font-black uppercase italic leading-[50px] tracking-[-1px] text-black">
-        ₹{yearly}
-      </p>
-      <p
-        className="absolute left-5 top-[34.3px] w-[139px] whitespace-nowrap bg-clip-text text-[41.09px] font-black uppercase italic leading-[50px] tracking-[-1px] text-transparent"
-        style={{ backgroundImage: "linear-gradient(111.32deg, #930509 0.64%, #F9080F 106.72%)" }}
-      >
-        ₹{yearly}
-      </p>
-      <p className="absolute left-5 top-[84px] text-[14px] font-semibold text-black">
-        a year by inviting
-        <br />
-        friends
-      </p>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpen();
-        }}
-        aria-label={`Invite friends and earn up to ₹${yearly} a year`}
-        className="absolute left-5 top-[132px] flex h-9 w-[127px] items-center justify-center rounded-[50.8px] border-[0.9px] border-[#E3EAF3] bg-[#F6F6F6] px-[10.8px] text-[12.6px] font-medium leading-[14.4px] text-[#292C31] active:bg-[#ECEDEF]"
-      >
-        Invite Friends
-      </button>
+      <div className="absolute left-[191px] top-[48px]">
+        <LogoTile size={76} depth={8} glow={false} />
+      </div>
+
+      <div className="relative flex h-full flex-col justify-between p-5 pr-0">
+        <div>
+          <p className="text-[10.5px] font-semibold uppercase leading-[12px] tracking-[2.5px] text-white/65">Refer &amp; win</p>
+          <p className="mt-2 text-[14px] font-medium leading-[16px] text-white/90">Win up to</p>
+          <p className="mt-0.5 text-[38px] font-bold leading-[42px] tracking-[-0.8px] tabular">{inr(yearly)}</p>
+          <p className="text-[13px] leading-[16px] text-white/75">a year</p>
+        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+          aria-label={`Invite friends and win up to ${inr(yearly)} a year`}
+          className="flex h-9 w-fit items-center justify-center rounded-full bg-white px-4 text-[12.6px] font-medium leading-[14.4px] text-black active:bg-white/85"
+        >
+          Invite friends
+        </button>
+      </div>
     </motion.div>
   );
 }
