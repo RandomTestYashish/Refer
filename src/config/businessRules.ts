@@ -78,7 +78,6 @@ export const PENDING_CONFIRMATION: string[] = [
   "Reward release timing / validation window",
   "Final eligibility wording and legal terms",
   "Whether existing users with no qualifying transaction are eligible",
-  "Social-proof claim (“Millions use the Airtel Thanks app every day”) needs a verified figure",
 ];
 
 /** True when persisted rules still use the old milestone shape. */

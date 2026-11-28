@@ -122,7 +122,7 @@ function EnvelopeInvite() {
           title="Invite waiting to send"
           body={`Your connection is slow, so your invite to ${nameList} is queued. It goes out automatically once you're back online.`}
           primary={{ label: "Go to My referrals", onClick: () => useProto.getState().resetTo("a_dashboard") }}
-          secondary={{ label: "Back to Refer a App", onClick: () => useProto.getState().resetTo("a_landing") }}
+          secondary={{ label: "Back to Refer Airtel App", onClick: () => useProto.getState().resetTo("a_landing") }}
         />
       </Screen>
     );

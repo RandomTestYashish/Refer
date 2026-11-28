@@ -277,11 +277,7 @@ export function ScenarioPanel() {
           <span className="text-[10.5px] font-medium text-airtel-sub">Friend data benefit</span>
           <Input value={s.rules.friendDataBenefit} onChange={(e) => s.setRules({ friendDataBenefit: e.target.value.slice(0, 12) })} className="mt-0.5 h-8 rounded-[8px] px-2 text-[12.5px]" />
         </label>
-        <label className="mt-2 block">
-          <span className="text-[10.5px] font-medium text-airtel-sub">Social-proof line (verify before launch)</span>
-          <Input value={s.rules.socialProof} onChange={(e) => s.setRules({ socialProof: e.target.value.slice(0, 70) })} className="mt-0.5 h-8 rounded-[8px] border-dashed border-airtel-warning px-2 text-[12.5px]" />
-        </label>
-        <p className="mt-3 text-[10.5px] font-semibold text-airtel-ink">Monthly milestones (successful referrals · ₹ reward)</p>
+                <p className="mt-3 text-[10.5px] font-semibold text-airtel-ink">Monthly milestones (successful referrals · ₹ reward)</p>
         <div className="mt-1 space-y-1.5">
           {s.rules.milestones.map((m, i) => (
             <div key={m.id} className="grid grid-cols-[64px_1fr_1fr] items-center gap-2">

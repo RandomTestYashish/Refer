@@ -193,7 +193,7 @@ function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => vo
         <MoneyJar width={128} />
       </div>
       <div className="relative flex h-full flex-col justify-between p-4 pr-0">
-        <MoneyTitle amount={yearly} size="sm" align="left" sub="a year by inviting friends" className="w-[144px]" />
+        <MoneyTitle amount={yearly} size="sm" align="left" sub="a year by inviting friends" />
         <button
           onClick={(e) => {
             e.stopPropagation();

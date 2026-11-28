@@ -2,6 +2,12 @@ import { expect, test } from "@playwright/test";
 import { expectScreen, goBack, landing, openAt, ui } from "./helpers";
 
 test.describe("Supporting sections & quality", () => {
+  test("header reads Refer Airtel App and there is no social-proof line", async ({ page }) => {
+    await landing(page);
+    await expect(ui(page).getByRole("heading", { name: "Refer Airtel App" })).toBeVisible();
+    await expect(ui(page).getByTestId("social-proof")).toHaveCount(0);
+  });
+
   test("FAQ and Terms are separate, working accordions; footer present", async ({ page }) => {
     await landing(page);
     const faqs = ui(page).getByRole("button", { name: "FAQs", exact: true });
@@ -21,11 +27,6 @@ test.describe("Supporting sections & quality", () => {
     await t.click();
     await expect(ui(page).getByText(/first recharge of ₹100 or more for the offer to activate/)).toBeVisible();
     await expect(ui(page).getByText(/Refer more\.\s*Earn more\./)).toBeVisible();
-  });
-
-  test("social proof sits above the main action and follows the business rule", async ({ page }) => {
-    await landing(page, { rules: { socialProof: "Trusted by many" } });
-    await expect(ui(page).getByTestId("social-proof")).toHaveText(/Trusted by many/);
   });
 
   test("help sheet opens FAQs", async ({ page }) => {
