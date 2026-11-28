@@ -79,7 +79,7 @@ import bnFinance from "@/assets/home/bn-finance.svg";
 import bnFamily from "@/assets/home/bn-family.svg";
 import bnAskUs from "@/assets/home/bn-askus.svg";
 import { LogoTile } from "@/components/refer/LogoTile";
-import { LogoFamily } from "@/components/refer/LogoFamily";
+import { RupeeCoin } from "@/components/refer/RupeeCoin";
 
 /**
  * A01 — Airtel home (Gen4 "Refresh" home page from Figma).
@@ -179,7 +179,7 @@ const TABS = [
  */
 /**
  * Curated for you · Refer banner. Same world as the Refer story it opens: white pastel card, soft blush glow,
- * the 3D Airtel logo framed by the "Airtel family" of small logos, and the prize up front.
+ * the 3D Airtel logo with ₹ coins floating around it, and the prize up front.
  */
 function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => void }) {
   return (
@@ -197,10 +197,24 @@ function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => vo
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         aria-hidden
       />
-      {/* The Airtel family around the big logo */}
-      <div className="absolute inset-y-0 right-0 w-[170px] [mask-image:radial-gradient(closest-side,#000_45%,transparent_100%)]">
-        <LogoFamily width={170} height={182} cx={92} cy={86} gap={27} icon={14} hole={50} tone="light" strength={0.45} />
-      </div>
+      {/* ₹ coins floating around the one logo */}
+      {[
+        { x: 180, y: 26, s: 26, d: 3.4 },
+        { x: 262, y: 40, s: 20, d: 4.1 },
+        { x: 268, y: 118, s: 28, d: 3.8 },
+        { x: 176, y: 128, s: 18, d: 4.6 },
+      ].map((c, k) => (
+        <motion.div
+          key={k}
+          className="pointer-events-none absolute"
+          style={{ left: c.x, top: c.y }}
+          animate={{ y: [-4, 4] }}
+          transition={{ duration: c.d, repeat: Infinity, repeatType: "mirror", ease: "easeInOut", delay: k * 0.4 }}
+          aria-hidden
+        >
+          <RupeeCoin size={c.s} />
+        </motion.div>
+      ))}
       <div className="absolute left-[191px] top-[48px]">
         <LogoTile size={76} depth={8} glow={false} />
       </div>

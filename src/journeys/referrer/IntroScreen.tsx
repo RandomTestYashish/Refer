@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BadgeIndianRupee, Check, MailOpen, Send, Smartphone, UserCheck } from "lucide-react";
+import { BadgeIndianRupee, Bell, Check, Copy, Gift, Link2, Mail, MailOpen, MessageSquare, Send, Smartphone, User, UserCheck, Wifi } from "lucide-react";
 import { ContactAvatar } from "@/components/app/primitives";
-import { LogoTile } from "@/components/refer/LogoTile";
-import { LogoFamily } from "@/components/refer/LogoFamily";
+import { RupeeCoin } from "@/components/refer/RupeeCoin";
 import { TierBadge } from "@/components/refer/AchievementBadge";
 import { useStartInvite } from "@/components/refer/ContactsPrompt";
 import { CONTACTS } from "@/domain/data";
@@ -11,6 +10,7 @@ import { useProto } from "@/store/useProto";
 import { haptic } from "@/lib/device";
 import { cn, inr } from "@/lib/utils";
 import airtelLogo from "@/assets/refer/airtel-logo.svg";
+import iaWhatsapp from "@/assets/refer/ia-whatsapp.svg";
 
 /**
  * A02a — Refer story.
@@ -47,7 +47,7 @@ export function IntroScreen() {
       title: `Every friend gets you ${inr(rules.referrerReward)}`,
       body: `Bring a friend into the Airtel family. You get ${inr(rules.referrerReward)}, they get ${inr(rules.friendReward)} + ${rules.friendDataBenefit}.`,
       cta: "Continue",
-      hero: <WelcomeHero />,
+      hero: <PairHero reward={rules.referrerReward} friendReward={rules.friendReward} data={rules.friendDataBenefit} />,
     },
     {
       key: "invite",
@@ -272,41 +272,61 @@ function Float({ children, d = 4, a = 8, delay = 0 }: { children: React.ReactNod
 
 /* ───────────────────────────── heroes ───────────────────────────── */
 
-/** 1 · A light flare, then the Airtel tile drops in, framed by the Airtel family of small logos. */
-function WelcomeHero() {
-  const [ready, setReady] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), 650);
-    return () => clearTimeout(t);
-  }, []);
-  const W = 375;
-  const H = 360;
+/** 2 · You and your friend, each with their reward; coins arc from the gift to both of you. */
+function PairHero({ reward, friendReward, data }: { reward: number; friendReward: number; data: string }) {
+  const friend = CONTACTS[0];
+  const card = "flex w-[128px] flex-col items-center rounded-[22px] border border-[#F1E4E6] bg-white/90 px-3 pb-3.5 pt-4 shadow-[0_14px_30px_rgba(140,60,70,0.12)] backdrop-blur";
   return (
-    <div className="relative flex items-center justify-center" style={{ width: W, height: H }}>
-      {/* The Airtel family: the same logo repeated small around the one big logo, fading into the dark */}
-      {ready && (
-        <div className="absolute inset-0 [mask-image:radial-gradient(closest-side,#000_55%,transparent_100%)]">
-          <LogoFamily width={W} height={H} gap={40} icon={22} hole={96} tone="light" strength={0.42} />
-        </div>
-      )}
-      {/* Flare */}
-      <motion.div className="absolute" initial={{ scale: 0, opacity: 0, rotate: -20 }} animate={{ scale: [0, 1.2, 0.2], opacity: [0, 1, 0], rotate: 20 }} transition={{ duration: 1.1, ease: "easeOut" }} aria-hidden>
-        <div className="absolute left-1/2 top-1/2 h-[2px] w-[220px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(90deg,transparent,#F28A92,transparent)]" />
-        <div className="absolute left-1/2 top-1/2 h-[140px] w-[2px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(180deg,transparent,#F28A92,transparent)]" />
-        <div className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FFC2C7] blur-md" />
-      </motion.div>
-      {ready && (
-        <motion.div initial={{ opacity: 0, scale: 0.5, y: -30, filter: "blur(10px)" }} animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }} transition={{ type: "spring", stiffness: 140, damping: 13 }}>
-          <Float d={4} a={12}>
-            <LogoTile size={132} depth={12} />
-          </Float>
+    <div className="relative flex w-full flex-col items-center">
+      {/* Gift in the middle, coins flying out to each side */}
+      <div className="relative h-[92px] w-[300px]">
+        <motion.div className="absolute left-1/2 top-2 -translate-x-1/2" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 200, damping: 12 }}>
+          <motion.div
+            className="flex size-[64px] items-center justify-center rounded-[20px] bg-[linear-gradient(160deg,#FFE3E6,#FFC9CF)] shadow-[0_10px_22px_rgba(202,38,43,0.2),inset_0_1px_0_#fff]"
+            animate={{ rotate: [0, -8, 8, -4, 0], scale: [1, 1.06, 1] }}
+            transition={{ duration: 1, repeat: Infinity, repeatDelay: 1.6 }}
+          >
+            <Gift className="size-8 text-[#CA262B]" strokeWidth={1.8} />
+          </motion.div>
         </motion.div>
-      )}
+        {[-1, 1].map((side) => (
+          <motion.div
+            key={side}
+            className="absolute left-1/2 top-6 -ml-[14px]"
+            initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
+            animate={{ x: [0, side * 60, side * 92], y: [0, -26, 46], opacity: [0, 1, 0], scale: [0.5, 1, 0.8] }}
+            transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 1.4, delay: 0.5, ease: "easeOut" }}
+          >
+            <RupeeCoin size={28} />
+          </motion.div>
+        ))}
+      </div>
+      <div className="mt-1 flex items-stretch gap-4">
+        <motion.div className={card} initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 140, damping: 15, delay: 0.1 }}>
+          <span className="flex size-12 items-center justify-center rounded-full bg-[#FFE3E6]">
+            <User className="size-6 text-[#CA262B]" strokeWidth={2} />
+          </span>
+          <p className="mt-2 text-[12px] text-[#5B5E66]">You get</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[22px] font-bold leading-[26px]">
+            <RupeeCoin size={18} /> {inr(reward)}
+          </p>
+        </motion.div>
+        <motion.div className={card} initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 140, damping: 15, delay: 0.18 }}>
+          <ContactAvatar name={friend.name} hue={friend.hue} size={48} />
+          <p className="mt-2 text-[12px] text-[#5B5E66]">{friend.name.split(" ")[0]} gets</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[22px] font-bold leading-[26px]">
+            <RupeeCoin size={18} /> {inr(friendReward)}
+          </p>
+          <span className="mt-1.5 flex items-center gap-1 rounded-full bg-[#EEF2FF] px-2 py-0.5 text-[11px] font-semibold text-[#4B4FC9]">
+            <Wifi className="size-3" strokeWidth={2.4} /> + {data} data
+          </span>
+        </motion.div>
+      </div>
     </div>
   );
 }
 
-/** 2 · The tile turns like a coin while friends get ticked off one by one. */
+/** 3 · Your invite link with share options, while friends get ticked off one by one. */
 function InviteHero({ reward }: { reward: number }) {
   const rows = CONTACTS.slice(0, 3);
   const [ticked, setTicked] = useState(0);
@@ -316,10 +336,35 @@ function InviteHero({ reward }: { reward: number }) {
   }, [rows.length]);
   return (
     <div className="flex w-full flex-col items-center px-6">
-      <Float d={4} a={8}>
-        <LogoTile size={96} depth={12} motionMode="spin" />
+      <Float d={4} a={6}>
+        <div className="w-[260px] rounded-[20px] border border-[#F1E4E6] bg-white/90 p-3 shadow-[0_14px_30px_rgba(140,60,70,0.12)] backdrop-blur">
+          <div className="flex items-center gap-2 rounded-[12px] bg-[#F6F6F8] px-3 py-2">
+            <Link2 className="size-4 shrink-0 text-[#CA262B]" strokeWidth={2.2} />
+            <span className="min-w-0 flex-1 truncate text-left text-[13px] font-medium">airtel.in/r/K7Q2</span>
+            <span className="flex items-center gap-1 rounded-full bg-[#1B1C1F] px-2 py-0.5 text-[11px] font-medium text-white">
+              <Copy className="size-3" /> Copy
+            </span>
+          </div>
+          <div className="mt-3 flex justify-around">
+            {[
+              { k: "wa", el: <img src={iaWhatsapp} alt="" className="size-5" />, bg: "#E7F8EE" },
+              { k: "sms", el: <MessageSquare className="size-5 text-[#2F6FE4]" strokeWidth={2} />, bg: "#EAF1FF" },
+              { k: "mail", el: <Mail className="size-5 text-[#CA262B]" strokeWidth={2} />, bg: "#FFECEE" },
+            ].map((c, k) => (
+              <motion.span
+                key={c.k}
+                className="flex size-10 items-center justify-center rounded-full"
+                style={{ background: c.bg }}
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 2, delay: k * 0.15 }}
+              >
+                {c.el}
+              </motion.span>
+            ))}
+          </div>
+        </div>
       </Float>
-      <ul className="mt-7 w-full">
+      <ul className="mt-6 w-full">
         {rows.map((c, k) => {
           const on = k < ticked;
           return (
@@ -339,7 +384,7 @@ function InviteHero({ reward }: { reward: number }) {
               <ContactAvatar name={c.name} hue={c.hue} size={26} />
               <span className={cn("min-w-0 flex-1 truncate text-left text-[15px] transition-colors", on ? "text-[#1B1C1F]/40 line-through" : "text-[#1B1C1F]")}>{c.name}</span>
               <span className="flex items-center gap-1.5 text-[14px] font-semibold text-[#CA262B]">
-                <img src={airtelLogo} alt="" className="size-3.5 rounded-[4px]" />+{inr(reward)}
+                <RupeeCoin size={16} />+{inr(reward)}
               </span>
             </motion.li>
           );
@@ -368,7 +413,9 @@ function ChainHero({ reward }: { reward: number }) {
     <div className="flex w-full flex-col items-center px-5">
       <div className="relative flex h-[120px] w-full items-center justify-center">
         <motion.div className="absolute left-2" initial={{ x: -40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 120, damping: 14 }}>
-          <LogoTile size={58} depth={8} glow={false} />
+          <span className="flex size-[58px] items-center justify-center rounded-full bg-[#FFE3E6] ring-2 ring-white shadow-[0_8px_18px_rgba(202,38,43,0.18)]">
+            <User className="size-7 text-[#CA262B]" strokeWidth={2} />
+          </span>
           <p className="mt-1.5 text-center text-[11px] text-[#5B5E66]">You</p>
         </motion.div>
         <motion.div className="absolute right-2 flex flex-col items-center" initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 120, damping: 14 }}>
@@ -466,7 +513,7 @@ function VaultHero({ amount }: { amount: number }) {
           <circle cx="88" cy="88" r="52" fill="none" stroke="rgba(202,38,43,0.08)" strokeWidth="10" />
         </motion.svg>
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <LogoTile size={58} depth={8} motionMode="still" glow={false} />
+          <RupeeCoin size={66} spin />
         </div>
       </div>
       {/* Rolling digits */}
@@ -565,7 +612,11 @@ function NotifyHero({ reward }: { reward: number }) {
     <div className="flex w-full flex-col items-center px-5">
       <div className="relative">
         <Float d={4} a={10}>
-          <LogoTile size={112} depth={12} />
+          <div className="flex size-[104px] items-center justify-center rounded-[30px] border border-[#F1E4E6] bg-[linear-gradient(160deg,#FFFFFF,#FFF1F2)] shadow-[0_18px_36px_rgba(140,60,70,0.16),inset_0_1px_0_#fff]">
+            <motion.span key={n} className="block origin-top" animate={{ rotate: [0, 16, -14, 10, -6, 0] }} transition={{ duration: 0.9, ease: "easeOut" }}>
+              <Bell className="size-12 text-[#CA262B]" strokeWidth={1.8} />
+            </motion.span>
+          </div>
         </Float>
         <AnimatePresence mode="popLayout">
           <motion.span
