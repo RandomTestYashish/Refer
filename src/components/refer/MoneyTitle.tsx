@@ -1,9 +1,10 @@
-import { motion } from "framer-motion";
 import { cn, inr } from "@/lib/utils";
 
 /**
- * Theme headline: "— ✦ Earn up to ✦ —", a heavy ₹ amount with a hand-drawn green underline that
- * draws itself in, and a light sub-line. Sizes scale with `size` ("lg" for heroes, "sm" for banners).
+ * Theme headline: "Earn up to", a heavy ₹ amount sitting on a soft peach highlight bar, and a sub-line.
+ * Tight type on an 8px grid (every line-height and gap is a multiple of 8).
+ *   lg — eyebrow 24/32 · amount 56/64 · sub 20/24, 8px between lines
+ *   sm — eyebrow 14/16 · amount 32/40 · sub 12/16, stacked with no gaps (banners)
  */
 export function MoneyTitle({
   amount,
@@ -23,38 +24,16 @@ export function MoneyTitle({
   const lg = size === "lg";
   return (
     <div className={cn(align === "center" ? "text-center" : "text-left", className)}>
-      <p className={cn("flex items-center gap-2 font-medium text-[#2A2825]", align === "center" && "justify-center", lg ? "text-[18px] leading-[22px]" : "text-[12px] leading-[14px]")}>
-        {lg && <Ornament />}
-        <span>{eyebrow}</span>
-        {lg && <Ornament flip />}
-      </p>
-      <div className={cn("relative w-fit", align === "center" && "mx-auto")}>
-        <p className={cn("font-black tracking-[-0.03em] text-[#262421] tabular", lg ? "mt-1 text-[58px] leading-[62px]" : "mt-0.5 text-[36px] leading-[40px]")}>{inr(amount)}</p>
-        <svg viewBox="0 0 200 14" preserveAspectRatio="none" className={cn("absolute right-[2%] w-[62%]", lg ? "-bottom-[6px] h-[10px]" : "-bottom-[4px] h-[7px]")} aria-hidden>
-          <motion.path
-            d="M4 10 C 60 2, 140 2, 196 6"
-            fill="none"
-            stroke="#6FAE3E"
-            strokeWidth="5"
-            strokeLinecap="round"
-            pathLength={1}
-            strokeDasharray="1 1"
-            initial={{ strokeDashoffset: 1 }}
-            animate={{ strokeDashoffset: 0 }}
-            transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          />
-        </svg>
+      <p className={cn("font-semibold tracking-[-0.02em] text-[#2A2825]", lg ? "text-[24px] leading-[32px]" : "text-[14px] leading-[16px]")}>{eyebrow}</p>
+      <div className={cn("relative w-fit", align === "center" && "mx-auto", lg ? "mt-2" : "mt-0")}>
+        {/* Highlight bar behind the lower half of the amount */}
+        <span
+          className={cn("absolute rounded-full bg-[#FBE3C6]", lg ? "-inset-x-4 bottom-1 h-6" : "-inset-x-2 bottom-1 h-3")}
+          aria-hidden
+        />
+        <p className={cn("relative font-black tracking-[-0.045em] text-[#1F1D1A] tabular", lg ? "text-[56px] leading-[64px]" : "text-[32px] leading-[40px]")}>{inr(amount)}</p>
       </div>
-      <p className={cn("font-normal text-[#4A4743]", lg ? "mt-3 text-[20px] leading-[26px] tracking-[0.01em]" : "mt-2 text-[12.5px] leading-[16px]")}>{sub}</p>
+      <p className={cn("tracking-[-0.01em] text-[#3A3835]", lg ? "mt-2 text-[20px] leading-[24px]" : "mt-0 text-[12px] leading-[16px]")}>{sub}</p>
     </div>
-  );
-}
-
-function Ornament({ flip = false }: { flip?: boolean }) {
-  return (
-    <span className={cn("flex items-center gap-1", flip && "flex-row-reverse")} aria-hidden>
-      <span className="h-px w-7 bg-[#2A2825]/60" />
-      <span className="text-[11px] leading-none text-[#2A2825]">✦</span>
-    </span>
   );
 }

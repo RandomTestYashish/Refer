@@ -6,7 +6,7 @@ import { ContactAvatar, Screen, ScreenBody } from "@/components/app/primitives";
 import { CONTACTS } from "@/domain/data";
 import { copyInviteLink } from "@/components/app/InviteKit";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Vault } from "@/components/refer/Vault";
+import { MoneyJar } from "@/components/refer/MoneyJar";
 import { MoneyTitle } from "@/components/refer/MoneyTitle";
 import { MilestoneCollection, useMilestones } from "@/components/refer/MilestoneCollection";
 import { UnlockCelebration } from "@/components/refer/AchievementBadge";
@@ -85,13 +85,13 @@ export function LandingScreen() {
       </AnimatePresence>
 
       <ScreenBody ref={bodyRef} className="pb-4">
-        {/* Hero (money theme): the vault opens on the money, then the headline */}
+        {/* Hero (money theme): the money jar, then the headline. 8px grid: 16 · jar 232 · 16 · title · 24 · pill · 8 */}
         <section className="relative bg-[linear-gradient(180deg,#FAF7F3_0%,#FAF7F3_70%,#FFFFFF_100%)] pb-2 pt-4" aria-label={`Earn up to ${inr(rules.yearlyEarningCap)} a year`}>
           <div className="flex justify-center">
-            <Vault scale={1.05} />
+            <MoneyJar width={208} />
           </div>
-          <MoneyTitle amount={rules.yearlyEarningCap} className="mt-3 px-6" />
-          <p className="mx-auto mt-5 flex w-fit items-center gap-2 rounded-full border border-[#E8E1D6] bg-white px-3.5 py-1.5 text-[12.5px] leading-[18px] text-[#4A4743] shadow-[0_4px_12px_rgba(90,70,45,0.08)]" data-testid="reward-split">
+          <MoneyTitle amount={rules.yearlyEarningCap} className="mt-4 px-6" />
+          <p className="mx-auto mt-6 flex h-8 w-fit items-center gap-2 rounded-full border border-[#E8E1D6] bg-white px-4 text-[12px] leading-[16px] text-[#4A4743] shadow-[0_4px_12px_rgba(90,70,45,0.08)]" data-testid="reward-split">
             <span className="size-1.5 rounded-full bg-[#6FAE3E]" aria-hidden />
             <b className="font-bold text-[#262421]">{inr(rules.referrerReward)}</b> for you · <b className="font-bold text-[#262421]">{inr(rules.friendReward)} + {rules.friendDataBenefit}</b> for them
           </p>

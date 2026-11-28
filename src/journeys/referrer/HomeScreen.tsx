@@ -78,7 +78,7 @@ import bnManage from "@/assets/home/bn-manage.svg";
 import bnFinance from "@/assets/home/bn-finance.svg";
 import bnFamily from "@/assets/home/bn-family.svg";
 import bnAskUs from "@/assets/home/bn-askus.svg";
-import { Vault } from "@/components/refer/Vault";
+import { MoneyJar } from "@/components/refer/MoneyJar";
 import { MoneyTitle } from "@/components/refer/MoneyTitle";
 
 /**
@@ -178,8 +178,8 @@ const TABS = [
  * Built from the frame's layers so the copy and the Invite Friends button are live.
  */
 /**
- * Curated for you · Refer banner, in the money theme: warm off-white card, the silver vault opening
- * on the money inside, and the "Earn up to ₹5,000" headline with its green underline.
+ * Curated for you · Refer banner, in the money theme: warm off-white card, the money-jar illustration
+ * and the "Earn up to ₹5,000" headline. 8px grid: 304 × 184 card, 16 padding, 40 button, jar 128 × 144.
  */
 function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => void }) {
   return (
@@ -187,19 +187,20 @@ function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => vo
       whileTap={{ scale: 0.98 }}
       onClick={onOpen}
       data-testid="home-refer-banner"
-      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] border border-[#ECE5DA] bg-[radial-gradient(120%_120%_at_80%_20%,#FFFDF9_0%,#F7F1E8_55%,#EFE6D9_100%)] text-[#262421]"
+      className="relative h-[184px] w-[304px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] shadow-[inset_0_0_0_1px_#ECE5DA] bg-[radial-gradient(120%_120%_at_80%_20%,#FFFDF9_0%,#F7F1E8_55%,#EFE6D9_100%)] text-[#262421]"
     >
-      <div className="absolute -right-[18px] top-[34px]">        <Vault scale={0.55} />
+      <div className="absolute bottom-4 right-4">
+        <MoneyJar width={128} />
       </div>
-      <div className="relative flex h-full flex-col justify-between p-5 pr-0">
-        <MoneyTitle amount={yearly} size="sm" align="left" sub="a year by inviting friends" className="w-[150px]" />
+      <div className="relative flex h-full flex-col justify-between p-4 pr-0">
+        <MoneyTitle amount={yearly} size="sm" align="left" sub="a year by inviting friends" className="w-[144px]" />
         <button
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
           }}
           aria-label={`Invite friends and earn up to ${inr(yearly)} a year`}
-          className="flex h-9 w-fit items-center justify-center rounded-full bg-[#262421] px-4 text-[12.6px] font-medium leading-[14.4px] text-white shadow-[0_6px_14px_rgba(38,36,33,0.18)] active:bg-black"
+          className="flex h-10 w-fit items-center justify-center rounded-full bg-[#262421] px-4 text-[14px] font-medium leading-[16px] text-white shadow-[0_6px_14px_rgba(38,36,33,0.18)] active:bg-black"
         >
           Invite friends
         </button>
@@ -392,7 +393,7 @@ export function HomeScreen() {
           <SectionTitle className="mx-4">curated for you</SectionTitle>
           <div className="no-scrollbar mt-4 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-pl-4 px-4">
             <CuratedReferCard yearly={rules.yearlyEarningCap} onOpen={() => openRefer("home_creative")} />
-            <button onClick={() => outOfScope("Offer")} className="relative h-[182px] w-[303px] shrink-0 snap-start overflow-hidden rounded-[16px]">
+            <button onClick={() => outOfScope("Offer")} className="relative h-[184px] w-[304px] shrink-0 snap-start overflow-hidden rounded-[16px]">
               <img src={curated2} alt="" className="size-full object-cover" />
             </button>
             <span className="w-px shrink-0" aria-hidden />
