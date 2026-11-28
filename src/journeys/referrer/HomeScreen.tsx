@@ -178,7 +178,7 @@ const TABS = [
  * Built from the frame's layers so the copy and the Invite Friends button are live.
  */
 /**
- * Curated for you · Refer banner. Same world as the Refer story it opens: black card, Airtel-red glow,
+ * Curated for you · Refer banner. Same world as the Refer story it opens: white pastel card, soft blush glow,
  * the 3D Airtel logo framed by the "Airtel family" of small logos, and the prize up front.
  */
 function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => void }) {
@@ -187,19 +187,19 @@ function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => vo
       whileTap={{ scale: 0.98 }}
       onClick={onOpen}
       data-testid="home-refer-banner"
-      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] bg-black text-white"
+      className="relative h-[182px] w-[303px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[16px] border border-[#F3E6E8] bg-[linear-gradient(135deg,#FFFFFF_0%,#FFF3F0_45%,#FCEBF1_75%,#F1ECFF_100%)] text-[#1B1C1F]"
     >
       {/* Ember glow, rising behind the logo */}
       <motion.div
         className="pointer-events-none absolute -bottom-16 -right-10 h-[220px] w-[300px]"
-        style={{ background: "radial-gradient(closest-side, #FF4A2E 0%, #E2262C 30%, #A3161C 55%, rgba(0,0,0,0) 100%)" }}
+        style={{ background: "radial-gradient(closest-side, #FFC9CE 0%, #FFDCDF 40%, rgba(255,230,233,0.5) 65%, rgba(255,255,255,0) 100%)" }}
         animate={{ opacity: [0.75, 1, 0.75], scale: [1, 1.06, 1] }}
         transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         aria-hidden
       />
       {/* The Airtel family around the big logo */}
       <div className="absolute inset-y-0 right-0 w-[170px] [mask-image:radial-gradient(closest-side,#000_45%,transparent_100%)]">
-        <LogoFamily width={170} height={182} cx={92} cy={86} gap={27} icon={14} hole={50} tone="dark" />
+        <LogoFamily width={170} height={182} cx={92} cy={86} gap={27} icon={14} hole={50} tone="light" strength={0.45} />
       </div>
       <div className="absolute left-[191px] top-[48px]">
         <LogoTile size={76} depth={8} glow={false} />
@@ -207,10 +207,10 @@ function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => vo
 
       <div className="relative flex h-full flex-col justify-between p-5 pr-0">
         <div>
-          <p className="text-[10.5px] font-semibold uppercase leading-[12px] tracking-[2.5px] text-white/65">Refer &amp; win</p>
-          <p className="mt-2 text-[14px] font-medium leading-[16px] text-white/90">Win up to</p>
-          <p className="mt-0.5 text-[38px] font-bold leading-[42px] tracking-[-0.8px] tabular">{inr(yearly)}</p>
-          <p className="text-[13px] leading-[16px] text-white/75">a year</p>
+          <p className="text-[10.5px] font-semibold uppercase leading-[12px] tracking-[2.5px] text-[#C2424A]">Refer &amp; win</p>
+          <p className="mt-2 text-[14px] font-medium leading-[16px] text-[#3A3C42]">Win up to</p>
+          <p className="mt-0.5 w-fit bg-[linear-gradient(100deg,#E0353B_0%,#CA262B_45%,#981C20_100%)] bg-clip-text text-[38px] font-bold leading-[42px] tracking-[-0.8px] text-transparent tabular">{inr(yearly)}</p>
+          <p className="text-[13px] leading-[16px] text-[#5B5E66]">a year</p>
         </div>
         <button
           onClick={(e) => {
@@ -218,7 +218,7 @@ function CuratedReferCard({ yearly, onOpen }: { yearly: number; onOpen: () => vo
             onOpen();
           }}
           aria-label={`Invite friends and win up to ${inr(yearly)} a year`}
-          className="flex h-9 w-fit items-center justify-center rounded-full bg-white px-4 text-[12.6px] font-medium leading-[14.4px] text-black active:bg-white/85"
+          className="flex h-9 w-fit items-center justify-center rounded-full bg-[#1B1C1F] px-4 text-[12.6px] font-medium leading-[14.4px] text-white shadow-[0_6px_14px_rgba(27,28,31,0.18)] active:bg-black"
         >
           Invite friends
         </button>

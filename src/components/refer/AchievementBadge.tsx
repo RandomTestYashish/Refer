@@ -94,7 +94,11 @@ function Emblem({ kind, color }: { kind: TierArt["emblem"]; color: string }) {
   }
 }
 
-/** A collectible achievement object — metal rim, enamel field, embossed emblem, die-cut sticker edge. */
+/**
+ * A collectible achievement object — metal rim, enamel field, embossed emblem, die-cut sticker edge.
+ * Drawn with real thickness: the sticker and the metal plate each have a side wall below them,
+ * the emblem is embossed and the badge casts a soft contact shadow, so it reads as a 3D object.
+ */
 export function TierBadge({ tier, status, size = 96, className }: { tier: TierId; status: TierStatus; size?: number; className?: string }) {
   const uid = useId().replace(/:/g, "");
   const a = ART[tier];
@@ -102,9 +106,9 @@ export function TierBadge({ tier, status, size = 96, className }: { tier: TierId
   const id = (n: string) => `${n}-${uid}`;
   const t = (1 - a.inset) / 2;
   return (
-    <div className={cn("relative shrink-0", className)} style={{ width: size, height: size * 1.1 }}>
+    <div className={cn("relative shrink-0", className)} style={{ width: size, height: size * (152 / 132) }}>
       <svg
-        viewBox="-6 -6 132 144"
+        viewBox="-6 -6 132 152"
         className="size-full overflow-visible"
         style={{
           filter: locked ? "grayscale(1) contrast(0.85) brightness(1.08)" : status === "pending" ? "saturate(0.75)" : undefined,
@@ -143,12 +147,35 @@ export function TierBadge({ tier, status, size = 96, className }: { tier: TierId
             <path d={a.shape} transform={`translate(${120 * t} ${132 * t}) scale(${a.inset})`} />
           </clipPath>
           <filter id={id("drop")} x="-30%" y="-30%" width="160%" height="170%">
-            <feDropShadow dx="0" dy="5" stdDeviation="4.5" floodColor="#1B1D22" floodOpacity="0.22" />
+            <feDropShadow dx="0" dy="7" stdDeviation="5.5" floodColor="#1B1D22" floodOpacity="0.2" />
           </filter>
+          <filter id={id("emboss")} x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="-1" stdDeviation="0.4" floodColor="#fff" floodOpacity="0.6" />
+            <feDropShadow dx="0" dy="1.8" stdDeviation="0.9" floodColor="#000" floodOpacity="0.35" />
+          </filter>
+          <linearGradient id={id("wall")} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#E9ECF1" />
+            <stop offset="1" stopColor="#B9BEC8" />
+          </linearGradient>
+          <linearGradient id={id("side")} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor={a.metal[a.metal.length - 1]} />
+            <stop offset="0.5" stopColor={a.metal[0]} />
+            <stop offset="1" stopColor={a.metal[a.metal.length - 1]} />
+          </linearGradient>
         </defs>
 
-        {/* sticker die-cut edge */}
-        <path d={a.shape} fill="#fff" stroke="#fff" strokeWidth={12} strokeLinejoin="round" filter={`url(#${id("drop")})`} />
+        {/* contact shadow + sticker side wall (thickness) */}
+        <path d={a.shape} transform="translate(0 7)" fill="#C3C8D0" stroke="#C3C8D0" strokeWidth={12} strokeLinejoin="round" filter={`url(#${id("drop")})`} />
+        {[6, 4.5, 3, 1.5].map((k) => (
+          <path key={k} d={a.shape} transform={`translate(0 ${k})`} fill={`url(#${id("wall")})`} stroke={`url(#${id("wall")})`} strokeWidth={12} strokeLinejoin="round" />
+        ))}
+        {/* sticker die-cut edge (top face) */}
+        <path d={a.shape} fill="#fff" stroke="#fff" strokeWidth={12} strokeLinejoin="round" />
+        {/* metal plate side wall */}
+        {[4, 3, 2, 1].map((k) => (
+          <path key={`m${k}`} d={a.shape} transform={`translate(0 ${k})`} fill={`url(#${id("side")})`} />
+        ))}
+        <path d={a.shape} transform="translate(0 4)" fill="#000" fillOpacity={0.22} />
         {/* metal body + bevel */}
         <path d={a.shape} fill={`url(#${id("metal")})`} />
         <path d={a.shape} transform="translate(4.2 4.6) scale(0.93)" fill={`url(#${id("rim")})`} />
@@ -162,7 +189,9 @@ export function TierBadge({ tier, status, size = 96, className }: { tier: TierId
               ))}
             </g>
           )}
-          <Emblem kind={a.emblem} color={a.ink} />
+          <g filter={`url(#${id("emboss")})`}>
+            <Emblem kind={a.emblem} color={a.ink} />
+          </g>
           <ellipse cx="44" cy="30" rx="58" ry="30" fill={`url(#${id("gloss")})`} transform="rotate(-18 44 30)" />
           {tier === "platinum" && <rect x="0" y="0" width="120" height="132" fill={`url(#${id("iris")})`} />}
         </g>

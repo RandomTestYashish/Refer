@@ -6,7 +6,6 @@ import { LogoTile } from "@/components/refer/LogoTile";
 import { LogoFamily } from "@/components/refer/LogoFamily";
 import { TierBadge } from "@/components/refer/AchievementBadge";
 import { useStartInvite } from "@/components/refer/ContactsPrompt";
-import { useStatusTone } from "@/components/device/statusTone";
 import { CONTACTS } from "@/domain/data";
 import { useProto } from "@/store/useProto";
 import { haptic } from "@/lib/device";
@@ -19,13 +18,18 @@ import airtelLogo from "@/assets/refer/airtel-logo.svg";
  * Airtel logo, an eyebrow, a title, one line of copy, page dots and a single white button.
  * Swipe or tap Continue to move on; Skip opens the full Refer a App page.
  */
+const STEP_MS = 4200;
+const LAST_HOLD_MS = 4800;
+
 export function IntroScreen() {
-  useStatusTone("light");
   const rules = useProto((s) => s.rules);
   const replace = useProto((s) => s.replace);
   const invite = useStartInvite();
   const [i, setI] = useState(0);
   const [dir, setDir] = useState(1);
+  // Auto-play: each step holds for STEP_MS (shown as progress in its dot). Touching the screen pauses it.
+  // After the last step has been on screen for a moment, the invite opens on its own.
+  const [paused, setPaused] = useState(false);
 
   // Story: the prize first (₹5,000 a year), then how you win it, step by step.
   const steps = [
@@ -80,6 +84,7 @@ export function IntroScreen() {
   ];
   const step = steps[i];
   const last = i === steps.length - 1;
+  const hold = last ? LAST_HOLD_MS : STEP_MS;
 
   const go = (n: number) => {
     if (n < 0 || n >= steps.length || n === i) return;
@@ -93,23 +98,34 @@ export function IntroScreen() {
     replace("a_landing");
     setTimeout(invite, 220);
   };
+  useEffect(() => {
+    if (paused) return;
+    const t = setTimeout(() => {
+      if (last) next();
+      else {
+        setDir(1);
+        setI((n) => n + 1);
+      }
+    }, hold);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i, paused, hold, last]);
 
   return (
-    <div className="relative flex h-full flex-col overflow-hidden bg-black pt-[var(--sb,44px)] text-white" data-testid="refer-intro">
-      {/* Airtel-red ember rising from the bottom */}
-      <motion.div
-        className="pointer-events-none absolute inset-x-[-20%] bottom-[-10%] h-[78%]"
-        style={{ background: "radial-gradient(75% 62% at 50% 100%, #FF4A2E 0%, #E2262C 20%, #A3161C 40%, #4A0A0D 62%, rgba(0,0,0,0) 84%)" }}
-        animate={{ opacity: [0.85, 1, 0.85], scale: [1, 1.04, 1] }}
-        transition={{ duration: 6, ease: "easeInOut", repeat: Infinity }}
-        aria-hidden
-      />
+    <div
+      className="relative flex h-full flex-col overflow-hidden bg-white pt-[var(--sb,44px)] text-[#1B1C1F]"
+      data-testid="refer-intro"
+      onPointerDown={() => setPaused(true)}
+      onPointerUp={() => setPaused(false)}
+      onPointerCancel={() => setPaused(false)}
+    >
+      <Aurora />
       <Dust />
 
       {/* Skip */}
       <div className="relative z-10 flex h-11 shrink-0 items-center justify-end px-5">
         {!last && (
-          <button onClick={skip} className="rounded-full px-2 py-1 text-[15px] text-white/60 active:text-white" data-testid="intro-skip">
+          <button onClick={skip} className="rounded-full px-2 py-1 text-[15px] text-[#5B5E66] active:text-[#1B1C1F]" data-testid="intro-skip">
             Skip
           </button>
         )}
@@ -153,9 +169,9 @@ export function IntroScreen() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="text-[11px] font-semibold uppercase leading-[14px] tracking-[3px] text-white/70">{step.eyebrow}</p>
+              <p className="text-[11px] font-semibold uppercase leading-[14px] tracking-[3px] text-[#C2424A]">{step.eyebrow}</p>
               <h1 className="mt-2.5 text-[28px] font-bold leading-[34px] tracking-[-0.3px] [text-wrap:balance]">{step.title}</h1>
-              <p className="mx-auto mt-2.5 max-w-[300px] text-[15px] leading-[21px] text-white/75">{step.body}</p>
+              <p className="mx-auto mt-2.5 max-w-[300px] text-[15px] leading-[21px] text-[#5B5E66]">{step.body}</p>
             </motion.div>
           </AnimatePresence>
 
@@ -163,7 +179,18 @@ export function IntroScreen() {
           <div className="mt-6 flex items-center justify-center gap-1.5" role="tablist" aria-label="Story steps">
             {steps.map((s, n) => (
               <button key={s.key} onClick={() => go(n)} role="tab" aria-selected={n === i} aria-label={`Step ${n + 1}`} className="flex h-4 items-center">
-                <motion.span className="block h-[5px] rounded-full bg-white" animate={{ width: n === i ? 20 : 5, opacity: n === i ? 1 : 0.35 }} transition={{ type: "spring", stiffness: 400, damping: 30 }} />
+                <motion.span className="relative block h-[5px] overflow-hidden rounded-full bg-[#1B1C1F]/15" animate={{ width: n === i ? 26 : 5 }} transition={{ type: "spring", stiffness: 400, damping: 30 }}>
+                  {n < i && <span className="absolute inset-0 bg-[#CA262B]" />}
+                  {n === i && (
+                    <motion.span
+                      key={`${i}-${paused}`}
+                      className="absolute inset-y-0 left-0 bg-[#CA262B]"
+                      initial={{ width: "0%" }}
+                      animate={{ width: paused ? undefined : "100%" }}
+                      transition={{ duration: hold / 1000, ease: "linear" }}
+                    />
+                  )}
+                </motion.span>
               </button>
             ))}
           </div>
@@ -174,14 +201,14 @@ export function IntroScreen() {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={next}
-          className="h-[52px] w-full rounded-full bg-white text-[16px] font-medium text-black shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
+          className="h-[52px] w-full rounded-full bg-[#1B1C1F] text-[16px] font-medium text-white shadow-[0_12px_28px_rgba(27,28,31,0.18)]"
           data-testid="intro-next"
         >
           {step.cta}
         </motion.button>
         <div className="flex h-9 items-end justify-center">
           {last && (
-            <button onClick={skip} className="text-[14px] text-white/70 active:text-white" data-testid="intro-details">
+            <button onClick={skip} className="text-[14px] text-[#5B5E66] active:text-[#1B1C1F]" data-testid="intro-details">
               See how it works
             </button>
           )}
@@ -193,6 +220,30 @@ export function IntroScreen() {
 
 /* ───────────────────────────── shared bits ───────────────────────────── */
 
+/** Soft pastel light (blush, peach, lilac) drifting slowly behind the hero. */
+function Aurora() {
+  const blobs = [
+    { c: "#FFD6DA", x: "-18%", y: "-6%", s: 300, d: 14 },
+    { c: "#FFE7D6", x: "48%", y: "4%", s: 280, d: 17 },
+    { c: "#ECE5FF", x: "18%", y: "30%", s: 260, d: 19 },
+    { c: "#FFE0E9", x: "-10%", y: "62%", s: 320, d: 21 },
+  ];
+  return (
+    <div className="pointer-events-none absolute inset-0" aria-hidden>
+      {blobs.map((b, k) => (
+        <motion.span
+          key={k}
+          className="absolute rounded-full blur-[46px]"
+          style={{ left: b.x, top: b.y, width: b.s, height: b.s, background: b.c }}
+          animate={{ x: [0, 24, -16, 0], y: [0, -18, 14, 0], scale: [1, 1.08, 0.96, 1] }}
+          transition={{ duration: b.d, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+      <div className="absolute inset-x-0 bottom-0 h-[42%] bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,#FFFFFF_55%)]" />
+    </div>
+  );
+}
+
 /** Slow-drifting specks of light, like dust in a beam. */
 function Dust() {
   const specks = Array.from({ length: 22 }, (_, k) => ({ x: (k * 37) % 100, y: (k * 53) % 70, d: 6 + (k % 5) * 2, s: 1 + (k % 3) * 0.6 }));
@@ -201,7 +252,7 @@ function Dust() {
       {specks.map((p, k) => (
         <motion.span
           key={k}
-          className="absolute rounded-full bg-[#FFB59A]"
+          className="absolute rounded-full bg-[#F4A9AE]"
           style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.s, height: p.s }}
           animate={{ y: [0, -24, 0], opacity: [0, 0.8, 0] }}
           transition={{ duration: p.d, repeat: Infinity, delay: k * 0.37, ease: "easeInOut" }}
@@ -235,14 +286,14 @@ function WelcomeHero() {
       {/* The Airtel family: the same logo repeated small around the one big logo, fading into the dark */}
       {ready && (
         <div className="absolute inset-0 [mask-image:radial-gradient(closest-side,#000_55%,transparent_100%)]">
-          <LogoFamily width={W} height={H} gap={40} icon={22} hole={96} tone="dark" />
+          <LogoFamily width={W} height={H} gap={40} icon={22} hole={96} tone="light" strength={0.42} />
         </div>
       )}
       {/* Flare */}
       <motion.div className="absolute" initial={{ scale: 0, opacity: 0, rotate: -20 }} animate={{ scale: [0, 1.2, 0.2], opacity: [0, 1, 0], rotate: 20 }} transition={{ duration: 1.1, ease: "easeOut" }} aria-hidden>
-        <div className="absolute left-1/2 top-1/2 h-[2px] w-[220px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(90deg,transparent,#fff,transparent)]" />
-        <div className="absolute left-1/2 top-1/2 h-[140px] w-[2px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(180deg,transparent,#fff,transparent)]" />
-        <div className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white blur-md" />
+        <div className="absolute left-1/2 top-1/2 h-[2px] w-[220px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(90deg,transparent,#F28A92,transparent)]" />
+        <div className="absolute left-1/2 top-1/2 h-[140px] w-[2px] -translate-x-1/2 -translate-y-1/2 bg-[linear-gradient(180deg,transparent,#F28A92,transparent)]" />
+        <div className="absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FFC2C7] blur-md" />
       </motion.div>
       {ready && (
         <motion.div initial={{ opacity: 0, scale: 0.5, y: -30, filter: "blur(10px)" }} animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }} transition={{ type: "spring", stiffness: 140, damping: 13 }}>
@@ -277,17 +328,17 @@ function InviteHero({ reward }: { reward: number }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + k * 0.08 }}
-              className="flex items-center gap-3 border-t border-dashed border-white/15 py-3 last:border-b"
+              className="flex items-center gap-3 border-t border-dashed border-[#1B1C1F]/12 py-3 last:border-b"
             >
               <motion.span
                 className="flex size-6 shrink-0 items-center justify-center rounded-[7px] border"
-                animate={{ backgroundColor: on ? "#E2262C" : "rgba(255,255,255,0)", borderColor: on ? "#E2262C" : "rgba(255,255,255,0.35)" }}
+                animate={{ backgroundColor: on ? "#CA262B" : "rgba(255,255,255,0.8)", borderColor: on ? "#CA262B" : "rgba(27,28,31,0.25)" }}
               >
                 <AnimatePresence>{on && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}><Check className="size-4 text-white" strokeWidth={3} /></motion.span>}</AnimatePresence>
               </motion.span>
               <ContactAvatar name={c.name} hue={c.hue} size={26} />
-              <span className={cn("min-w-0 flex-1 truncate text-left text-[15px] transition-colors", on ? "text-white/45 line-through" : "text-white")}>{c.name}</span>
-              <span className="flex items-center gap-1.5 text-[14px] font-semibold text-[#FF8A6B]">
+              <span className={cn("min-w-0 flex-1 truncate text-left text-[15px] transition-colors", on ? "text-[#1B1C1F]/40 line-through" : "text-[#1B1C1F]")}>{c.name}</span>
+              <span className="flex items-center gap-1.5 text-[14px] font-semibold text-[#CA262B]">
                 <img src={airtelLogo} alt="" className="size-3.5 rounded-[4px]" />+{inr(reward)}
               </span>
             </motion.li>
@@ -318,21 +369,21 @@ function ChainHero({ reward }: { reward: number }) {
       <div className="relative flex h-[120px] w-full items-center justify-center">
         <motion.div className="absolute left-2" initial={{ x: -40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 120, damping: 14 }}>
           <LogoTile size={58} depth={8} glow={false} />
-          <p className="mt-1.5 text-center text-[11px] text-white/60">You</p>
+          <p className="mt-1.5 text-center text-[11px] text-[#5B5E66]">You</p>
         </motion.div>
         <motion.div className="absolute right-2 flex flex-col items-center" initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 120, damping: 14 }}>
-          <div className="rounded-full p-[3px] ring-2 ring-[#E2262C]/70">
+          <div className="rounded-full p-[3px] ring-2 ring-[#F28A92] bg-white">
             <ContactAvatar name={CONTACTS[0].name} hue={CONTACTS[0].hue} size={52} />
           </div>
-          <p className="mt-1.5 text-[11px] text-white/60">{CONTACTS[0].name.split(" ")[0]}</p>
+          <p className="mt-1.5 text-[11px] text-[#5B5E66]">{CONTACTS[0].name.split(" ")[0]}</p>
         </motion.div>
         {/* Chain */}
         <motion.svg width="150" height="60" viewBox="0 0 150 60" className="overflow-visible" animate={{ y: [-3, 3] }} transition={{ duration: 2.8, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}>
           <defs>
             <linearGradient id="chainMetal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#FFC2B0" />
-              <stop offset="0.45" stopColor="#E2262C" />
-              <stop offset="1" stopColor="#6E1216" />
+              <stop offset="0" stopColor="#FFE3E5" />
+              <stop offset="0.45" stopColor="#F07A82" />
+              <stop offset="1" stopColor="#B8262C" />
             </linearGradient>
           </defs>
           {Array.from({ length: links }, (_, k) => {
@@ -353,7 +404,7 @@ function ChainHero({ reward }: { reward: number }) {
                 initial={{ opacity: 0, scale: 0.4 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 + k * 0.08, type: "spring", stiffness: 260, damping: 16 }}
-                style={{ transformOrigin: `${x}px ${y}px`, filter: "drop-shadow(0 0 6px rgba(253,47,54,0.45))" }}
+                style={{ transformOrigin: `${x}px ${y}px`, filter: "drop-shadow(0 3px 4px rgba(202,38,43,0.25))" }}
               />
             );
           })}
@@ -369,15 +420,15 @@ function ChainHero({ reward }: { reward: number }) {
               <motion.span
                 className="flex size-9 items-center justify-center rounded-full"
                 animate={{
-                  backgroundColor: on ? "#E2262C" : "rgba(255,255,255,0.08)",
-                  boxShadow: on ? "0 0 18px rgba(253,47,54,0.75)" : "0 0 0 rgba(0,0,0,0)",
+                  backgroundColor: on ? "#CA262B" : "#F1F2F5",
+                  boxShadow: on ? "0 6px 16px rgba(202,38,43,0.35)" : "0 0 0 rgba(0,0,0,0)",
                   scale: k === lit - 1 ? [1, 1.18, 1] : 1,
                 }}
                 transition={{ duration: 0.4 }}
               >
-                <Icon className={cn("size-[18px]", on ? "text-white" : "text-white/35")} strokeWidth={2} />
+                <Icon className={cn("size-[18px]", on ? "text-white" : "text-[#9A9DA5]")} strokeWidth={2} />
               </motion.span>
-              <span className={cn("text-center text-[10.5px] leading-[13px]", on ? "text-white" : "text-white/40")}>{s.label}</span>
+              <span className={cn("text-center text-[10.5px] leading-[13px]", on ? "text-[#1B1C1F]" : "text-[#9A9DA5]")}>{s.label}</span>
             </div>
           );
         })}
@@ -399,10 +450,10 @@ function VaultHero({ amount }: { amount: number }) {
   return (
     <div className="flex flex-col items-center">
       <div className="relative size-[176px]">
-        <div className="absolute inset-[-30%] rounded-full bg-[radial-gradient(circle,rgba(253,47,54,0.35),transparent_62%)] blur-xl" />
+        <div className="absolute inset-[-30%] rounded-full bg-[radial-gradient(circle,rgba(255,170,178,0.55),transparent_62%)] blur-xl" />
         {/* Outer ring */}
-        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,#5a5c62,#c9cbd0,#4a4c52,#b5b7bd,#5a5c62,#d6d8dc,#5a5c62)] p-[7px] shadow-[0_18px_40px_rgba(0,0,0,0.6)]">
-          <div className="size-full rounded-full bg-[radial-gradient(circle_at_50%_35%,#3a3c42,#16171a_70%)]" />
+        <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,#d9dce2,#ffffff,#c8ccd4,#f4f5f7,#d9dce2,#ffffff,#d9dce2)] p-[7px] shadow-[0_18px_36px_rgba(140,60,70,0.18),inset_0_1px_0_#fff]">
+          <div className="size-full rounded-full bg-[radial-gradient(circle_at_50%_35%,#FFFFFF,#F1F2F5_70%)] shadow-[inset_0_3px_10px_rgba(27,28,31,0.12)]" />
         </div>
         {/* Turning dial with ticks */}
         <motion.svg viewBox="0 0 176 176" className="absolute inset-0" animate={{ rotate: turn }} transition={{ type: "spring", stiffness: 40, damping: 10 }}>
@@ -410,9 +461,9 @@ function VaultHero({ amount }: { amount: number }) {
             const a = (k / 60) * Math.PI * 2;
             const long = k % 5 === 0;
             const r1 = 76, r2 = long ? 64 : 69;
-            return <line key={k} x1={88 + Math.cos(a) * r1} y1={88 + Math.sin(a) * r1} x2={88 + Math.cos(a) * r2} y2={88 + Math.sin(a) * r2} stroke={k === 45 ? "#FD2F36" : "rgba(255,255,255,0.45)"} strokeWidth={long ? 2 : 1} strokeLinecap="round" />;
+            return <line key={k} x1={88 + Math.cos(a) * r1} y1={88 + Math.sin(a) * r1} x2={88 + Math.cos(a) * r2} y2={88 + Math.sin(a) * r2} stroke={k === 45 ? "#CA262B" : "rgba(27,28,31,0.3)"} strokeWidth={long ? 2 : 1} strokeLinecap="round" />;
           })}
-          <circle cx="88" cy="88" r="52" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" />
+          <circle cx="88" cy="88" r="52" fill="none" stroke="rgba(202,38,43,0.08)" strokeWidth="10" />
         </motion.svg>
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <LogoTile size={58} depth={8} motionMode="still" glow={false} />
@@ -427,14 +478,14 @@ function VaultHero({ amount }: { amount: number }) {
           </DigitBox>
         ))}
       </div>
-      <p className="mt-2 text-[10px] font-semibold uppercase tracking-[2.5px] text-white/50">a year</p>
+      <p className="mt-2 text-[10px] font-semibold uppercase tracking-[2.5px] text-[#5B5E66]">a year</p>
     </div>
   );
 }
 
 function DigitBox({ children }: { children: React.ReactNode }) {
   return (
-    <span className="relative flex h-[46px] w-[36px] items-center justify-center overflow-hidden rounded-[10px] border border-white/15 bg-white/[0.07] text-[26px] font-bold tabular shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+    <span className="relative flex h-[46px] w-[36px] items-center justify-center overflow-hidden rounded-[10px] border border-[#ECEDF1] bg-white text-[26px] font-bold tabular text-[#1B1C1F] shadow-[0_6px_14px_rgba(140,60,70,0.10),inset_0_-2px_0_#F1F2F5]">
       {children}
     </span>
   );
@@ -488,7 +539,7 @@ function BadgesHero() {
       <AnimatePresence mode="wait">
         <motion.div key={m.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="mt-3 text-center">
           <p className="text-[16px] font-semibold">{m.label}</p>
-          <p className="mt-0.5 text-[12px] text-white/55">
+          <p className="mt-0.5 text-[12px] text-[#5B5E66]">
             {m.target} {m.target === 1 ? "referral" : "referrals"} a month{m.reward ? ` · ${inr(m.reward)} bonus` : ""}
           </p>
         </motion.div>
@@ -523,7 +574,7 @@ function NotifyHero({ reward }: { reward: number }) {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             transition={{ type: "spring", stiffness: 500, damping: 18 }}
-            className="absolute -right-2.5 -top-2.5 flex size-7 items-center justify-center rounded-full bg-[#FD2F36] text-[13px] font-bold shadow-[0_0_14px_rgba(253,47,54,0.8)]"
+            className="absolute -right-2.5 -top-2.5 flex size-7 items-center justify-center rounded-full bg-[#CA262B] text-[13px] font-bold text-white shadow-[0_6px_14px_rgba(202,38,43,0.45)] ring-2 ring-white"
           >
             {(n % 9) + 1}
           </motion.span>
@@ -537,15 +588,15 @@ function NotifyHero({ reward }: { reward: number }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 14, scale: 0.94, filter: "blur(4px)" }}
             transition={{ type: "spring", stiffness: 220, damping: 22 }}
-            className="absolute inset-x-0 flex items-start gap-2.5 rounded-[18px] border border-white/10 bg-white/[0.09] p-3 text-left backdrop-blur-md"
+            className="absolute inset-x-0 flex items-start gap-2.5 rounded-[18px] border border-[#EEF0F3] bg-white/90 p-3 text-left shadow-[0_12px_30px_rgba(140,60,70,0.12)] backdrop-blur-md"
           >
             <img src={airtelLogo} alt="" className="size-[22px] shrink-0 rounded-[6px]" />
             <div className="min-w-0 flex-1">
               <div className="flex items-baseline justify-between gap-2">
                 <p className="truncate text-[13px] font-semibold">{note.title}</p>
-                <span className="shrink-0 text-[11px] text-white/45">now</span>
+                <span className="shrink-0 text-[11px] text-[#9A9DA5]">now</span>
               </div>
-              <p className="mt-0.5 line-clamp-2 text-[12px] leading-[16px] text-white/65">{note.body}</p>
+              <p className="mt-0.5 line-clamp-2 text-[12px] leading-[16px] text-[#5B5E66]">{note.body}</p>
             </div>
           </motion.div>
         </AnimatePresence>
